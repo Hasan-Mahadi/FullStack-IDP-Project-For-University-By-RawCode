@@ -1,0 +1,23 @@
+{
+  "name": "role-based-ecommerce",
+  "version": "1.0.0",
+  "description": "Design and Development of a Role-Based E-commerce Web Application - IDP Project",
+  "main": "server/server.js",
+  "scripts": {
+    "start": "node server/server.js",
+    "dev":   "node server/server.js",
+    "seed":  "node server/database/seeder.js"
+  },
+  "keywords": [
+    "raw-nodejs",
+    "vanilla-js",
+    "oracle-database",
+    "idp",
+    "ecommerce"
+  ],
+  "author": "IDP Student Team",
+  "license": "ISC",
+  "dependencies": {
+    "oracledb": "^6.5.0"
+  }
+}

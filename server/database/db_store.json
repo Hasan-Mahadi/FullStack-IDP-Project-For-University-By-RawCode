@@ -1,0 +1,110 @@
+{
+  "roles": [
+    {
+      "id": 1,
+      "name": "Admin"
+    },
+    {
+      "id": 2,
+      "name": "Seller"
+    },
+    {
+      "id": 3,
+      "name": "Customer"
+    },
+    {
+      "id": 4,
+      "name": "Service Team"
+    }
+  ],
+  "users": [
+    {
+      "id": 1,
+      "username": "admin",
+      "password_hash": "f1a8e2d3b4c56789.b099d79cc3eb3ca1c8805ad02d707abaa8a1a0465525b2dbc0f73611e35135af0242030c1e5caccd19cfac2221266fc20b71dbfc0c4a934e735c74c24a4ee22f",
+      "email": "admin@idpshop.edu",
+      "role_id": 1,
+      "full_name": "System Administrator",
+      "is_active": 1,
+      "created_at": "2026-05-24T12:41:48.207Z"
+    },
+    {
+      "id": 2,
+      "username": "seller",
+      "password_hash": "f1a8e2d3b4c56789.208b59137e77eac2d9f55ab20093053adec0625d2fcf5cb8925d9e2b3420f9ece15aa0fc43334189fe0470d49b81862b7b1f91d0e39d2ec1eca018dabd5aaa4f",
+      "email": "seller@idpshop.edu",
+      "role_id": 2,
+      "full_name": "Elite Campus Seller",
+      "is_active": 1,
+      "created_at": "2026-05-24T12:41:48.208Z"
+    },
+    {
+      "id": 3,
+      "username": "customer",
+      "password_hash": "f1a8e2d3b4c56789.fa559ff94d44c698d06f79091d3c9c5dfdca94df0ef7e7faf73a642cd6e8340b7ac64beacdaa2e3a6c5cc564c8d109e77963e5f9091fe7897866254c59f80b68",
+      "email": "customer@idpshop.edu",
+      "role_id": 3,
+      "full_name": "John Doe Student",
+      "is_active": 1,
+      "created_at": "2026-05-24T12:41:48.208Z"
+    },
+    {
+      "id": 4,
+      "username": "service",
+      "password_hash": "f1a8e2d3b4c56789.4f4333ee61e4302420ffeb89b8e0ddb0f680e066adedb1862c1b7d13fa530227a213a6b00530543d8c22e7448be27693c9de6201520a624fcd8fc3804157fdd8",
+      "email": "service@idpshop.edu",
+      "role_id": 4,
+      "full_name": "Operations Coordinator",
+      "is_active": 1,
+      "created_at": "2026-05-24T12:41:48.208Z"
+    }
+  ],
+  "products": [
+    {
+      "id": 1,
+      "seller_id": 2,
+      "name": "Engineering Toolkit v3",
+      "description": "Complete kit including digital multimeter, breadboard, wire strippers, and microcontrollers for electrical laboratory classes.",
+      "price": 45.99,
+      "stock": 50,
+      "is_active": 1,
+      "created_at": "2026-05-24T12:41:48.208Z"
+    },
+    {
+      "id": 2,
+      "seller_id": 2,
+      "name": "Mechanical Drafting Instrument",
+      "description": "Professional-grade technical drawing compass set with extension bars, dividers, and precision mechanical lead pens.",
+      "price": 29.5,
+      "stock": 35,
+      "is_active": 1,
+      "created_at": "2026-05-24T12:41:48.208Z"
+    },
+    {
+      "id": 3,
+      "seller_id": 2,
+      "name": "University Hooded Sweatshirt",
+      "description": "Extra comfort navy blue university design lab hoodie, premium heavy cotton blend, ideal for cold computer lab shifts.",
+      "price": 39.99,
+      "stock": 120,
+      "is_active": 1,
+      "created_at": "2026-05-24T12:41:48.208Z"
+    },
+    {
+      "id": 4,
+      "seller_id": 2,
+      "name": "Reusable Lab Notebook",
+      "description": "Synthetically designed spiral smart notebook, dot grid layout, includes microfiber cloth for erasable and uploadable pages.",
+      "price": 18,
+      "stock": 200,
+      "is_active": 1,
+      "created_at": "2026-05-24T12:41:48.208Z"
+    }
+  ],
+  "orders": [],
+  "order_items": [],
+  "deliveries": [],
+  "warehouse": [],
+  "notifications": [],
+  "messages": []
+}

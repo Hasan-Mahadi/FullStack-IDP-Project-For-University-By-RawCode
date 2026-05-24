@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Dashboard | Campus Shop</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+    <div class="app-container">
+        <!-- Sidebar Navigation Menu -->
+        <aside class="sidebar">
+            <div class="sidebar-brand">
+                <div class="sidebar-logo">IDP</div>
+                <div class="sidebar-title">EduShop</div>
+            </div>
+            
+            <ul class="sidebar-menu">
+                <li class="sidebar-item"><a href="/">🛒 Browse Catalog</a></li>
+                <li class="sidebar-item active"><a href="/pages/customer.html">📦 My Orders</a></li>
+            </ul>
+
+            <div class="sidebar-footer">
+                <div id="sidebarAvatar" class="user-avatar">S</div>
+                <div class="user-info">
+                    <span id="sidebarName" class="user-name">Loading...</span>
+                    <span id="sidebarRole" class="user-role">Student</span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Dashboard Workspace -->
+        <main class="main-workspace">
+            <header class="navbar">
+                <div class="navbar-page-title">Student Dashboard</div>
+                
+                <div class="navbar-actions">
+                    <div id="notificationBell" class="notification-bell">
+                        <span>🔔</span>
+                        <span id="notificationBadge" class="bell-badge" style="display: none;"></span>
+                    </div>
+                    
+                    <button id="signoutBtn" class="btn btn-secondary" style="padding: 8px 16px; font-size: 0.85rem;">Sign Out</button>
+                </div>
+
+                <!-- Notifications Inbox Dropdown Panel -->
+                <div id="notificationInbox" class="notification-inbox">
+                    <div class="notification-header">
+                        <h4 style="font-size: 0.85rem; font-weight: bold;">System Notifications</h4>
+                        <button id="markReadBtn" style="background: none; border: none; color: var(--primary); font-size: 0.7rem; cursor: pointer; font-weight: 600;">Mark all as read</button>
+                    </div>
+                    <div id="notificationList">
+                        <div style="padding: 16px; text-align: center; color: var(--text-muted);">Syncing alerts...</div>
+                    </div>
+                </div>
+            </header>
+
+            <div style="padding: 32px; display: flex; flex-direction: column; gap: 32px;">
+                
+                <!-- Welcome Card -->
+                <div class="glass-card" style="padding: 28px; background: linear-gradient(135deg, rgba(0, 122, 255, 0.1), rgba(31, 41, 55, 0.4));">
+                    <h2 style="font-size: 1.5rem; margin-bottom: 8px;">Order Tracker</h2>
+                    <p style="color: var(--text-secondary); font-size: 0.9rem;">
+                        View your submitted orders, track real-time delivery state pipelines, and discuss logistical concerns directly with our Service Team.
+                    </p>
+                </div>
+
+                <!-- Table Card -->
+                <div class="glass-card">
+                    <h3 style="font-size: 1.1rem; margin-bottom: 20px;">My Orders History</h3>
+                    
+                    <div class="table-responsive">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Order ID</th>
+                                    <th>Date Placed</th>
+                                    <th>Products Detail</th>
+                                    <th>Total Price</th>
+                                    <th>Workflow State</th>
+                                    <th>Actions Scope</th>
+                                </tr>
+                            </thead>
+                            <tbody id="customerOrdersTable">
+                                <tr>
+                                    <td colspan="6" style="text-align: center; color: var(--text-muted);">Syncing your campus transactions...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Tracking Pipeline Stepper -->
+                <div id="stepperCard" class="glass-card" style="display: none;">
+                    <h3 id="stepperOrderTitle" style="font-size: 1.1rem; margin-bottom: 12px;">Logistics Pipeline Tracking - Order #0</h3>
+                    
+                    <div class="stepper-container">
+                        <div id="stepProgressBar" class="stepper-line-progress" style="width: 0%;"></div>
+                        
+                        <div id="stepPending" class="step-node">
+                            <div class="step-icon">1</div>
+                            <span class="step-label">Submitted</span>
+                        </div>
+                        <div id="stepApproved" class="step-node">
+                            <div class="step-icon">2</div>
+                            <span class="step-label">Approved</span>
+                        </div>
+                        <div id="stepWarehouse" class="step-node">
+                            <div class="step-icon">3</div>
+                            <span class="step-label">In Warehouse</span>
+                        </div>
+                        <div id="stepVerified" class="step-node">
+                            <div class="step-icon">4</div>
+                            <span class="step-label">Quality Checked</span>
+                        </div>
+                        <div id="stepDispatched" class="step-node">
+                            <div class="step-icon">5</div>
+                            <span class="step-label">In-Transit</span>
+                        </div>
+                        <div id="stepCompleted" class="step-node">
+                            <div class="step-icon">6</div>
+                            <span class="step-label">Completed</span>
+                        </div>
+                    </div>
+
+                    <!-- Confirm Physical Receipt -->
+                    <div id="confirmReceiptArea" style="display: none; padding: 20px; border-radius: 12px; background: rgba(52, 199, 89, 0.05); border: 1px solid rgba(52, 199, 89, 0.2); text-align: center; margin-top: 32px;">
+                        <h4 style="color: var(--success); font-weight: 700; margin-bottom: 8px;">Physical Package Arrived?</h4>
+                        <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 16px;">
+                            Confirm physical delivery to complete the transaction and release stock reserves.
+                        </p>
+                        <button id="confirmReceiptBtn" class="btn btn-success">Confirm Physical Package Arrival</button>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <!-- Communication Bridge Chat Modal (Customer <-> Service Team Coordinator) -->
+    <div id="chatModal" class="modal">
+        <div class="modal-content" style="max-width: 500px;">
+            <div class="modal-header">
+                <h3 id="chatOrderTitle" style="font-size: 1.1rem;">Coordination Chat - Order #0</h3>
+                <span id="chatCloseBtn" class="modal-close">✕</span>
+            </div>
+            
+            <div style="font-size: 0.75rem; color: var(--warning); padding: 8px 12px; border-radius: 8px; background: rgba(255, 204, 0, 0.08); border: 1px solid rgba(255, 204, 0, 0.2); margin-bottom: 16px; line-height: 1.4;">
+                ⚠️ <strong>Communication Bridge Active:</strong> Customer-Seller direct talk is blocked. All messages are securely routed through the central Service Team.
+            </div>
+
+            <!-- Chat Messaging screen -->
+            <div class="chat-window">
+                <div id="chatMessages" class="chat-messages">
+                    <div style="text-align: center; padding: 20px; color: var(--text-muted);">Syncing secure logs...</div>
+                </div>
+                
+                <div class="chat-input-bar">
+                    <input id="chatInput" class="form-control" type="text" placeholder="Type message to Service Team Coordinator..." style="height: 38px;">
+                    <button id="chatSendBtn" class="btn btn-primary" style="height: 38px; padding: 0 16px; font-size: 0.8rem;">Send</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Security Check, Redirection Guards and Controllers -->
+    <script src="/js/api.js"></script>
+    <script src="/js/auth.js"></script>
+    <script>
+        // Enforce route security role guard (Customer role ID: 3)
+        Auth.checkPageGuard([3]);
+    </script>
+    <script src="/js/dashboards.js"></script>
+</body>
+</html>

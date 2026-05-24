@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Account Sign-In | Role-Based E-Commerce</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body class="auth-wrapper">
+
+    <div class="glass-card auth-card">
+        <div class="sidebar-logo" style="margin: 0 auto 20px; width: 48px; height: 48px; font-size: 1.5rem;">IDP</div>
+        <h2 class="auth-title">Welcome Back</h2>
+        <p class="auth-subtitle">Sign in to access your role-specific IDP workspace</p>
+
+        <div id="alertBox" style="display: none; padding: 12px; border-radius: 8px; font-size: 0.85rem; margin-bottom: 20px; text-align: center;"></div>
+
+        <form id="loginForm">
+            <div class="form-group">
+                <label class="form-label" for="username">Username</label>
+                <input class="form-control" type="text" id="username" placeholder="e.g. admin" required autocomplete="username">
+            </div>
+
+            <div class="form-group" style="margin-bottom: 24px;">
+                <label class="form-label" for="password">Password</label>
+                <input class="form-control" type="password" id="password" placeholder="••••••••" required autocomplete="current-password">
+            </div>
+
+            <button type="submit" class="btn btn-primary" style="width: 100%; height: 46px;">
+                Authenticate Session
+            </button>
+        </form>
+
+        <p style="text-align: center; margin-top: 24px; font-size: 0.85rem; color: var(--text-secondary);">
+            New user? <a href="/pages/register.html" style="color: var(--primary); text-decoration: none; font-weight: 600;">Create an account</a>
+        </p>
+    </div>
+
+    <!-- Inject Native AJAX API & redirectional script -->
+    <script src="/js/api.js"></script>
+    <script src="/js/auth.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const loginForm = document.getElementById('loginForm');
+            const alertBox = document.getElementById('alertBox');
+
+            // Quick check if redirected with expiration notice
+            const params = new URLSearchParams(window.location.search);
+            if (params.get('session_expired') === 'true') {
+                alertBox.style.display = 'block';
+                alertBox.style.background = 'rgba(255, 59, 48, 0.1)';
+                alertBox.style.color = 'var(--danger)';
+                alertBox.style.border = '1px solid rgba(255, 59, 48, 0.3)';
+                alertBox.innerText = 'Your session has expired. Please sign in again.';
+            }
+
+            loginForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                alertBox.style.display = 'none';
+
+                const username = document.getElementById('username').value.trim();
+                const password = document.getElementById('password').value;
+
+                try {
+                    const data = await API.post('/api/auth/login', { username, password });
+                    
+                    if (data.success) {
+                        // Success toast
+                        alertBox.style.display = 'block';
+                        alertBox.style.background = 'rgba(52, 199, 89, 0.1)';
+                        alertBox.style.color = 'var(--success)';
+                        alertBox.style.border = '1px solid rgba(52, 199, 89, 0.3)';
+                        alertBox.innerText = 'Login successful! Redirecting...';
+
+                        // Save session
+                        Auth.saveSession(data.token, data.user);
+
+                        // Redirection based on role
+                        setTimeout(() => {
+                            Auth.redirectDashboard(data.user.roleId);
+                        }, 800);
+                    }
+                } catch (error) {
+                    alertBox.style.display = 'block';
+                    alertBox.style.background = 'rgba(255, 59, 48, 0.1)';
+                    alertBox.style.color = 'var(--danger)';
+                    alertBox.style.border = '1px solid rgba(255, 59, 48, 0.3)';
+                    alertBox.innerText = error.message || 'Login failed. Check credentials.';
+                }
+            });
+        });
+    </script>
+</body>
+</html>

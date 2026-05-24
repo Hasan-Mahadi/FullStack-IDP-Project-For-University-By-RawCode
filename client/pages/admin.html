@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard | Campus Shop</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+    <div class="app-container">
+        <!-- Sidebar Navigation Menu -->
+        <aside class="sidebar">
+            <div class="sidebar-brand">
+                <div class="sidebar-logo">IDP</div>
+                <div class="sidebar-title">EduShop</div>
+            </div>
+            
+            <ul class="sidebar-menu">
+                <li class="sidebar-item active"><a href="/pages/admin.html">🛡️ Root Administration</a></li>
+            </ul>
+
+            <div class="sidebar-footer">
+                <div id="sidebarAvatar" class="user-avatar">A</div>
+                <div class="user-info">
+                    <span id="sidebarName" class="user-name">Loading...</span>
+                    <span id="sidebarRole" class="user-role">Administrator</span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Workspace -->
+        <main class="main-workspace">
+            <header class="navbar">
+                <div class="navbar-page-title">Administrative Overview & Security Console</div>
+                
+                <div class="navbar-actions">
+                    <div id="notificationBell" class="notification-bell">
+                        <span>🔔</span>
+                        <span id="notificationBadge" class="bell-badge" style="display: none;"></span>
+                    </div>
+                    
+                    <button id="signoutBtn" class="btn btn-secondary" style="padding: 8px 16px; font-size: 0.85rem;">Sign Out</button>
+                </div>
+
+                <!-- Notifications Inbox Dropdown Panel -->
+                <div id="notificationInbox" class="notification-inbox">
+                    <div class="notification-header">
+                        <h4 style="font-size: 0.85rem; font-weight: bold;">System Notifications</h4>
+                        <button id="markReadBtn" style="background: none; border: none; color: var(--primary); font-size: 0.7rem; cursor: pointer; font-weight: 600;">Mark all as read</button>
+                    </div>
+                    <div id="notificationList">
+                        <div style="padding: 16px; text-align: center; color: var(--text-muted);">Syncing alerts...</div>
+                    </div>
+                </div>
+            </header>
+
+            <div style="padding: 32px; display: flex; flex-direction: column; gap: 32px;">
+                
+                <!-- Stat Summary Row -->
+                <div class="dashboard-grid" style="padding: 0; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px;">
+                    <div class="glass-card">
+                        <div class="stat-card-title">Registered Accounts</div>
+                        <div id="statAdminTotalUsers" class="stat-card-value">0</div>
+                        <div class="stat-card-icon">👥</div>
+                    </div>
+
+                    <div class="glass-card" style="border-left: 3px solid var(--success);">
+                        <div class="stat-card-title">Completed Revenue</div>
+                        <div id="statAdminTotalRevenue" class="stat-card-value">$0.00</div>
+                        <div class="stat-card-icon">💵</div>
+                    </div>
+
+                    <div class="glass-card" style="border-left: 3px solid var(--primary);">
+                        <div class="stat-card-title">Orders Logged</div>
+                        <div id="statAdminTotalOrders" class="stat-card-value">0</div>
+                        <div class="stat-card-icon">📜</div>
+                    </div>
+
+                    <div class="glass-card">
+                        <div class="stat-card-title">Catalog Inventory</div>
+                        <div id="statAdminCatalogSize" class="stat-card-value">0</div>
+                        <div class="stat-card-icon">📦</div>
+                    </div>
+                </div>
+
+                <!-- User Management Table & SVG Graphical Chart Column layout -->
+                <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 32px; align-items: start;">
+                    
+                    <!-- Registered Accounts Table -->
+                    <div class="glass-card">
+                        <h3 style="font-size: 1.1rem; margin-bottom: 20px;">Campus User Directory</h3>
+                        
+                        <div class="table-responsive">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Full Name</th>
+                                        <th>Username</th>
+                                        <th>Email</th>
+                                        <th>Role Group</th>
+                                        <th>Account State</th>
+                                        <th>Security Toggle</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="adminUsersTable">
+                                    <tr>
+                                        <td colspan="7" style="text-align: center; color: var(--text-muted);">Syncing campus user directory...</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Analytical Graphics Box -->
+                    <div class="glass-card" style="display: flex; flex-direction: column; justify-content: space-between; min-height: 400px;">
+                        <h3 style="font-size: 1.1rem; margin-bottom: 20px; text-align: center;">Order Pipeline Analytics</h3>
+                        
+                        <!-- Analytical SVG graphic (drawn by dashboards.js) -->
+                        <div id="adminAnalyticsChart" style="flex-grow: 1; display: flex; align-items: center; justify-content: center;">
+                            <div style="text-align: center; color: var(--text-muted);">Compiling graphical matrices...</div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <!-- Security Check, Redirection Guards and Controllers -->
+    <script src="/js/api.js"></script>
+    <script src="/js/auth.js"></script>
+    <script>
+        // Enforce route security role guard (Admin role ID: 1)
+        Auth.checkPageGuard([1]);
+    </script>
+    <script src="/js/dashboards.js"></script>
+</body>
+</html>

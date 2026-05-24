@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Service Dashboard | Operations & Logistics</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+    <div class="app-container">
+        <!-- Sidebar Navigation Menu -->
+        <aside class="sidebar">
+            <div class="sidebar-brand">
+                <div class="sidebar-logo">IDP</div>
+                <div class="sidebar-title">EduShop</div>
+            </div>
+            
+            <ul class="sidebar-menu">
+                <li class="sidebar-item active"><a href="/pages/service.html">🛠️ Logistics Control Panel</a></li>
+            </ul>
+
+            <div class="sidebar-footer">
+                <div id="sidebarAvatar" class="user-avatar">O</div>
+                <div class="user-info">
+                    <span id="sidebarName" class="user-name">Loading...</span>
+                    <span id="sidebarRole" class="user-role">Service Team</span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Workspace -->
+        <main class="main-workspace">
+            <header class="navbar">
+                <div class="navbar-page-title">Operations & Central Warehouse Console</div>
+                
+                <div class="navbar-actions">
+                    <div id="notificationBell" class="notification-bell">
+                        <span>🔔</span>
+                        <span id="notificationBadge" class="bell-badge" style="display: none;"></span>
+                    </div>
+                    
+                    <button id="signoutBtn" class="btn btn-secondary" style="padding: 8px 16px; font-size: 0.85rem;">Sign Out</button>
+                </div>
+
+                <!-- Notifications Inbox Dropdown Panel -->
+                <div id="notificationInbox" class="notification-inbox">
+                    <div class="notification-header">
+                        <h4 style="font-size: 0.85rem; font-weight: bold;">System Notifications</h4>
+                        <button id="markReadBtn" style="background: none; border: none; color: var(--primary); font-size: 0.7rem; cursor: pointer; font-weight: 600;">Mark all as read</button>
+                    </div>
+                    <div id="notificationList">
+                        <div style="padding: 16px; text-align: center; color: var(--text-muted);">Syncing alerts...</div>
+                    </div>
+                </div>
+            </header>
+
+            <div style="padding: 32px; display: flex; flex-direction: column; gap: 32px;">
+                
+                <!-- Welcome Banner -->
+                <div class="glass-card" style="padding: 28px; background: linear-gradient(135deg, rgba(255, 204, 0, 0.08), rgba(31, 41, 55, 0.4));">
+                    <h2 style="font-size: 1.5rem; margin-bottom: 8px;">Logistics Management Hub</h2>
+                    <p style="color: var(--text-secondary); font-size: 0.9rem;">
+                        You are the vital link in the trade ecosystem. Approve incoming purchases, execute physical quantity quality audits in the Central Warehouse, assign courier dispatches, and coordinate disputes between students and vendors.
+                    </p>
+                </div>
+
+                <!-- Stat Counters Row -->
+                <div class="dashboard-grid" style="padding: 0; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px;">
+                    <div class="glass-card">
+                        <div class="stat-card-title">Pending Order Reviews</div>
+                        <div id="statPendingReview" class="stat-card-value">0</div>
+                        <div class="stat-card-icon">🛎️</div>
+                    </div>
+
+                    <div class="glass-card" style="border-left: 3px solid var(--warning);">
+                        <div class="stat-card-title">Warehouse Physical Audits</div>
+                        <div id="statWarehouseAudits" class="stat-card-value">0</div>
+                        <div class="stat-card-icon">🏗️</div>
+                    </div>
+
+                    <div class="glass-card" style="border-left: 3px solid var(--primary);">
+                        <div class="stat-card-title">Assigned courier Dispatches</div>
+                        <div id="statCourierDispatches" class="stat-card-value">0</div>
+                        <div class="stat-card-icon">🚴</div>
+                    </div>
+                </div>
+
+                <!-- Central Orders Coordination Table -->
+                <div class="glass-card">
+                    <h3 style="font-size: 1.1rem; margin-bottom: 20px;">Central Logistics Coordination Ledger</h3>
+                    
+                    <div class="table-responsive">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Order ID</th>
+                                    <th>Student Buyer</th>
+                                    <th>Items Ordered</th>
+                                    <th>Fulfillment Value</th>
+                                    <th>Logistics State</th>
+                                    <th>Action Coordinates</th>
+                                </tr>
+                            </thead>
+                            <tbody id="serviceOrdersTable">
+                                <tr>
+                                    <td colspan="6" style="text-align: center; color: var(--text-muted);">Syncing central logs ledger...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <!-- Communication Bridge Chat Modal (Service Team Coordinator acting as bridge) -->
+    <div id="chatModal" class="modal">
+        <div class="modal-content" style="max-width: 500px;">
+            <div class="modal-header">
+                <h3 id="chatOrderTitle" style="font-size: 1.1rem;">Coordination Chat - Order #0</h3>
+                <span id="chatCloseBtn" class="modal-close">✕</span>
+            </div>
+            
+            <!-- Bridge Channel Select dropdown (Exclusive to Service Team Dashboard!) -->
+            <div class="form-group" style="margin-bottom: 20px;">
+                <label class="form-label" for="chatReceiverSelect">Target Bridge Recipient</label>
+                <select id="chatReceiverSelect" class="form-control">
+                    <!-- Loaded dynamically via dashboards.js -->
+                </select>
+                <span style="font-size: 0.7rem; color: var(--warning); margin-top: 4px; display: block;">
+                    * All messages from you are routed exclusively to the selected user.
+                </span>
+            </div>
+
+            <!-- Chat Messaging screen -->
+            <div class="chat-window">
+                <div id="chatMessages" class="chat-messages">
+                    <div style="text-align: center; padding: 20px; color: var(--text-muted);">Syncing secure logs...</div>
+                </div>
+                
+                <div class="chat-input-bar">
+                    <input id="chatInput" class="form-control" type="text" placeholder="Type message..." style="height: 38px;">
+                    <button id="chatSendBtn" class="btn btn-primary" style="height: 38px; padding: 0 16px; font-size: 0.8rem;">Send</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Security Check, Redirection Guards and Controllers -->
+    <script src="/js/api.js"></script>
+    <script src="/js/auth.js"></script>
+    <script>
+        // Enforce route security role guard (Service Team role ID: 4)
+        Auth.checkPageGuard([4]);
+    </script>
+    <script src="/js/dashboards.js"></script>
+</body>
+</html>
