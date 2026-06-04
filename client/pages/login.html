@@ -3,8 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Account Sign-In | Role-Based E-Commerce</title>
+    <title>Account Sign-In | EduShop</title>
     <link rel="stylesheet" href="/css/style.css">
+    <style>
+        /* Center container and adjust padding for standalone look */
+        body.auth-wrapper {
+            padding: 40px 20px;
+        }
+    </style>
 </head>
 <body class="auth-wrapper">
 
@@ -75,9 +81,14 @@
                         // Save session
                         Auth.saveSession(data.token, data.user);
 
-                        // Redirection based on role
+                        // Redirection based on role or redirect parameter
                         setTimeout(() => {
-                            Auth.redirectDashboard(data.user.roleId);
+                            const redirectUrl = params.get('redirect');
+                            if (redirectUrl) {
+                                window.location.href = decodeURIComponent(redirectUrl);
+                            } else {
+                                Auth.redirectDashboard(data.user.roleId);
+                            }
                         }, 800);
                     }
                 } catch (error) {

@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Us | EduShop</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        .faq-item {
+            margin-bottom: 16px;
+            cursor: pointer;
+            transition: var(--transition-smooth);
+        }
+        .faq-question {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 700;
+            padding: 16px 20px;
+        }
+        .faq-answer {
+            max-height: 0;
+            overflow: hidden;
+            padding: 0 20px;
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            line-height: 1.6;
+            transition: max-height 0.3s ease, padding 0.3s ease;
+        }
+        .faq-item.active .faq-answer {
+            max-height: 200px;
+            padding: 0 20px 20px 20px;
+            border-top: 1px solid var(--border-glass);
+            margin-top: 8px;
+        }
+        .faq-icon {
+            transition: transform 0.3s ease;
+        }
+        .faq-item.active .faq-icon {
+            transform: rotate(45deg);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header Navigation Placeholder -->
+    <div id="main-header"></div>
+
+    <!-- Main Container -->
+    <main class="container" style="max-width: 1100px; margin: 0 auto; padding: 100px 24px 80px;">
+        
+        <!-- Heading -->
+        <section class="scroll-reveal" style="text-align: center; margin-bottom: 50px;">
+            <span class="badge" style="background: rgba(99,102,241,0.15); color: var(--primary); margin-bottom: 16px;">Get In Touch</span>
+            <h1 style="font-size: 2.5rem; font-weight: 800; margin-bottom: 16px; background: linear-gradient(135deg, #ffffff, #a78bfa); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Support & Assistance</h1>
+            <p style="color: var(--text-secondary); max-width: 600px; margin: 0 auto; font-size: 1rem;">Have questions about order verification, listings, role access levels, or payment handovers? Contact our help desk.</p>
+        </section>
+
+        <!-- Form and Cards Grid -->
+        <section class="detail-grid scroll-reveal" style="grid-template-columns: 3fr 2fr; gap: 40px; margin-top: 0; margin-bottom: 60px; align-items: start;">
+            
+            <!-- Left Side: Contact Form -->
+            <div class="glass-panel" style="padding: 30px;">
+                <h3 style="font-size: 1.35rem; font-weight: 700; margin-bottom: 20px;">Send a Message</h3>
+                <form id="contactForm" onsubmit="event.preventDefault(); alert('Message logged successfully! Our service desk will contact you via your campus credentials within 24 hours. (Visual Demo)'); this.reset();">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px;">
+                        <div class="form-group" style="margin-bottom: 0;">
+                            <label class="form-label" for="contactName">Your Name</label>
+                            <input class="form-control" type="text" id="contactName" placeholder="John Doe" required>
+                        </div>
+                        <div class="form-group" style="margin-bottom: 0;">
+                            <label class="form-label" for="contactEmail">Campus Email</label>
+                            <input class="form-control" type="email" id="contactEmail" placeholder="student@university.edu" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="contactSubject">Subject</label>
+                        <input class="form-control" type="text" id="contactSubject" placeholder="Order QC delay, Seller approval, etc..." required>
+                    </div>
+                    <div class="form-group" style="margin-bottom: 24px;">
+                        <label class="form-label" for="contactMessage">Detailed Message</label>
+                        <textarea class="form-control" id="contactMessage" rows="5" placeholder="Explain your inquiry in detail, including order ID or product listing number..." required style="padding: 12px; resize: none;"></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="height: 44px; width: 100%; font-weight: bold;">Submit Message</button>
+                </form>
+            </div>
+
+            <!-- Right Side: Info Cards -->
+            <div style="display: flex; flex-direction: column; gap: 20px;">
+                <div class="glass-card" style="padding: 24px; display: flex; align-items: center; gap: 20px;">
+                    <div style="font-size: 1.8rem; background: rgba(99,102,241,0.1); width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--primary);">📞</div>
+                    <div>
+                        <h4 style="font-weight: 700; margin: 0 0 4px 0; font-size: 0.95rem;">Hotline Support</h4>
+                        <p style="color: var(--text-secondary); font-size: 0.8rem; margin: 0;">+1 (555) 890-CAMPUS</p>
+                    </div>
+                </div>
+                <div class="glass-card" style="padding: 24px; display: flex; align-items: center; gap: 20px;">
+                    <div style="font-size: 1.8rem; background: rgba(16,185,129,0.1); width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--success);">✉️</div>
+                    <div>
+                        <h4 style="font-weight: 700; margin: 0 0 4px 0; font-size: 0.95rem;">Support Mail</h4>
+                        <p style="color: var(--text-secondary); font-size: 0.8rem; margin: 0;">support@edushop.campus.edu</p>
+                    </div>
+                </div>
+                <div class="glass-card" style="padding: 24px; display: flex; align-items: center; gap: 20px;">
+                    <div style="font-size: 1.8rem; background: rgba(245,158,11,0.1); width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--warning);">📍</div>
+                    <div>
+                        <h4 style="font-weight: 700; margin: 0 0 4px 0; font-size: 0.95rem;">Service Desk Office</h4>
+                        <p style="color: var(--text-secondary); font-size: 0.8rem; margin: 0;">Building C, Lab Office 204</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- FAQ Section -->
+        <section class="scroll-reveal" style="margin-bottom: 40px;">
+            <h2 style="font-size: 1.8rem; font-weight: 800; margin-bottom: 24px; text-align: center; background: linear-gradient(135deg, #ffffff, #a78bfa); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Frequently Asked Questions</h2>
+            
+            <div style="max-width: 800px; margin: 0 auto;">
+                <!-- FAQ 1 -->
+                <div class="glass-card faq-item" onclick="this.classList.toggle('active')">
+                    <div class="faq-question">
+                        <span>How does the Logistics Quality Control (QC) review work?</span>
+                        <span class="faq-icon" style="color: var(--primary);">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        Once a Student Customer places an order, the system reserves the vendor's stock. The physical product must then be brought to the campus Logistics Service Desk. Our agents verify that the model, hardware state, and accessories match the description listed by the seller.
+                    </div>
+                </div>
+                
+                <!-- FAQ 2 -->
+                <div class="glass-card faq-item" onclick="this.classList.toggle('active')">
+                    <div class="faq-question">
+                        <span>Who can register as a Seller?</span>
+                        <span class="faq-icon" style="color: var(--primary);">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        Any registered college student, research laboratory assistant, department administration officer, or student sports leader is authorized to register and upgrade their role to a Vendor/Seller. Account approvals are managed by system administrators.
+                    </div>
+                </div>
+
+                <!-- FAQ 3 -->
+                <div class="glass-card faq-item" onclick="this.classList.toggle('active')">
+                    <div class="faq-question">
+                        <span>How are payments processed?</span>
+                        <span class="faq-icon" style="color: var(--primary);">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        Currently, the platform locks the trade logs for audit compliance. The actual financial transaction is finalized in person at the central Service Desk during QC handovers (cash or mobile transfers) to ensure maximum safety.
+                    </div>
+                </div>
+
+                <!-- FAQ 4 -->
+                <div class="glass-card faq-item" onclick="this.classList.toggle('active')">
+                    <div class="faq-question">
+                        <span>What is the image upload size limit?</span>
+                        <span class="faq-icon" style="color: var(--primary);">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        To maintain high performance and prevent abuse, we allow JPEG, PNG, GIF, and WEBP image files. Each file upload is limited to a maximum of 5MB.
+                    </div>
+                </div>
+
+                <!-- FAQ 5 -->
+                <div class="glass-card faq-item" onclick="this.classList.toggle('active')">
+                    <div class="faq-question">
+                        <span>Is there a review submission policy?</span>
+                        <span class="faq-icon" style="color: var(--primary);">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        Yes! To avoid artificial score inflating, customers can only write one review per product. Reviews are tied strictly to student IDs and verified purchases.
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Shopping Cart Drawer (Preserving original structure and IDs) -->
+    <div id="cartDrawer" class="cart-drawer">
+        <div class="cart-header">
+            <h3 style="font-size: 1.25rem;">Shopping Cart</h3>
+            <span id="cartClose" class="modal-close">✕</span>
+        </div>
+
+        <div id="cartItems" class="cart-items-container">
+            <div style="text-align: center; padding: 50px 0; color: var(--text-muted);">
+                Your cart is empty.
+            </div>
+        </div>
+
+        <div class="cart-footer">
+            <div class="cart-total-flex">
+                <span>Total:</span>
+                <span id="cartTotalValue">$0.00</span>
+            </div>
+            <button id="checkoutBtn" class="btn btn-success" style="width: 100%; height: 46px;">
+                Submit Order for Approval
+            </button>
+        </div>
+    </div>
+
+    <!-- Footer Placeholder -->
+    <div id="main-footer"></div>
+
+    <!-- Scripts -->
+    <script src="/js/api.js"></script>
+    <script src="/js/auth.js"></script>
+    <script src="/js/navbar.js"></script>
+    <script src="/js/animations.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            if (window.AppAnimations && window.AppAnimations.observeAll) {
+                window.AppAnimations.observeAll();
+            }
+        });
+    </script>
+</body>
+</html>

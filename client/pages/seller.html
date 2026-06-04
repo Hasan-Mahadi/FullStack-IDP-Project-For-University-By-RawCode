@@ -86,10 +86,31 @@
                             
                             <div class="form-group">
                                 <label class="form-label" for="newProdDesc">Detailed Description</label>
-                                <textarea class="form-control" id="newProdDesc" rows="3" placeholder="Explain technical details, condition, specifications..." style="resize: none;"></textarea>
+                                <textarea class="form-control" id="newProdDesc" rows="2" placeholder="Explain technical details, condition, specifications..." style="resize: none;"></textarea>
                             </div>
 
-                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+                            <div class="form-group">
+                                <label class="form-label" for="newProdCategory">Product Category</label>
+                                <select id="newProdCategory" class="form-control" required>
+                                    <option value="">Select Category</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Product Image</label>
+                                <div style="display: flex; gap: 8px; margin-bottom: 8px;">
+                                    <button type="button" id="toggleNewFileBtn" class="btn btn-secondary btn-sm active" style="flex: 1; padding: 6px; font-size: 0.75rem;">Upload File</button>
+                                    <button type="button" id="toggleNewUrlBtn" class="btn btn-secondary btn-sm" style="flex: 1; padding: 6px; font-size: 0.75rem;">Image URL</button>
+                                </div>
+                                <div id="newFileGroup">
+                                    <input type="file" id="newProdImageFile" accept="image/*" class="form-control" style="padding-top: 6px;">
+                                </div>
+                                <div id="newUrlGroup" style="display: none;">
+                                    <input type="text" id="newProdImageUrl" placeholder="Image URL (e.g. /uploads/products/xyz.png)" class="form-control">
+                                </div>
+                            </div>
+
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 12px;">
                                 <div class="form-group">
                                     <label class="form-label" for="newProdPrice">Price ($)</label>
                                     <input class="form-control" type="number" step="0.01" id="newProdPrice" placeholder="45.99" required>
@@ -115,7 +136,9 @@
                                 <thead>
                                     <tr>
                                         <th>ID</th>
+                                        <th>Image</th>
                                         <th>Product Name</th>
+                                        <th>Category</th>
                                         <th>Price</th>
                                         <th>Stock</th>
                                         <th>Status</th>
@@ -124,7 +147,7 @@
                                 </thead>
                                 <tbody id="sellerProductsTable">
                                     <tr>
-                                        <td colspan="6" style="text-align: center; color: var(--text-muted);">Syncing catalog inventories...</td>
+                                        <td colspan="8" style="text-align: center; color: var(--text-muted);">Syncing catalog inventories...</td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -177,8 +200,29 @@
                     <label class="form-label" for="editProdName">Product Title</label>
                     <input class="form-control" type="text" id="editProdName" required>
                 </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="editProdCategory">Product Category</label>
+                    <select id="editProdCategory" class="form-control" required>
+                        <option value="">Select Category</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Product Image</label>
+                    <div style="display: flex; gap: 8px; margin-bottom: 8px;">
+                        <button type="button" id="toggleEditFileBtn" class="btn btn-secondary btn-sm active" style="flex: 1; padding: 6px; font-size: 0.75rem;">Upload File</button>
+                        <button type="button" id="toggleEditUrlBtn" class="btn btn-secondary btn-sm" style="flex: 1; padding: 6px; font-size: 0.75rem;">Image URL</button>
+                    </div>
+                    <div id="editFileGroup">
+                        <input type="file" id="editProdImageFile" accept="image/*" class="form-control" style="padding-top: 6px;">
+                    </div>
+                    <div id="editUrlGroup" style="display: none;">
+                        <input type="text" id="editProdImageUrl" placeholder="Image URL (e.g. /uploads/products/xyz.png)" class="form-control">
+                    </div>
+                </div>
                 
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px;">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px; margin-top: 12px;">
                     <div class="form-group">
                         <label class="form-label" for="editProdPrice">Price ($)</label>
                         <input class="form-control" type="number" step="0.01" id="editProdPrice" required>

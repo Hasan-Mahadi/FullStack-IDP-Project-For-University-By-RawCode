@@ -68,7 +68,9 @@
       "price": 45.99,
       "stock": 50,
       "is_active": 1,
-      "created_at": "2026-05-24T12:41:48.208Z"
+      "created_at": "2026-05-24T12:41:48.208Z",
+      "category_id": 4,
+      "image_url": "/uploads/products/placeholder-toolkit.png"
     },
     {
       "id": 2,
@@ -76,9 +78,11 @@
       "name": "Mechanical Drafting Instrument",
       "description": "Professional-grade technical drawing compass set with extension bars, dividers, and precision mechanical lead pens.",
       "price": 29.5,
-      "stock": 35,
+      "stock": 31,
       "is_active": 1,
-      "created_at": "2026-05-24T12:41:48.208Z"
+      "created_at": "2026-05-24T12:41:48.208Z",
+      "category_id": 5,
+      "image_url": "/uploads/products/placeholder-drafting.png"
     },
     {
       "id": 3,
@@ -86,9 +90,11 @@
       "name": "University Hooded Sweatshirt",
       "description": "Extra comfort navy blue university design lab hoodie, premium heavy cotton blend, ideal for cold computer lab shifts.",
       "price": 39.99,
-      "stock": 120,
+      "stock": 116,
       "is_active": 1,
-      "created_at": "2026-05-24T12:41:48.208Z"
+      "created_at": "2026-05-24T12:41:48.208Z",
+      "category_id": 2,
+      "image_url": "/uploads/products/placeholder-sweatshirt.png"
     },
     {
       "id": 4,
@@ -98,13 +104,609 @@
       "price": 18,
       "stock": 200,
       "is_active": 1,
-      "created_at": "2026-05-24T12:41:48.208Z"
+      "created_at": "2026-05-24T12:41:48.208Z",
+      "category_id": 5,
+      "image_url": "/uploads/products/placeholder-notebook.png"
+    },
+    {
+      "id": 5,
+      "seller_id": 2,
+      "name": "pen pro",
+      "description": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "price": 100,
+      "stock": 199,
+      "is_active": 1,
+      "category_id": 4,
+      "image_url": "https://static.vecteezy.com/system/resources/thumbnails/053/968/677/small/black-and-golden-pens-for-everyday-use-vector.jpg",
+      "created_at": "2026-06-04T06:43:44.031Z"
+    },
+    {
+      "id": 6,
+      "seller_id": 2,
+      "name": "pen pro",
+      "description": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "price": 100,
+      "stock": 200,
+      "is_active": 1,
+      "category_id": 4,
+      "image_url": "https://static.vecteezy.com/system/resources/thumbnails/053/968/677/small/black-and-golden-pens-for-everyday-use-vector.jpg",
+      "created_at": "2026-06-04T06:44:16.603Z"
+    },
+    {
+      "id": 7,
+      "seller_id": 2,
+      "name": "mobile",
+      "description": "mmmmmmmmmmmmmmmmmmmmmmmmmmmmm",
+      "price": 50000,
+      "stock": 100,
+      "is_active": 1,
+      "category_id": 1,
+      "image_url": "https://image.made-in-china.com/202f0j00RCLbwodscKcF/Brand-New-4G-LTE-Network-Mobile-Phone-3GB-64GB-IPS-Touch-Screen-2000mAh-Battery-Android-10-0-Smartphone.webp",
+      "created_at": "2026-06-04T11:10:43.106Z"
     }
   ],
-  "orders": [],
-  "order_items": [],
-  "deliveries": [],
-  "warehouse": [],
-  "notifications": [],
-  "messages": []
+  "orders": [
+    {
+      "id": 1,
+      "customer_id": 3,
+      "total_amount": 178.97,
+      "status": "COMPLETED",
+      "created_at": "2026-06-04T06:40:47.567Z"
+    },
+    {
+      "id": 2,
+      "customer_id": 3,
+      "total_amount": 29.5,
+      "status": "COMPLETED",
+      "created_at": "2026-06-04T08:03:40.361Z"
+    },
+    {
+      "id": 3,
+      "customer_id": 3,
+      "total_amount": 129.5,
+      "status": "PENDING",
+      "created_at": "2026-06-04T08:14:59.979Z"
+    },
+    {
+      "id": 4,
+      "customer_id": 3,
+      "total_amount": 39.99,
+      "status": "COMPLETED",
+      "created_at": "2026-06-04T10:58:46.679Z"
+    }
+  ],
+  "order_items": [
+    {
+      "id": 1,
+      "order_id": 1,
+      "product_id": 2,
+      "quantity": 2,
+      "price": 29.5,
+      "created_at": "2026-06-04T06:40:47.570Z"
+    },
+    {
+      "id": 2,
+      "order_id": 1,
+      "product_id": 3,
+      "quantity": 3,
+      "price": 39.99,
+      "created_at": "2026-06-04T06:40:47.573Z"
+    },
+    {
+      "id": 3,
+      "order_id": 2,
+      "product_id": 2,
+      "quantity": 1,
+      "price": 29.5,
+      "created_at": "2026-06-04T08:03:40.362Z"
+    },
+    {
+      "id": 4,
+      "order_id": 3,
+      "product_id": 5,
+      "quantity": 1,
+      "price": 100,
+      "created_at": "2026-06-04T08:14:59.980Z"
+    },
+    {
+      "id": 5,
+      "order_id": 3,
+      "product_id": 2,
+      "quantity": 1,
+      "price": 29.5,
+      "created_at": "2026-06-04T08:14:59.982Z"
+    },
+    {
+      "id": 6,
+      "order_id": 4,
+      "product_id": 3,
+      "quantity": 1,
+      "price": 39.99,
+      "created_at": "2026-06-04T10:58:46.681Z"
+    }
+  ],
+  "deliveries": [
+    {
+      "id": 1,
+      "order_id": 1,
+      "status": "DELIVERED",
+      "assigned_service_id": 4,
+      "created_at": "2026-06-04T06:40:47.576Z",
+      "warehouse_arrival_date": "2026-06-04T06:48:22.074Z",
+      "dispatch_date": "2026-06-04T06:50:54.044Z"
+    },
+    {
+      "id": 2,
+      "order_id": 2,
+      "status": "DELIVERED",
+      "assigned_service_id": 4,
+      "created_at": "2026-06-04T08:03:40.365Z",
+      "warehouse_arrival_date": "2026-06-04T08:04:29.516Z",
+      "dispatch_date": "2026-06-04T08:04:55.472Z"
+    },
+    {
+      "id": 3,
+      "order_id": 3,
+      "status": "PENDING",
+      "assigned_service_id": null,
+      "created_at": "2026-06-04T08:14:59.984Z"
+    },
+    {
+      "id": 4,
+      "order_id": 4,
+      "status": "DELIVERED",
+      "assigned_service_id": 4,
+      "created_at": "2026-06-04T10:58:46.692Z",
+      "warehouse_arrival_date": "2026-06-04T11:02:11.153Z",
+      "dispatch_date": "2026-06-04T11:05:25.926Z"
+    }
+  ],
+  "warehouse": [
+    {
+      "id": 1,
+      "product_id": 2,
+      "quantity": 2,
+      "location": "Aisle-B",
+      "verified_status": "VERIFIED",
+      "verified_by": 4,
+      "verified_at": "2026-06-04T06:50:41.473Z",
+      "created_at": "2026-06-04T06:48:22.086Z"
+    },
+    {
+      "id": 2,
+      "product_id": 3,
+      "quantity": 3,
+      "location": "Aisle-B",
+      "verified_status": "VERIFIED",
+      "verified_by": 4,
+      "verified_at": "2026-06-04T06:50:41.473Z",
+      "created_at": "2026-06-04T06:48:22.093Z"
+    },
+    {
+      "id": 3,
+      "product_id": 2,
+      "quantity": 1,
+      "location": "Aisle-B",
+      "verified_status": "VERIFIED",
+      "verified_by": 4,
+      "verified_at": "2026-06-04T08:04:54.507Z",
+      "created_at": "2026-06-04T08:04:29.537Z"
+    },
+    {
+      "id": 4,
+      "product_id": 3,
+      "quantity": 1,
+      "location": "Aisle-B",
+      "verified_status": "VERIFIED",
+      "verified_by": 4,
+      "verified_at": "2026-06-04T11:05:23.082Z",
+      "created_at": "2026-06-04T11:02:11.172Z"
+    }
+  ],
+  "notifications": [
+    {
+      "id": 1,
+      "user_id": 3,
+      "message": "Your order #1 for $178.97 has been successfully submitted and is awaiting Service Team approval.",
+      "is_read": 1,
+      "created_at": "2026-06-04T06:40:47.577Z"
+    },
+    {
+      "id": 2,
+      "user_id": 4,
+      "message": "New order pending verification: Order #1 was submitted by student customer.",
+      "is_read": 1,
+      "created_at": "2026-06-04T06:40:47.578Z"
+    },
+    {
+      "id": 3,
+      "user_id": 4,
+      "message": "New message on Order #1 from John Doe Student: \"hi...\"",
+      "is_read": 1,
+      "created_at": "2026-06-04T06:40:59.718Z"
+    },
+    {
+      "id": 4,
+      "user_id": 3,
+      "message": "New message on Order #1 from Operations Coordinator: \"confirmd...\"",
+      "is_read": 1,
+      "created_at": "2026-06-04T06:46:31.107Z"
+    },
+    {
+      "id": 5,
+      "user_id": 3,
+      "message": "Good news! Your order #1 has been APPROVED by the Service Team and sent to the Sellers for packaging.",
+      "is_read": 1,
+      "created_at": "2026-06-04T06:46:49.672Z"
+    },
+    {
+      "id": 6,
+      "user_id": 2,
+      "message": "New operational directive: Incoming approved Order #1 has been assigned to you. Prepare items and dispatch to central warehouse.",
+      "is_read": 1,
+      "created_at": "2026-06-04T06:46:49.673Z"
+    },
+    {
+      "id": 7,
+      "user_id": 2,
+      "message": "New operational directive: Incoming approved Order #1 has been assigned to you. Prepare items and dispatch to central warehouse.",
+      "is_read": 1,
+      "created_at": "2026-06-04T06:46:49.674Z"
+    },
+    {
+      "id": 8,
+      "user_id": 4,
+      "message": "Audit requirement: Seller has shipped items for Order #1 to Central Warehouse. Conduct verification.",
+      "is_read": 1,
+      "created_at": "2026-06-04T06:48:22.095Z"
+    },
+    {
+      "id": 9,
+      "user_id": 2,
+      "message": "New message on Order #1 from Operations Coordinator: \"recived...\"",
+      "is_read": 1,
+      "created_at": "2026-06-04T06:50:30.471Z"
+    },
+    {
+      "id": 10,
+      "user_id": 3,
+      "message": "Quality checked: Your Order #1 has passed central warehouse verification and is being prepared for direct dispatch.",
+      "is_read": 1,
+      "created_at": "2026-06-04T06:50:41.473Z"
+    },
+    {
+      "id": 11,
+      "user_id": 3,
+      "message": "Courier assigned: Order #1 has been dispatched from the warehouse and is currently in-transit to your dorm/campus location.",
+      "is_read": 1,
+      "created_at": "2026-06-04T06:50:54.045Z"
+    },
+    {
+      "id": 12,
+      "user_id": 4,
+      "message": "New message on Order #1 from Elite Campus Seller: \"ok, thanks...\"",
+      "is_read": 1,
+      "created_at": "2026-06-04T06:51:34.474Z"
+    },
+    {
+      "id": 13,
+      "user_id": 4,
+      "message": "Fulfillment Success: Order #1 has been marked as completed/delivered by the customer.",
+      "is_read": 1,
+      "created_at": "2026-06-04T06:52:05.593Z"
+    },
+    {
+      "id": 14,
+      "user_id": 2,
+      "message": "Transaction Finished: Customer John Doe has confirmed delivery of Order #1. Funds released.",
+      "is_read": 1,
+      "created_at": "2026-06-04T06:52:05.594Z"
+    },
+    {
+      "id": 15,
+      "user_id": 2,
+      "message": "Transaction Finished: Customer John Doe has confirmed delivery of Order #1. Funds released.",
+      "is_read": 1,
+      "created_at": "2026-06-04T06:52:05.596Z"
+    },
+    {
+      "id": 16,
+      "user_id": 3,
+      "message": "Thank you for shopping! Transaction for Order #1 is officially complete.",
+      "is_read": 1,
+      "created_at": "2026-06-04T06:52:05.599Z"
+    },
+    {
+      "id": 17,
+      "user_id": 3,
+      "message": "Your order #2 for $29.50 has been successfully submitted and is awaiting Service Team approval.",
+      "is_read": 1,
+      "created_at": "2026-06-04T08:03:40.367Z"
+    },
+    {
+      "id": 18,
+      "user_id": 4,
+      "message": "New order pending verification: Order #2 was submitted by student customer.",
+      "is_read": 1,
+      "created_at": "2026-06-04T08:03:40.368Z"
+    },
+    {
+      "id": 19,
+      "user_id": 3,
+      "message": "Good news! Your order #2 has been APPROVED by the Service Team and sent to the Sellers for packaging.",
+      "is_read": 1,
+      "created_at": "2026-06-04T08:04:09.355Z"
+    },
+    {
+      "id": 20,
+      "user_id": 2,
+      "message": "New operational directive: Incoming approved Order #2 has been assigned to you. Prepare items and dispatch to central warehouse.",
+      "is_read": 1,
+      "created_at": "2026-06-04T08:04:09.356Z"
+    },
+    {
+      "id": 21,
+      "user_id": 4,
+      "message": "Audit requirement: Seller has shipped items for Order #2 to Central Warehouse. Conduct verification.",
+      "is_read": 1,
+      "created_at": "2026-06-04T08:04:29.540Z"
+    },
+    {
+      "id": 22,
+      "user_id": 3,
+      "message": "Quality checked: Your Order #2 has passed central warehouse verification and is being prepared for direct dispatch.",
+      "is_read": 1,
+      "created_at": "2026-06-04T08:04:54.508Z"
+    },
+    {
+      "id": 23,
+      "user_id": 3,
+      "message": "Courier assigned: Order #2 has been dispatched from the warehouse and is currently in-transit to your dorm/campus location.",
+      "is_read": 1,
+      "created_at": "2026-06-04T08:04:55.474Z"
+    },
+    {
+      "id": 24,
+      "user_id": 4,
+      "message": "Fulfillment Success: Order #2 has been marked as completed/delivered by the customer.",
+      "is_read": 1,
+      "created_at": "2026-06-04T08:05:50.866Z"
+    },
+    {
+      "id": 25,
+      "user_id": 2,
+      "message": "Transaction Finished: Customer John Doe has confirmed delivery of Order #2. Funds released.",
+      "is_read": 1,
+      "created_at": "2026-06-04T08:05:50.867Z"
+    },
+    {
+      "id": 26,
+      "user_id": 3,
+      "message": "Thank you for shopping! Transaction for Order #2 is officially complete.",
+      "is_read": 1,
+      "created_at": "2026-06-04T08:05:50.868Z"
+    },
+    {
+      "id": 27,
+      "user_id": 3,
+      "message": "Your order #3 for $129.50 has been successfully submitted and is awaiting Service Team approval.",
+      "is_read": 1,
+      "created_at": "2026-06-04T08:14:59.986Z"
+    },
+    {
+      "id": 28,
+      "user_id": 4,
+      "message": "New order pending verification: Order #3 was submitted by student customer.",
+      "is_read": 1,
+      "created_at": "2026-06-04T08:14:59.987Z"
+    },
+    {
+      "id": 29,
+      "user_id": 3,
+      "message": "Your order #4 for $39.99 has been successfully submitted and is awaiting Service Team approval.",
+      "is_read": 1,
+      "created_at": "2026-06-04T10:58:46.694Z"
+    },
+    {
+      "id": 30,
+      "user_id": 4,
+      "message": "New order pending verification: Order #4 was submitted by student customer.",
+      "is_read": 1,
+      "created_at": "2026-06-04T10:58:46.694Z"
+    },
+    {
+      "id": 31,
+      "user_id": 2,
+      "message": "New message on Order #4 from Operations Coordinator: \"your product is confirmd...\"",
+      "is_read": 1,
+      "created_at": "2026-06-04T11:00:51.752Z"
+    },
+    {
+      "id": 32,
+      "user_id": 3,
+      "message": "Good news! Your order #4 has been APPROVED by the Service Team and sent to the Sellers for packaging.",
+      "is_read": 1,
+      "created_at": "2026-06-04T11:01:15.848Z"
+    },
+    {
+      "id": 33,
+      "user_id": 2,
+      "message": "New operational directive: Incoming approved Order #4 has been assigned to you. Prepare items and dispatch to central warehouse.",
+      "is_read": 1,
+      "created_at": "2026-06-04T11:01:15.848Z"
+    },
+    {
+      "id": 34,
+      "user_id": 4,
+      "message": "New message on Order #4 from Elite Campus Seller: \"ok...\"",
+      "is_read": 1,
+      "created_at": "2026-06-04T11:01:55.936Z"
+    },
+    {
+      "id": 35,
+      "user_id": 4,
+      "message": "Audit requirement: Seller has shipped items for Order #4 to Central Warehouse. Conduct verification.",
+      "is_read": 1,
+      "created_at": "2026-06-04T11:02:11.172Z"
+    },
+    {
+      "id": 36,
+      "user_id": 3,
+      "message": "Quality checked: Your Order #4 has passed central warehouse verification and is being prepared for direct dispatch.",
+      "is_read": 1,
+      "created_at": "2026-06-04T11:05:23.082Z"
+    },
+    {
+      "id": 37,
+      "user_id": 3,
+      "message": "Courier assigned: Order #4 has been dispatched from the warehouse and is currently in-transit to your dorm/campus location.",
+      "is_read": 1,
+      "created_at": "2026-06-04T11:05:25.932Z"
+    },
+    {
+      "id": 38,
+      "user_id": 4,
+      "message": "Fulfillment Success: Order #4 has been marked as completed/delivered by the customer.",
+      "is_read": 0,
+      "created_at": "2026-06-04T11:07:32.183Z"
+    },
+    {
+      "id": 39,
+      "user_id": 2,
+      "message": "Transaction Finished: Customer John Doe has confirmed delivery of Order #4. Funds released.",
+      "is_read": 1,
+      "created_at": "2026-06-04T11:07:32.184Z"
+    },
+    {
+      "id": 40,
+      "user_id": 3,
+      "message": "Thank you for shopping! Transaction for Order #4 is officially complete.",
+      "is_read": 1,
+      "created_at": "2026-06-04T11:07:32.185Z"
+    }
+  ],
+  "messages": [
+    {
+      "id": 1,
+      "sender_id": 3,
+      "receiver_id": 4,
+      "order_id": 1,
+      "message_text": "hi",
+      "is_service_bridge": 1,
+      "created_at": "2026-06-04T06:40:59.708Z"
+    },
+    {
+      "id": 2,
+      "sender_id": 4,
+      "receiver_id": 3,
+      "order_id": 1,
+      "message_text": "confirmd",
+      "is_service_bridge": 1,
+      "created_at": "2026-06-04T06:46:31.104Z"
+    },
+    {
+      "id": 3,
+      "sender_id": 4,
+      "receiver_id": 2,
+      "order_id": 1,
+      "message_text": "recived",
+      "is_service_bridge": 1,
+      "created_at": "2026-06-04T06:50:30.469Z"
+    },
+    {
+      "id": 4,
+      "sender_id": 2,
+      "receiver_id": 4,
+      "order_id": 1,
+      "message_text": "ok, thanks",
+      "is_service_bridge": 1,
+      "created_at": "2026-06-04T06:51:34.472Z"
+    },
+    {
+      "id": 5,
+      "sender_id": 4,
+      "receiver_id": 2,
+      "order_id": 4,
+      "message_text": "your product is confirmd",
+      "is_service_bridge": 1,
+      "created_at": "2026-06-04T11:00:51.750Z"
+    },
+    {
+      "id": 6,
+      "sender_id": 2,
+      "receiver_id": 4,
+      "order_id": 4,
+      "message_text": "ok",
+      "is_service_bridge": 1,
+      "created_at": "2026-06-04T11:01:55.934Z"
+    }
+  ],
+  "categories": [
+    {
+      "id": 1,
+      "name": "Electronics",
+      "description": "Gadgets, devices, and electronic accessories.",
+      "icon": "laptop",
+      "is_active": 1
+    },
+    {
+      "id": 2,
+      "name": "Clothing",
+      "description": "University apparel and campus fashion.",
+      "icon": "tshirt",
+      "is_active": 1
+    },
+    {
+      "id": 3,
+      "name": "Books",
+      "description": "Academic textbooks and reading materials.",
+      "icon": "book",
+      "is_active": 1
+    },
+    {
+      "id": 4,
+      "name": "Lab Equipment",
+      "description": "Scientific tools and lab experiment kits.",
+      "icon": "flask",
+      "is_active": 1
+    },
+    {
+      "id": 5,
+      "name": "Stationery",
+      "description": "Notebooks, pens, and study supplies.",
+      "icon": "pen",
+      "is_active": 1
+    },
+    {
+      "id": 6,
+      "name": "Sports",
+      "description": "Fitness gear and sports equipment.",
+      "icon": "dumbbell",
+      "is_active": 1
+    },
+    {
+      "id": 7,
+      "name": "Home & Living",
+      "description": "Dorm room decor and home goods.",
+      "icon": "home",
+      "is_active": 1
+    },
+    {
+      "id": 8,
+      "name": "Accessories",
+      "description": "Bags, watches, and daily essentials.",
+      "icon": "gem",
+      "is_active": 1
+    }
+  ],
+  "reviews": [
+    {
+      "id": 1,
+      "product_id": 3,
+      "customer_id": 3,
+      "rating": 5,
+      "review_text": "good",
+      "created_at": "2026-06-04T07:11:09.583Z"
+    }
+  ]
 }

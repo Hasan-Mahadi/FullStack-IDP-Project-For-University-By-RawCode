@@ -91,5 +91,39 @@ const API = {
 
     delete(endpoint, body) {
         return this.request(endpoint, 'DELETE', body);
+    },
+
+    async uploadFile(endpoint, formData) {
+        const url = `${API_BASE}${endpoint}`;
+        const headers = {};
+
+        const token = this.getToken();
+        if (token) {
+            headers['Authorization'] = `Bearer ${token}`;
+        }
+
+        const config = {
+            method: 'POST',
+            headers,
+            body: formData
+        };
+
+        try {
+            const response = await fetch(url, config);
+            const data = await response.json();
+
+            if (!response.ok) {
+                if (response.status === 401 && endpoint !== '/api/auth/login') {
+                    this.clearSession();
+                    window.location.href = '/pages/login.html?session_expired=true';
+                }
+                throw new Error(data.error?.message || `Request failed with status ${response.status}`);
+            }
+
+            return data;
+        } catch (error) {
+            console.error(`>> [API Client Upload Error] Route: ${endpoint} failed.`, error.message);
+            throw error;
+        }
     }
 };

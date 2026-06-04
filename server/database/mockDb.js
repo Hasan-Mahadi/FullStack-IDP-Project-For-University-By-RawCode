@@ -27,7 +27,9 @@ const STORE_PATH = path.join(__dirname, 'db_store.json');
 let db = {
     roles: [],
     users: [],
+    categories: [],
     products: [],
+    reviews: [],
     orders: [],
     order_items: [],
     deliveries: [],
@@ -93,6 +95,16 @@ const seedData = {
             created_at: new Date().toISOString()
         }
     ],
+    categories: [
+        { id: 1, name: 'Electronics', description: 'Gadgets, devices, and electronic accessories.', icon: 'laptop', is_active: 1 },
+        { id: 2, name: 'Clothing', description: 'University apparel and campus fashion.', icon: 'tshirt', is_active: 1 },
+        { id: 3, name: 'Books', description: 'Academic textbooks and reading materials.', icon: 'book', is_active: 1 },
+        { id: 4, name: 'Lab Equipment', description: 'Scientific tools and lab experiment kits.', icon: 'flask', is_active: 1 },
+        { id: 5, name: 'Stationery', description: 'Notebooks, pens, and study supplies.', icon: 'pen', is_active: 1 },
+        { id: 6, name: 'Sports', description: 'Fitness gear and sports equipment.', icon: 'dumbbell', is_active: 1 },
+        { id: 7, name: 'Home & Living', description: 'Dorm room decor and home goods.', icon: 'home', is_active: 1 },
+        { id: 8, name: 'Accessories', description: 'Bags, watches, and daily essentials.', icon: 'gem', is_active: 1 }
+    ],
     products: [
         {
             id: 1,
@@ -102,6 +114,8 @@ const seedData = {
             price: 45.99,
             stock: 50,
             is_active: 1,
+            category_id: 4,
+            image_url: '/uploads/products/placeholder-toolkit.png',
             created_at: new Date().toISOString()
         },
         {
@@ -112,6 +126,8 @@ const seedData = {
             price: 29.50,
             stock: 35,
             is_active: 1,
+            category_id: 5,
+            image_url: '/uploads/products/placeholder-drafting.png',
             created_at: new Date().toISOString()
         },
         {
@@ -122,6 +138,8 @@ const seedData = {
             price: 39.99,
             stock: 120,
             is_active: 1,
+            category_id: 2,
+            image_url: '/uploads/products/placeholder-sweatshirt.png',
             created_at: new Date().toISOString()
         },
         {
@@ -132,9 +150,12 @@ const seedData = {
             price: 18.00,
             stock: 200,
             is_active: 1,
+            category_id: 5,
+            image_url: '/uploads/products/placeholder-notebook.png',
             created_at: new Date().toISOString()
         }
     ],
+    reviews:       [],
     orders:        [],
     order_items:   [],
     deliveries:    [],
@@ -172,7 +193,9 @@ function initDb() {
             db = parsed;
             // Schema integrity check — add any missing tables
             for (const table of Object.keys(seedData)) {
-                if (!db[table]) db[table] = [];
+                if (!db[table] || (Array.isArray(db[table]) && db[table].length === 0 && seedData[table].length > 0)) {
+                    db[table] = JSON.parse(JSON.stringify(seedData[table]));
+                }
             }
         } else {
             db = JSON.parse(JSON.stringify(seedData));

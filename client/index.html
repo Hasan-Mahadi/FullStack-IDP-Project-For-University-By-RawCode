@@ -3,200 +3,190 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>E-Commerce Campus Portal | Integrated Design Project (IDP)</title>
+    <title>EduShop | Premium Campus E-Commerce Portal</title>
     <link rel="stylesheet" href="/css/style.css">
-    <style>
-        /* Special styles for landing catalog layout */
-        .landing-header {
-            background: rgba(17, 24, 39, 0.6);
-            backdrop-filter: blur(12px);
-            border-bottom: var(--border-glass);
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-        }
-        .hero-banner {
-            padding: 80px 32px 60px;
-            text-align: center;
-            max-width: 800px;
-            margin: 0 auto;
-        }
-        .hero-title {
-            font-size: 3rem;
-            font-weight: 800;
-            line-height: 1.1;
-            margin-bottom: 20px;
-            background: linear-gradient(135deg, #ffffff, var(--primary), var(--success));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-        .hero-subtitle {
-            color: var(--text-secondary);
-            font-size: 1.1rem;
-            margin-bottom: 30px;
-        }
-        .search-container {
-            display: flex;
-            gap: 16px;
-            max-width: 600px;
-            margin: 0 auto 50px;
-        }
-        /* Cart Drawer Style */
-        .cart-drawer {
-            position: fixed;
-            top: 0;
-            right: -400px;
-            width: 380px;
-            height: 100vh;
-            background: var(--bg-surface-solid);
-            border-left: var(--border-glass);
-            z-index: 2000;
-            transition: right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            padding: 30px;
-            display: flex;
-            flex-direction: column;
-            box-shadow: -10px 0 30px rgba(0,0,0,0.5);
-        }
-        .cart-drawer.active {
-            right: 0;
-        }
-        .cart-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 24px;
-            border-bottom: var(--border-glass);
-            padding-bottom: 16px;
-        }
-        .cart-items-container {
-            flex-grow: 1;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-        }
-        .cart-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: rgba(255,255,255,0.02);
-            border: var(--border-glass);
-            border-radius: 10px;
-            padding: 12px;
-        }
-        .cart-item-info {
-            max-width: 180px;
-        }
-        .cart-item-name {
-            font-size: 0.85rem;
-            font-weight: 600;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-        .cart-item-price {
-            font-size: 0.8rem;
-            color: var(--primary);
-            font-weight: bold;
-        }
-        .cart-item-controls {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .cart-item-qty-btn {
-            background: rgba(255,255,255,0.05);
-            border: var(--border-glass);
-            color: white;
-            width: 24px;
-            height: 24px;
-            border-radius: 4px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.8rem;
-        }
-        .cart-footer {
-            border-top: var(--border-glass);
-            padding-top: 20px;
-            margin-top: 20px;
-        }
-        .cart-total-flex {
-            display: flex;
-            justify-content: space-between;
-            font-size: 1.1rem;
-            font-weight: 700;
-            margin-bottom: 20px;
-        }
-    </style>
 </head>
 <body>
 
-    <!-- Header Navigation -->
-    <header class="landing-header">
-        <div class="navbar" style="max-width: 1280px; margin: 0 auto; background: transparent; border: none;">
-            <div class="sidebar-brand" style="padding: 0; border: none;">
-                <div class="sidebar-logo">IDP</div>
-                <div class="sidebar-title">EduShop</div>
+    <!-- Header Navigation Placeholder -->
+    <div id="main-header"></div>
+
+    <!-- Main Content Container -->
+    <main class="container" style="max-width: 1200px; margin: 0 auto; padding: 0 24px;">
+        
+        <!-- Hero Carousel Section -->
+        <section class="hero-carousel scroll-reveal" id="heroCarousel">
+            <div class="carousel-track" id="carouselTrack">
+                <!-- Slide 1 -->
+                <div class="carousel-slide" style="background-image: linear-gradient(135deg, rgba(7,10,19,0.75) 0%, rgba(99,102,241,0.4) 100%), url('https://images.unsplash.com/photo-1507679799987-c73779587ccf?q=80&w=1200&auto=format&fit=crop');">
+                    <div class="carousel-overlay"></div>
+                    <div class="carousel-content">
+                        <h2 class="carousel-title">Next-Gen Academic Gear</h2>
+                        <p class="carousel-desc">Empower your studies and research labs with state-of-the-art instruments, reference books, and verified tools.</p>
+                        <a href="/pages/categories.html" class="btn btn-primary carousel-btn-cta">Explore Catalog</a>
+                    </div>
+                </div>
+                <!-- Slide 2 -->
+                <div class="carousel-slide" style="background-image: linear-gradient(135deg, rgba(7,10,19,0.75) 0%, rgba(139,92,246,0.4) 100%), url('https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?q=80&w=1200&auto=format&fit=crop');">
+                    <div class="carousel-overlay"></div>
+                    <div class="carousel-content">
+                        <h2 class="carousel-title">Elite Research Equipment</h2>
+                        <p class="carousel-desc">Get high-fidelity components, electronics, and microcontrollers directly from trusted campus sellers.</p>
+                        <a href="/pages/categories.html?category=1" class="btn btn-primary carousel-btn-cta">Shop Electronics</a>
+                    </div>
+                </div>
+                <!-- Slide 3 -->
+                <div class="carousel-slide" style="background-image: linear-gradient(135deg, rgba(7,10,19,0.75) 0%, rgba(16,185,129,0.4) 100%), url('https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?q=80&w=1200&auto=format&fit=crop');">
+                    <div class="carousel-overlay"></div>
+                    <div class="carousel-content">
+                        <h2 class="carousel-title">Authentic Library Source</h2>
+                        <p class="carousel-desc">Access peer-to-peer textbook exchanges, scientific guides, and reference material for all major college courses.</p>
+                        <a href="/pages/categories.html?category=3" class="btn btn-primary carousel-btn-cta">Browse Books</a>
+                    </div>
+                </div>
+                <!-- Slide 4 -->
+                <div class="carousel-slide" style="background-image: linear-gradient(135deg, rgba(7,10,19,0.75) 0%, rgba(245,158,11,0.4) 100%), url('https://images.unsplash.com/photo-1517841905240-472988babdf9?q=80&w=1200&auto=format&fit=crop');">
+                    <div class="carousel-overlay"></div>
+                    <div class="carousel-content">
+                        <h2 class="carousel-title">Campus Lifestyle Collection</h2>
+                        <p class="carousel-desc">Showcase your school pride with high-quality athletic wear, stylish stationary, and official accessories.</p>
+                        <a href="/pages/categories.html" class="btn btn-primary carousel-btn-cta">Shop Lifestyle</a>
+                    </div>
+                </div>
             </div>
             
-            <div class="navbar-actions">
-                <div id="cartToggle" class="notification-bell" title="View Shopping Cart">
-                    <span style="font-size: 1.2rem;">🛒</span>
-                    <span id="cartBadge" class="bell-badge" style="display: none;"></span>
+            <!-- Controls -->
+            <button class="carousel-btn carousel-prev" id="carouselPrev">&#10094;</button>
+            <button class="carousel-btn carousel-next" id="carouselNext">&#10095;</button>
+            
+            <!-- Dots -->
+            <div class="carousel-dots" id="carouselDots">
+                <div class="carousel-dot active" data-index="0"></div>
+                <div class="carousel-dot" data-index="1"></div>
+                <div class="carousel-dot" data-index="2"></div>
+                <div class="carousel-dot" data-index="3"></div>
+            </div>
+        </section>
+
+        <!-- Notification / Alert Toast -->
+        <div id="alertBox" style="display: none; padding: 12px; border-radius: 8px; font-size: 0.85rem; margin-top: 20px; margin-bottom: 20px; text-align: center;"></div>
+
+        <!-- Top Categories Section -->
+        <section class="scroll-reveal" style="margin-bottom: 60px;">
+            <h2 style="font-size: 1.8rem; font-weight: 800; margin-bottom: 24px; text-align: center; background: linear-gradient(135deg, #ffffff, #a78bfa); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Top Categories</h2>
+            <div class="catalog-grid" id="categoriesGrid">
+                <!-- Loaded dynamically from API -->
+            </div>
+        </section>
+
+        <!-- Flash Deals & Promo Section -->
+        <section class="scroll-reveal glass-card" style="padding: 40px; margin-bottom: 60px; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 30px; background: linear-gradient(135deg, rgba(99,102,241,0.08) 0%, rgba(139,92,246,0.08) 100%); border-color: rgba(99,102,241,0.25);">
+            <div>
+                <span class="badge badge-danger animate-fade-in" style="margin-bottom: 12px;">Limited Flash Offer</span>
+                <h2 style="font-size: 2rem; font-weight: 800; margin-bottom: 8px;">Campus Lab Clearance</h2>
+                <p style="color: var(--text-secondary); max-width: 500px;">Save up to 50% on selected electronic controllers and lab notebooks. Prices reset at midnight!</p>
+            </div>
+            <div>
+                <div class="countdown-box" id="flashCountdown">
+                    <div class="countdown-unit">
+                        <div class="countdown-num" id="countdownHours">00</div>
+                        <div class="countdown-lbl">Hours</div>
+                    </div>
+                    <div class="countdown-unit">
+                        <div class="countdown-num" id="countdownMinutes">00</div>
+                        <div class="countdown-lbl">Mins</div>
+                    </div>
+                    <div class="countdown-unit">
+                        <div class="countdown-num" id="countdownSeconds">00</div>
+                        <div class="countdown-lbl">Secs</div>
+                    </div>
                 </div>
+            </div>
+        </section>
+
+        <!-- Catalog Filter and Browser Area -->
+        <section class="scroll-reveal" style="margin-bottom: 40px;">
+            <div class="card-header-flex" style="margin-bottom: 24px;">
+                <h2 style="font-size: 1.8rem; font-weight: 800; background: linear-gradient(135deg, #ffffff, #a78bfa); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Featured Products</h2>
                 
-                <div id="authActions" class="navbar-actions" style="gap: 12px;">
-                    <a href="/pages/login.html" class="btn btn-secondary" style="padding: 8px 18px; font-size: 0.85rem;">Sign In</a>
-                    <a href="/pages/register.html" class="btn btn-primary" style="padding: 8px 18px; font-size: 0.85rem;">Register</a>
+                <!-- Search & Filters -->
+                <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
+                    <div style="position: relative;">
+                        <input class="form-control" type="text" id="searchInput" placeholder="Search product..." style="height: 38px; width: 220px; padding: 0 16px;">
+                    </div>
+                    <select id="priceFilter" class="form-control" style="width: 160px; height: 38px; padding: 0 16px;">
+                        <option value="all">All Prices</option>
+                        <option value="0-20">$0.00 - $20.00</option>
+                        <option value="20-50">$20.00 - $50.00</option>
+                        <option value="50-above">$50.00 & Above</option>
+                    </select>
+                    <button id="searchBtn" class="btn btn-primary" style="height: 38px; padding: 0 16px;">Filter</button>
                 </div>
             </div>
-        </div>
-    </header>
 
-    <!-- Main Banner Section -->
-    <section class="hero-banner">
-        <h1 class="hero-title">Design and Development of a Role-Based E-commerce Web Application</h1>
-        <p class="hero-subtitle">
-            An elegant, secure academic trading ecosystem connecting Customers, Sellers, and the central logistics Service Team in an auditable workflow.
-        </p>
-
-        <!-- Search Bar -->
-        <div class="search-container">
-            <input class="form-control" type="text" id="searchInput" placeholder="Search premium tools, hoodies, textbooks, components..." style="height: 48px;">
-            <button id="searchBtn" class="btn btn-primary" style="height: 48px; padding: 0 24px;">Search</button>
-        </div>
-    </section>
-
-    <!-- Product Grid & Catalog Area -->
-    <main style="max-width: 1280px; margin: 0 auto; padding: 0 32px 80px;">
-        <div class="card-header-flex">
-            <h2 style="font-size: 1.5rem;">Academic Catalog</h2>
-            
-            <!-- Filters -->
-            <div style="display: flex; gap: 12px;">
-                <select id="priceFilter" class="form-control" style="width: 180px; height: 38px; padding: 0 16px;">
-                    <option value="all">All Prices</option>
-                    <option value="0-20">$0.00 - $20.00</option>
-                    <option value="20-50">$20.00 - $50.00</option>
-                    <option value="50-above">$50.00 & Above</option>
-                </select>
+            <!-- Products Grid -->
+            <div id="catalogGrid" class="catalog-grid">
+                <!-- Loaded dynamically from API -->
             </div>
-        </div>
+        </section>
 
-        <div id="alertBox" style="display: none; padding: 12px; border-radius: 8px; font-size: 0.85rem; margin-bottom: 20px; text-align: center;"></div>
-
-        <!-- Dynamic Product Catalog Cards Grid -->
-        <div id="catalogGrid" class="product-catalog">
-            <!-- Loading Indicator fallback -->
-            <div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: var(--text-secondary);">
-                Synthesizing academic products...
+        <!-- Newest Arrivals Section -->
+        <section class="scroll-reveal" style="margin-bottom: 80px;">
+            <h2 style="font-size: 1.8rem; font-weight: 800; margin-bottom: 24px; background: linear-gradient(135deg, #ffffff, #a78bfa); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Newest Arrivals</h2>
+            <div id="newArrivalsGrid" class="catalog-grid">
+                <!-- Loaded dynamically from API -->
             </div>
-        </div>
+        </section>
+
+        <!-- Testimonials Section -->
+        <section class="scroll-reveal" style="margin-bottom: 80px;">
+            <h2 style="font-size: 1.8rem; font-weight: 800; margin-bottom: 32px; text-align: center; background: linear-gradient(135deg, #ffffff, #a78bfa); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Trusted by Students & Faculty</h2>
+            <div class="catalog-grid">
+                <div class="glass-card" style="padding: 24px;">
+                    <p style="font-style: italic; color: var(--text-secondary); margin-bottom: 16px;">"As a lab assistant, uploading and selling our surplus microcontrollers has never been easier. The role security is stellar."</p>
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        <div style="font-size: 1.5rem;">🔬</div>
+                        <div>
+                            <div style="font-weight: bold; font-size: 0.85rem;">Dr. Sarah Chen</div>
+                            <div style="font-size: 0.75rem; color: var(--text-muted);">Department of Engineering</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="glass-card" style="padding: 24px;">
+                    <p style="font-style: italic; color: var(--text-secondary); margin-bottom: 16px;">"I saved nearly $80 on my physics textbook by buying from a senior student. The checkout process is clean and simple."</p>
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        <div style="font-size: 1.5rem;">🎓</div>
+                        <div>
+                            <div style="font-weight: bold; font-size: 0.85rem;">Marcus Vance</div>
+                            <div style="font-size: 0.75rem; color: var(--text-muted);">Sophomore Student</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="glass-card" style="padding: 24px;">
+                    <p style="font-style: italic; color: var(--text-secondary); margin-bottom: 16px;">"Being part of the logistics Service Team, checking and verifying peer shipments feels automated and completely auditable."</p>
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        <div style="font-size: 1.5rem;">📦</div>
+                        <div>
+                            <div style="font-weight: bold; font-size: 0.85rem;">Elena Rostova</div>
+                            <div style="font-size: 0.75rem; color: var(--text-muted);">Logistics Lead</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Newsletter Subscription Area -->
+        <section class="scroll-reveal glass-card" style="padding: 50px 30px; text-align: center; background: linear-gradient(135deg, rgba(139,92,246,0.05) 0%, rgba(99,102,241,0.05) 100%); margin-bottom: 80px;">
+            <h2 style="font-size: 1.8rem; font-weight: 800; margin-bottom: 8px;">Stay Updated</h2>
+            <p style="color: var(--text-secondary); margin-bottom: 24px; max-width: 500px; margin-left: auto; margin-right: auto;">Receive weekly notifications about newly listed lab instruments, study packs, and campus events.</p>
+            <div style="display: flex; gap: 10px; max-width: 450px; margin: 0 auto;">
+                <input class="form-control" type="email" placeholder="Enter student email..." style="height: 44px;">
+                <button class="btn btn-primary" onclick="alert('Thank you for subscribing! (Visual Demo)')" style="height: 44px; white-space: nowrap; padding: 0 20px;">Subscribe</button>
+            </div>
+        </section>
     </main>
 
-    <!-- Dynamic Cart Drawer -->
+    <!-- Shopping Cart Drawer (Preserving original structure and IDs) -->
     <div id="cartDrawer" class="cart-drawer">
         <div class="cart-header">
             <h3 style="font-size: 1.25rem;">Shopping Cart</h3>
@@ -220,9 +210,14 @@
         </div>
     </div>
 
-    <!-- Inject Vanilla JS core logic -->
+    <!-- Footer Placeholder -->
+    <div id="main-footer"></div>
+
+    <!-- Shared Client JS dependencies -->
     <script src="/js/api.js"></script>
     <script src="/js/auth.js"></script>
+    <script src="/js/navbar.js"></script>
+    <script src="/js/animations.js"></script>
     <script src="/js/store.js"></script>
 </body>
 </html>

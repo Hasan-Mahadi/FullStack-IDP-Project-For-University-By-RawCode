@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Details | EduShop</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+    <!-- Header Navigation Placeholder -->
+    <div id="main-header"></div>
+
+    <!-- Main Container -->
+    <main class="container" style="max-width: 1200px; margin: 0 auto; padding: 0 24px 80px;">
+        
+        <div id="alertBox" style="display: none; padding: 12px; border-radius: 8px; font-size: 0.85rem; margin-top: 100px; margin-bottom: -70px; text-align: center; z-index: 100;"></div>
+
+        <!-- Product Detail Grid -->
+        <div class="detail-grid scroll-reveal" id="productDetailSection">
+            <!-- Left Side: Product Image -->
+            <div class="detail-image-panel" id="detailImagePanel">
+                <div class="product-image-placeholder" style="font-size: 3rem;">📦</div>
+            </div>
+
+            <!-- Right Side: Product Info -->
+            <div class="glass-card" style="padding: 40px; display: flex; flex-direction: column; justify-content: space-between;">
+                <div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                        <span class="badge" id="productCategory" style="background: rgba(99,102,241,0.15); color: var(--primary);">Loading Category...</span>
+                        <div id="productStock"></div>
+                    </div>
+                    
+                    <h1 id="productName" style="font-size: 2.2rem; font-weight: 800; margin-bottom: 12px; line-height: 1.2;">Loading Product Name...</h1>
+                    
+                    <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 24px;">
+                        <div class="star-rating" id="productRatingStars" style="font-size: 1.1rem;"></div>
+                        <span id="productRatingText" style="font-size: 0.85rem; color: var(--text-secondary);"></span>
+                    </div>
+
+                    <div id="productPrice" style="font-size: 2rem; font-weight: 800; color: var(--text-primary); margin-bottom: 24px;">$0.00</div>
+                    
+                    <p id="productDescription" style="color: var(--text-secondary); line-height: 1.6; margin-bottom: 30px; font-size: 0.95rem;">Loading product details and description...</p>
+                </div>
+
+                <div style="border-top: 1px solid var(--border-glass); padding-top: 24px; display: flex; flex-direction: column; gap: 16px;">
+                    <div style="display: flex; justify-content: space-between; font-size: 0.85rem; color: var(--text-muted);">
+                        <span>Vendor/Seller: <strong id="productSeller" style="color: var(--text-secondary);">Loading...</strong></span>
+                        <span id="productCreated">Listed on: Loading...</span>
+                    </div>
+                    
+                    <button class="btn btn-primary" id="addToCartBtn" style="height: 48px; font-size: 1rem; font-weight: bold; width: 100%;">
+                        Add to Lab Cart
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Reviews & Submission Grid -->
+        <section class="scroll-reveal" style="margin-bottom: 60px;">
+            <h2 style="font-size: 1.8rem; font-weight: 800; margin-bottom: 24px; background: linear-gradient(135deg, #ffffff, #a78bfa); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Customer Reviews</h2>
+            
+            <div class="detail-grid" style="grid-template-columns: 3fr 2fr; margin-top: 0; align-items: start;">
+                <!-- Left: Reviews List -->
+                <div class="glass-card" style="padding: 24px; min-height: 300px;">
+                    <div id="reviewsList">
+                        <div style="text-align: center; padding: 40px; color: var(--text-muted);">
+                            No reviews found for this product yet.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right: Submit Review Form (Role 3: Student Customer) -->
+                <div class="glass-card" id="submitReviewCard" style="padding: 24px; display: none;">
+                    <h3 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 16px;">Write a Review</h3>
+                    <form id="reviewForm">
+                        <div class="form-group">
+                            <label class="form-label">Your Rating</label>
+                            <div class="rating-picker" id="ratingPicker">
+                                <span class="star-btn" data-value="1">☆</span>
+                                <span class="star-btn" data-value="2">☆</span>
+                                <span class="star-btn" data-value="3">☆</span>
+                                <span class="star-btn" data-value="4">☆</span>
+                                <span class="star-btn" data-value="5">☆</span>
+                            </div>
+                            <input type="hidden" id="reviewRatingVal" value="0">
+                        </div>
+                        <div class="form-group" style="margin-bottom: 20px;">
+                            <label class="form-label" for="reviewText">Review Comments</label>
+                            <textarea class="form-control" id="reviewText" rows="4" placeholder="Explain your experience with this tool, delivery, and vendor..." required style="padding: 12px; resize: none;"></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary" id="submitReviewBtn" style="width: 100%; height: 40px;">
+                            Submit Review
+                        </button>
+                    </form>
+                </div>
+                
+                <!-- If not logged in as Customer (Show prompt) -->
+                <div class="glass-card" id="submitReviewPrompt" style="padding: 24px; text-align: center;">
+                    <span style="font-size: 1.5rem;">🔒</span>
+                    <h3 style="font-size: 1.1rem; font-weight: 700; margin: 12px 0 8px;">Write a Review</h3>
+                    <p style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 16px;">Only verified Student Customers who logged in can submit reviews for lab products.</p>
+                    <a href="/pages/login.html" class="btn btn-secondary btn-sm">Authenticate Session</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Related Products Section -->
+        <section class="scroll-reveal">
+            <h2 style="font-size: 1.8rem; font-weight: 800; margin-bottom: 24px; background: linear-gradient(135deg, #ffffff, #a78bfa); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Related Products</h2>
+            <div id="relatedProductsGrid" class="catalog-grid">
+                <!-- Dynamically loaded -->
+            </div>
+        </section>
+    </main>
+
+    <!-- Shopping Cart Drawer (Preserves original structure and IDs) -->
+    <div id="cartDrawer" class="cart-drawer">
+        <div class="cart-header">
+            <h3 style="font-size: 1.25rem;">Shopping Cart</h3>
+            <span id="cartClose" class="modal-close">✕</span>
+        </div>
+
+        <div id="cartItems" class="cart-items-container">
+            <div style="text-align: center; padding: 50px 0; color: var(--text-muted);">
+                Your cart is empty.
+            </div>
+        </div>
+
+        <div class="cart-footer">
+            <div class="cart-total-flex">
+                <span>Total:</span>
+                <span id="cartTotalValue">$0.00</span>
+            </div>
+            <button id="checkoutBtn" class="btn btn-success" style="width: 100%; height: 46px;">
+                Submit Order for Approval
+            </button>
+        </div>
+    </div>
+
+    <!-- Footer Placeholder -->
+    <div id="main-footer"></div>
+
+    <!-- Scripts -->
+    <script src="/js/api.js"></script>
+    <script src="/js/auth.js"></script>
+    <script src="/js/navbar.js"></script>
+    <script src="/js/animations.js"></script>
+    <script src="/js/product-details.js"></script>
+</body>
+</html>

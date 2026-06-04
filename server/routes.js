@@ -30,10 +30,16 @@ const routesRegistry = {
 
     // 2. Products Catalog
     'GET /api/products': { handler: prodController.getAllProducts, auth: false },
+    'GET /api/products/details': { handler: prodController.getProductDetails, auth: false },
+    'GET /api/products/featured': { handler: prodController.getFeaturedProducts, auth: false },
     'GET /api/products/my': { handler: prodController.getMyProducts, auth: true, roles: [2] },
     'POST /api/products': { handler: prodController.createProduct, auth: true, roles: [2] },
     'PUT /api/products': { handler: prodController.updateProduct, auth: true, roles: [2] },
     'DELETE /api/products': { handler: prodController.deleteProduct, auth: true, roles: [2] },
+    'GET /api/categories': { handler: prodController.getCategories, auth: false },
+    'POST /api/upload/product-image': { handler: prodController.uploadProductImage, auth: true, roles: [2] },
+    'POST /api/reviews': { handler: prodController.createReview, auth: true, roles: [3] },
+    'GET /api/reviews': { handler: prodController.getProductReviews, auth: false },
 
     // 3. Transactions & Order Flow
     'POST /api/orders': { handler: ordController.createOrder, auth: true, roles: [3] },

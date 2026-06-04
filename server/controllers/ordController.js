@@ -232,7 +232,8 @@ module.exports = {
                         return {
                             ...item,
                             product_name: prod ? prod.name : 'Unknown Product',
-                            seller_id: prod ? prod.seller_id : null
+                            seller_id: prod ? prod.seller_id : null,
+                            image_url: prod ? prod.image_url : null
                         };
                     });
 
@@ -249,7 +250,9 @@ module.exports = {
                         status: o.status,
                         created_at: o.created_at,
                         items: filteredItems,
-                        delivery_status: delivery ? delivery.status : 'PENDING'
+                        delivery_status: delivery ? delivery.status : 'PENDING',
+                        warehouse_arrival_date: delivery ? delivery.warehouse_arrival_date : null,
+                        dispatch_date: delivery ? delivery.dispatch_date : null
                     };
                 });
 
@@ -260,7 +263,8 @@ module.exports = {
 
                 if (roleId === 1 || roleId === 4) {
                     sql = `
-                        SELECT o.id, o.customer_id, u.full_name as customer_name, o.total_amount, o.status, o.created_at, d.status as delivery_status
+                        SELECT o.id, o.customer_id, u.full_name as customer_name, o.total_amount, o.status, o.created_at, 
+                               d.status as delivery_status, d.warehouse_arrival_date, d.dispatch_date
                         FROM orders o
                         JOIN users u ON o.customer_id = u.id
                         LEFT JOIN deliveries d ON o.id = d.order_id
@@ -268,7 +272,8 @@ module.exports = {
                     `;
                 } else if (roleId === 3) {
                     sql = `
-                        SELECT o.id, o.customer_id, u.full_name as customer_name, o.total_amount, o.status, o.created_at, d.status as delivery_status
+                        SELECT o.id, o.customer_id, u.full_name as customer_name, o.total_amount, o.status, o.created_at, 
+                               d.status as delivery_status, d.warehouse_arrival_date, d.dispatch_date
                         FROM orders o
                         JOIN users u ON o.customer_id = u.id
                         LEFT JOIN deliveries d ON o.id = d.order_id
@@ -278,7 +283,8 @@ module.exports = {
                     binds.push(userId);
                 } else if (roleId === 2) {
                     sql = `
-                        SELECT DISTINCT o.id, o.customer_id, u.full_name as customer_name, o.total_amount, o.status, o.created_at, d.status as delivery_status
+                        SELECT DISTINCT o.id, o.customer_id, u.full_name as customer_name, o.total_amount, o.status, o.created_at, 
+                                        d.status as delivery_status, d.warehouse_arrival_date, d.dispatch_date
                         FROM orders o
                         JOIN users u ON o.customer_id = u.id
                         JOIN order_items oi ON o.id = oi.order_id
@@ -298,7 +304,7 @@ module.exports = {
                     
                     // Fetch items for this order
                     let itemSql = `
-                        SELECT oi.id, oi.product_id, oi.quantity, oi.price, p.name as product_name, p.seller_id
+                        SELECT oi.id, oi.product_id, oi.quantity, oi.price, p.name as product_name, p.seller_id, p.image_url
                         FROM order_items oi
                         JOIN products p ON oi.product_id = p.id
                         WHERE oi.order_id = :1
@@ -316,7 +322,8 @@ module.exports = {
                         quantity: Number(iRow.QUANTITY),
                         price: Number(iRow.PRICE),
                         product_name: iRow.PRODUCT_NAME,
-                        seller_id: Number(iRow.SELLER_ID)
+                        seller_id: Number(iRow.SELLER_ID),
+                        image_url: iRow.IMAGE_URL
                     }));
 
                     ordersList.push({
@@ -327,7 +334,9 @@ module.exports = {
                         status: row.STATUS,
                         created_at: row.CREATED_AT,
                         items,
-                        delivery_status: row.DELIVERY_STATUS
+                        delivery_status: row.DELIVERY_STATUS,
+                        warehouse_arrival_date: row.WAREHOUSE_ARRIVAL_DATE || null,
+                        dispatch_date: row.DISPATCH_DATE || null
                     });
                 }
             }

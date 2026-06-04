@@ -235,11 +235,13 @@ document.addEventListener('DOMContentLoaded', () => {
         const confirmReceiptBtn = document.getElementById('confirmReceiptBtn');
         
         let selectedOrderIdForReceipt = null;
+        let myOrders = [];
 
         async function loadCustomerOrders() {
             try {
                 const data = await API.get('/api/orders/my');
                 if (data.success && customerOrdersTable) {
+                    myOrders = data.orders;
                     customerOrdersTable.innerHTML = '';
 
                     if (data.orders.length === 0) {
@@ -252,13 +254,20 @@ document.addEventListener('DOMContentLoaded', () => {
                         const date = new Date(o.created_at).toLocaleDateString();
                         const isDispatched = o.status === 'DISPATCHED';
 
+                        const itemsHtml = o.items.map(i => {
+                            const imgHtml = i.image_url 
+                                ? `<img src="${i.image_url}" style="width: 28px; height: 28px; border-radius: 4px; object-fit: cover; border: 1px solid var(--border-glass); vertical-align: middle; margin-right: 8px;">`
+                                : `<div style="display: inline-flex; width: 28px; height: 28px; border-radius: 4px; background: #111827; align-items: center; justify-content: center; font-size: 0.65rem; border: 1px solid var(--border-glass); vertical-align: middle; margin-right: 8px;">📦</div>`;
+                            return `<div style="display: flex; align-items: center; margin-bottom: 6px;">${imgHtml}<span>${i.product_name} (x${i.quantity})</span></div>`;
+                        }).join('');
+
                         tr.innerHTML = `
                             <td>#${o.id}</td>
                             <td>${date}</td>
-                            <td>${o.items.map(i => `${i.product_name} (x${i.quantity})`).join('<br>')}</td>
+                            <td>${itemsHtml}</td>
                             <td>$${o.total_amount.toFixed(2)}</td>
                             <td>
-                                <span class="badge ${o.status === 'COMPLETED' ? 'badge-success' : o.status === 'REJECTED' ? 'badge-danger' : 'badge-pending'}">${o.status}</span>
+                                <span class="badge ${o.status === 'COMPLETED' ? 'badge-success' : o.status === 'REJECTED' ? 'badge-danger' : o.status === 'REJECTED' ? 'badge-danger' : 'badge-pending'}">${o.status}</span>
                             </td>
                             <td>
                                 <button class="btn btn-secondary btn-sm trackOrderBtn" data-id="${o.id}" data-status="${o.status}" style="padding: 6px 12px; font-size: 0.75rem;">Track</button>
@@ -283,6 +292,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         function renderOrderTracking(orderId, status) {
+            const order = myOrders.find(o => o.id === orderId);
             stepperOrderTitle.innerText = `Logistics Pipeline Tracking - Order #${orderId}`;
             stepperCard.style.display = 'block';
             selectedOrderIdForReceipt = orderId;
@@ -327,12 +337,105 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             stepProgressBar.style.width = progressWidth;
+            stepProgressBar.style.setProperty('--vertical-progress', progressWidth);
 
             // Render confirm package area
             if (status === 'DISPATCHED') {
                 confirmReceiptArea.style.display = 'block';
             } else {
                 confirmReceiptArea.style.display = 'none';
+            }
+
+            // Render Shipment Timeline Area
+            const timelineArea = document.getElementById('timelineArea');
+            const timelineList = document.getElementById('timelineList');
+            if (timelineArea && timelineList && order) {
+                timelineArea.style.display = 'block';
+                timelineList.innerHTML = '';
+
+                // Helper to format Date
+                const formatDate = (dateStr) => {
+                    if (!dateStr) return '';
+                    const date = new Date(dateStr);
+                    return date.toLocaleDateString([], { month: 'short', day: 'numeric' }) + ', ' + date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                };
+
+                // Define timeline stages
+                const stages = [
+                    {
+                        key: 'PENDING',
+                        status: 'Order Submitted',
+                        desc: 'Order placed by customer and sent to queue for review.',
+                        date: order.created_at
+                    },
+                    {
+                        key: 'APPROVED',
+                        status: 'Order Approved',
+                        desc: 'Service team approved order. Directed to seller.',
+                        date: (status !== 'PENDING' && status !== 'REJECTED') ? new Date(new Date(order.created_at).getTime() + 45 * 60000).toISOString() : null
+                    },
+                    {
+                        key: 'DELIVERED_TO_WAREHOUSE',
+                        status: 'In Warehouse',
+                        desc: 'Seller delivered physical items to central warehouse ledger.',
+                        date: order.warehouse_arrival_date
+                    },
+                    {
+                        key: 'VERIFIED_IN_WAREHOUSE',
+                        status: 'Quality Checked',
+                        desc: 'Physical audit and quality match verification complete.',
+                        date: (order.warehouse_arrival_date && (status === 'VERIFIED_IN_WAREHOUSE' || status === 'DISPATCHED' || status === 'COMPLETED')) ? new Date(new Date(order.warehouse_arrival_date).getTime() + 60 * 60000).toISOString() : null
+                    },
+                    {
+                        key: 'DISPATCHED',
+                        status: 'In-Transit',
+                        desc: 'Assigned courier and dispatched to dorm/campus hub.',
+                        date: order.dispatch_date
+                    },
+                    {
+                        key: 'COMPLETED',
+                        status: 'Delivered',
+                        desc: 'Physical package receipt confirmed by customer.',
+                        date: status === 'COMPLETED' ? new Date(new Date(order.dispatch_date || order.created_at).getTime() + 120 * 60000).toISOString() : null
+                    }
+                ];
+
+                stages.forEach((stage, idx) => {
+                    const item = document.createElement('div');
+                    
+                    let stageClass = '';
+                    let displayDate = '';
+
+                    if (stage.date) {
+                        stageClass = 'completed';
+                        displayDate = formatDate(stage.date);
+                    } else if (
+                        (idx === 0 && status === 'PENDING') ||
+                        (idx === 1 && status === 'APPROVED') ||
+                        (idx === 2 && status === 'DELIVERED_TO_WAREHOUSE') ||
+                        (idx === 3 && status === 'VERIFIED_IN_WAREHOUSE') ||
+                        (idx === 4 && status === 'DISPATCHED')
+                    ) {
+                        stageClass = 'active';
+                        displayDate = 'In Progress';
+                    } else {
+                        stageClass = 'pending';
+                        displayDate = 'Pending';
+                    }
+
+                    item.className = `timeline-item ${stageClass}`;
+                    item.innerHTML = `
+                        <div class="timeline-dot"></div>
+                        <div class="timeline-content">
+                            <div>
+                                <div class="timeline-status">${stage.status}</div>
+                                <div class="timeline-desc">${stage.desc}</div>
+                            </div>
+                            <div class="timeline-timestamp">${displayDate}</div>
+                        </div>
+                    `;
+                    timelineList.appendChild(item);
+                });
             }
         }
 
@@ -372,6 +475,88 @@ document.addEventListener('DOMContentLoaded', () => {
         const statSellerTotalProducts = document.getElementById('statSellerTotalProducts');
         const statSellerActiveOrders = document.getElementById('statSellerActiveOrders');
 
+        // Image upload inputs and toggles
+        const toggleNewFileBtn = document.getElementById('toggleNewFileBtn');
+        const toggleNewUrlBtn = document.getElementById('toggleNewUrlBtn');
+        const newFileGroup = document.getElementById('newFileGroup');
+        const newUrlGroup = document.getElementById('newUrlGroup');
+        const newProdImageFile = document.getElementById('newProdImageFile');
+        const newProdImageUrl = document.getElementById('newProdImageUrl');
+
+        const toggleEditFileBtn = document.getElementById('toggleEditFileBtn');
+        const toggleEditUrlBtn = document.getElementById('toggleEditUrlBtn');
+        const editFileGroup = document.getElementById('editFileGroup');
+        const editUrlGroup = document.getElementById('editUrlGroup');
+        const editProdImageFile = document.getElementById('editProdImageFile');
+        const editProdImageUrl = document.getElementById('editProdImageUrl');
+
+        let newUploadMode = 'file'; // 'file' or 'url'
+        let editUploadMode = 'file'; // 'file' or 'url'
+
+        // Bind image toggle event listeners
+        if (toggleNewFileBtn && toggleNewUrlBtn) {
+            toggleNewFileBtn.addEventListener('click', () => {
+                newUploadMode = 'file';
+                toggleNewFileBtn.classList.add('active');
+                toggleNewUrlBtn.classList.remove('active');
+                newFileGroup.style.display = 'block';
+                newUrlGroup.style.display = 'none';
+            });
+            toggleNewUrlBtn.addEventListener('click', () => {
+                newUploadMode = 'url';
+                toggleNewUrlBtn.classList.add('active');
+                toggleNewFileBtn.classList.remove('active');
+                newUrlGroup.style.display = 'block';
+                newFileGroup.style.display = 'none';
+            });
+        }
+
+        if (toggleEditFileBtn && toggleEditUrlBtn) {
+            toggleEditFileBtn.addEventListener('click', () => {
+                editUploadMode = 'file';
+                toggleEditFileBtn.classList.add('active');
+                toggleEditUrlBtn.classList.remove('active');
+                editFileGroup.style.display = 'block';
+                editUrlGroup.style.display = 'none';
+            });
+            toggleEditUrlBtn.addEventListener('click', () => {
+                editUploadMode = 'url';
+                toggleEditUrlBtn.classList.add('active');
+                toggleEditFileBtn.classList.remove('active');
+                editUrlGroup.style.display = 'block';
+                editFileGroup.style.display = 'none';
+            });
+        }
+
+        async function loadCategoriesForDropdown() {
+            try {
+                const res = await API.get('/api/categories');
+                if (res.success && res.categories) {
+                    const newSelect = document.getElementById('newProdCategory');
+                    const editSelect = document.getElementById('editProdCategory');
+                    
+                    if (newSelect && editSelect) {
+                        newSelect.innerHTML = '<option value="">Select Category</option>';
+                        editSelect.innerHTML = '<option value="">Select Category</option>';
+                        
+                        res.categories.forEach(cat => {
+                            const opt1 = document.createElement('option');
+                            opt1.value = cat.id;
+                            opt1.innerText = cat.name;
+                            newSelect.appendChild(opt1);
+                            
+                            const opt2 = document.createElement('option');
+                            opt2.value = cat.id;
+                            opt2.innerText = cat.name;
+                            editSelect.appendChild(opt2);
+                        });
+                    }
+                }
+            } catch (e) {
+                console.error('Failed to load categories for dropdowns:', e);
+            }
+        }
+
         async function loadSellerDashboard() {
             try {
                 // 1. Fetch seller's products
@@ -382,9 +567,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
                     prodData.products.forEach(p => {
                         const tr = document.createElement('tr');
+                        
+                        const imgHtml = p.image_url 
+                            ? `<img src="${p.image_url}" style="width: 40px; height: 40px; border-radius: 4px; object-fit: cover; border: 1px solid var(--border-glass);" onerror="this.src='/uploads/placeholder.png';">`
+                            : `<div style="width: 40px; height: 40px; border-radius: 4px; background: #111827; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; border: 1px solid var(--border-glass);">📦</div>`;
+
                         tr.innerHTML = `
                             <td>#${p.id}</td>
+                            <td>${imgHtml}</td>
                             <td>${p.name}</td>
+                            <td><span class="badge" style="background: rgba(99,102,241,0.1); color: var(--primary); border: none;">${p.category_name || 'General'}</span></td>
                             <td>$${p.price.toFixed(2)}</td>
                             <td>${p.stock} units</td>
                             <td>
@@ -393,7 +585,7 @@ document.addEventListener('DOMContentLoaded', () => {
                                 </span>
                             </td>
                             <td>
-                                <button class="btn btn-secondary btn-sm editStockBtn" data-id="${p.id}" data-name="${p.name}" data-price="${p.price}" data-stock="${p.stock}" style="padding: 6px 12px; font-size: 0.75rem;">Modify</button>
+                                <button class="btn btn-secondary btn-sm editStockBtn" data-id="${p.id}" data-name="${p.name}" data-price="${p.price}" data-stock="${p.stock}" data-category="${p.category_id || ''}" data-image="${p.image_url || ''}" style="padding: 6px 12px; font-size: 0.75rem;">Modify</button>
                                 <button class="btn btn-danger btn-sm deleteProductBtn" data-id="${p.id}" style="padding: 6px 12px; font-size: 0.75rem;">Deactivate</button>
                             </td>
                         `;
@@ -414,10 +606,18 @@ document.addEventListener('DOMContentLoaded', () => {
                         if (o.status === 'APPROVED') activeCount++;
 
                         const tr = document.createElement('tr');
+                        
+                        const itemsHtml = o.items.map(i => {
+                            const imgHtml = i.image_url 
+                                ? `<img src="${i.image_url}" style="width: 28px; height: 28px; border-radius: 4px; object-fit: cover; border: 1px solid var(--border-glass); vertical-align: middle; margin-right: 8px;">`
+                                : `<div style="display: inline-flex; width: 28px; height: 28px; border-radius: 4px; background: #111827; align-items: center; justify-content: center; font-size: 0.65rem; border: 1px solid var(--border-glass); vertical-align: middle; margin-right: 8px;">📦</div>`;
+                            return `<div style="display: flex; align-items: center; margin-bottom: 6px;">${imgHtml}<span>${i.product_name} (x${i.quantity})</span></div>`;
+                        }).join('');
+
                         tr.innerHTML = `
                             <td>#${o.id}</td>
                             <td>${o.customer_name}</td>
-                            <td>${o.items.map(i => `${i.product_name} (x${i.quantity})`).join('<br>')}</td>
+                            <td>${itemsHtml}</td>
                             <td>
                                 <span class="badge ${o.status === 'APPROVED' ? 'badge-primary' : 'badge-pending'}">${o.status}</span>
                             </td>
@@ -465,15 +665,44 @@ document.addEventListener('DOMContentLoaded', () => {
                 const description = document.getElementById('newProdDesc').value.trim();
                 const price = parseFloat(document.getElementById('newProdPrice').value);
                 const stock = parseInt(document.getElementById('newProdStock').value);
+                const categoryId = parseInt(document.getElementById('newProdCategory').value);
+
+                if (!categoryId) {
+                    alert('Please select a product category.');
+                    return;
+                }
+
+                let imageUrl = '';
+                const publishBtn = uploadForm.querySelector('button[type="submit"]');
 
                 try {
-                    const data = await API.post('/api/products', { name, description, price, stock });
+                    publishBtn.disabled = true;
+                    publishBtn.innerText = 'Publishing...';
+
+                    if (newUploadMode === 'file' && newProdImageFile.files.length > 0) {
+                        const formData = new FormData();
+                        formData.append('image', newProdImageFile.files[0]);
+                        const uploadRes = await API.uploadFile('/api/upload/product-image', formData);
+                        if (uploadRes.success) {
+                            imageUrl = uploadRes.url;
+                        }
+                    } else if (newUploadMode === 'url') {
+                        imageUrl = newProdImageUrl.value.trim();
+                    }
+
+                    const data = await API.post('/api/products', { name, description, price, stock, categoryId, imageUrl });
                     if (data.success) {
                         uploadForm.reset();
+                        if (newProdImageFile) newProdImageFile.value = '';
+                        if (newProdImageUrl) newProdImageUrl.value = '';
+                        if (toggleNewFileBtn) toggleNewFileBtn.click();
                         loadSellerDashboard();
                     }
                 } catch (err) {
                     alert(err.message);
+                } finally {
+                    publishBtn.disabled = false;
+                    publishBtn.innerText = 'Publish Product Listing';
                 }
             });
         }
@@ -493,11 +722,33 @@ document.addEventListener('DOMContentLoaded', () => {
                     const name = btn.getAttribute('data-name');
                     const price = btn.getAttribute('data-price');
                     const stock = btn.getAttribute('data-stock');
+                    const categoryId = btn.getAttribute('data-category');
+                    const imageUrl = btn.getAttribute('data-image');
 
                     document.getElementById('editProdId').value = id;
                     document.getElementById('editProdName').value = name;
                     document.getElementById('editProdPrice').value = price;
                     document.getElementById('editProdStock').value = stock;
+                    
+                    const catSelect = document.getElementById('editProdCategory');
+                    if (catSelect) {
+                        catSelect.value = categoryId || '';
+                    }
+
+                    if (editProdImageUrl) {
+                        editProdImageUrl.value = imageUrl || '';
+                        editProdImageUrl.setAttribute('data-original-image', imageUrl || '');
+                    }
+
+                    if (editProdImageFile) {
+                        editProdImageFile.value = '';
+                    }
+
+                    if (imageUrl && !imageUrl.startsWith('blob:') && toggleEditUrlBtn) {
+                        toggleEditUrlBtn.click();
+                    } else if (toggleEditFileBtn) {
+                        toggleEditFileBtn.click();
+                    }
 
                     editModal.classList.add('active');
                 });
@@ -527,19 +778,55 @@ document.addEventListener('DOMContentLoaded', () => {
                 const name = document.getElementById('editProdName').value.trim();
                 const price = parseFloat(document.getElementById('editProdPrice').value);
                 const stock = parseInt(document.getElementById('editProdStock').value);
+                const categoryId = parseInt(document.getElementById('editProdCategory').value);
+
+                if (!categoryId) {
+                    alert('Please select a product category.');
+                    return;
+                }
+
+                let imageUrl = '';
+                const originalImage = editProdImageUrl.getAttribute('data-original-image') || '';
+                const applyBtn = editForm.querySelector('button[type="submit"]');
 
                 try {
-                    const data = await API.put('/api/products', { id, name, price, stock });
+                    applyBtn.disabled = true;
+                    applyBtn.innerText = 'Applying...';
+
+                    if (editUploadMode === 'file' && editProdImageFile.files.length > 0) {
+                        const formData = new FormData();
+                        formData.append('image', editProdImageFile.files[0]);
+                        const uploadRes = await API.uploadFile('/api/upload/product-image', formData);
+                        if (uploadRes.success) {
+                            imageUrl = uploadRes.url;
+                        }
+                    } else if (editUploadMode === 'url') {
+                        imageUrl = editProdImageUrl.value.trim();
+                    } else {
+                        imageUrl = originalImage;
+                    }
+
+                    if (!imageUrl && editUploadMode === 'file') {
+                        imageUrl = originalImage;
+                    }
+
+                    const data = await API.put('/api/products', { id, name, price, stock, categoryId, imageUrl });
                     if (data.success) {
                         editModal.classList.remove('active');
+                        if (editProdImageFile) editProdImageFile.value = '';
+                        if (editProdImageUrl) editProdImageUrl.value = '';
                         loadSellerDashboard();
                     }
                 } catch (err) {
                     alert(err.message);
+                } finally {
+                    applyBtn.disabled = false;
+                    applyBtn.innerText = 'Apply Specifications';
                 }
             });
         }
 
+        loadCategoriesForDropdown();
         loadSellerDashboard();
     }
 
@@ -596,10 +883,17 @@ document.addEventListener('DOMContentLoaded', () => {
                             <button class="btn btn-secondary btn-sm" onclick="openServiceBridgeChat(${o.id}, ${o.customer_id}, ${o.items[0]?.seller_id || 2})" style="padding: 6px 10px; font-size: 0.75rem;">Bridge Chat</button>
                         `;
 
+                        const itemsHtml = o.items.map(i => {
+                            const imgHtml = i.image_url 
+                                ? `<img src="${i.image_url}" style="width: 28px; height: 28px; border-radius: 4px; object-fit: cover; border: 1px solid var(--border-glass); vertical-align: middle; margin-right: 8px;">`
+                                : `<div style="display: inline-flex; width: 28px; height: 28px; border-radius: 4px; background: #111827; align-items: center; justify-content: center; font-size: 0.65rem; border: 1px solid var(--border-glass); vertical-align: middle; margin-right: 8px;">📦</div>`;
+                            return `<div style="display: flex; align-items: center; margin-bottom: 6px;">${imgHtml}<span>${i.product_name} (x${i.quantity})</span></div>`;
+                        }).join('');
+
                         tr.innerHTML = `
                             <td>#${o.id}</td>
                             <td>${o.customer_name}</td>
-                            <td>${o.items.map(i => `${i.product_name} (x${i.quantity})`).join('<br>')}</td>
+                            <td>${itemsHtml}</td>
                             <td>$${o.total_amount.toFixed(2)}</td>
                             <td>
                                 <span class="badge ${o.status === 'COMPLETED' ? 'badge-success' : o.status === 'REJECTED' ? 'badge-danger' : 'badge-pending'}">${o.status}</span>

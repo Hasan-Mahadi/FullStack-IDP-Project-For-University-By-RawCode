@@ -13,6 +13,7 @@
 
 const http = require('http');
 const path = require('path');
+const fs = require('fs');
 const { URL } = require('url');
 const db = require('./database/connection');
 const seeder = require('./database/seeder');   // Auto-seed on startup
@@ -66,17 +67,21 @@ const server = http.createServer(async (req, res) => {
         req.query[key] = value;
     });
 
-    // 4. Request Stream Buffer Body Parser
-    let rawBody = '';
+    // 4. Request Stream Buffer Body Parser (Binary-Safe)
+    let chunks = [];
     req.on('data', chunk => {
-        rawBody += chunk.toString();
+        chunks.push(chunk);
     });
 
     req.on('end', async () => {
         try {
+            const bodyBuffer = Buffer.concat(chunks);
+            req.rawBody = bodyBuffer;
+            req.rawBodyBuffer = bodyBuffer;
+
             // Parse JSON body if present
-            if (rawBody && req.headers['content-type'] && req.headers['content-type'].includes('application/json')) {
-                req.body = JSON.parse(rawBody);
+            if (bodyBuffer.length > 0 && req.headers['content-type'] && req.headers['content-type'].includes('application/json')) {
+                req.body = JSON.parse(bodyBuffer.toString('utf8'));
             } else {
                 req.body = {};
             }
@@ -106,6 +111,13 @@ const server = http.createServer(async (req, res) => {
 // Bootstrapper function
 async function boot() {
     try {
+        // Create client/uploads/products directory if it doesn't exist
+        const uploadsDir = path.join(__dirname, '../client/uploads/products');
+        if (!fs.existsSync(uploadsDir)) {
+            fs.mkdirSync(uploadsDir, { recursive: true });
+            console.log('>> [Server] Created upload directory at: client/uploads/products');
+        }
+
         // 1. Establish database connection pool / mock fallbacks
         const dbReady = await db.initialize();
         if (!dbReady) {
