@@ -13,11 +13,14 @@
         <aside class="sidebar">
             <div class="sidebar-brand">
                 <div class="sidebar-logo">IDP</div>
-                <div class="sidebar-title">EduShop</div>
+                               <div class="sidebar-title"> <a href="/" class="nav-brand">EduShop</a></div>
             </div>
             
             <ul class="sidebar-menu">
-                <li class="sidebar-item active"><a href="/pages/seller.html">📦 Inventory & Shipments</a></li>
+                <li class="sidebar-item" data-route="dashboard"><a href="#/dashboard">📊 Dashboard Overview</a></li>
+                <li class="sidebar-item" data-route="upload-product"><a href="#/upload-product">📤 Upload Product</a></li>
+                <li class="sidebar-item" data-route="active-inventory"><a href="#/active-inventory">📦 Active Inventory</a></li>
+                <li class="sidebar-item" data-route="incoming-orders"><a href="#/incoming-orders">🛎️ Incoming Orders</a></li>
             </ul>
 
             <div class="sidebar-footer">
@@ -57,26 +60,54 @@
 
             <div style="padding: 32px; display: flex; flex-direction: column; gap: 32px;">
                 
-                <!-- Stat Summary Row -->
-                <div class="dashboard-grid" style="padding: 0; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px;">
-                    <div class="glass-card">
-                        <div class="stat-card-title">Listed Catalog Size</div>
-                        <div id="statSellerTotalProducts" class="stat-card-value">0</div>
-                        <div class="stat-card-icon">📦</div>
-                    </div>
+                <!-- VIEW 1: Overview Dashboard -->
+                <div id="view-dashboard" class="dashboard-view" style="display: none;">
+                    <div style="display: flex; flex-direction: column; gap: 32px;">
+                        <!-- Stat Summary Row -->
+                        <div class="dashboard-grid" style="padding: 0; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px;">
+                            <div class="glass-card">
+                                <div class="stat-card-title">Listed Catalog Size</div>
+                                <div id="statSellerTotalProducts" class="stat-card-value">0</div>
+                                <div class="stat-card-icon">📦</div>
+                            </div>
 
-                    <div class="glass-card" style="border-left: 3px solid var(--primary);">
-                        <div class="stat-card-title">Incoming Approved Orders</div>
-                        <div id="statSellerActiveOrders" class="stat-card-value">0</div>
-                        <div class="stat-card-icon">🛎️</div>
+                            <div class="glass-card" style="border-left: 3px solid var(--primary);">
+                                <div class="stat-card-title">Incoming Approved Orders</div>
+                                <div id="statSellerActiveOrders" class="stat-card-value">0</div>
+                                <div class="stat-card-icon">🛎️</div>
+                            </div>
+
+                            <div class="glass-card" style="border-left: 3px solid var(--success);">
+                                <div class="stat-card-title">Completed Sales Revenue</div>
+                                <div id="statSellerRevenue" class="stat-card-value">$0.00</div>
+                                <div class="stat-card-icon">💵</div>
+                            </div>
+                        </div>
+
+                        <!-- Interactive Analytics Chart Widget -->
+                        <div class="glass-card" style="display: flex; flex-direction: column; gap: 24px; min-height: 420px; width: 100%;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
+                                <div>
+                                    <h3 style="font-size: 1.15rem; margin-bottom: 4px;">Performance Analytics</h3>
+                                    <p style="color: var(--text-secondary); font-size: 0.8rem;">Real-time trends of sales, orders, and revenue generated.</p>
+                                </div>
+                                <div style="display: flex; gap: 8px;">
+                                    <button id="chartTabRevenue" class="btn btn-secondary btn-sm active" style="padding: 6px 12px; font-size: 0.75rem;">Revenue Trend</button>
+                                    <button id="chartTabOrders" class="btn btn-secondary btn-sm" style="padding: 6px 12px; font-size: 0.75rem;">Orders Count</button>
+                                    <button id="chartTabInventory" class="btn btn-secondary btn-sm" style="padding: 6px 12px; font-size: 0.75rem;">Category distribution</button>
+                                </div>
+                            </div>
+                            
+                            <div id="sellerAnalyticsChart" style="flex-grow: 1; display: flex; align-items: center; justify-content: center; min-height: 280px; position: relative;">
+                                <div style="text-align: center; color: var(--text-muted);">Compiling graphical matrices...</div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
-                <!-- Form Upload Card & Product Catalog List Column layout -->
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(360px, 1fr)); gap: 32px;">
-                    
-                    <!-- Upload Product Form -->
-                    <div class="glass-card">
+                <!-- VIEW 2: Upload Product Form -->
+                <div id="view-upload" class="dashboard-view" style="display: none;">
+                    <div class="glass-card" style="max-width: 600px; margin: 0 auto;">
                         <h3 style="font-size: 1.1rem; margin-bottom: 20px;">Upload New Product</h3>
                         <form id="uploadForm">
                             <div class="form-group">
@@ -86,7 +117,7 @@
                             
                             <div class="form-group">
                                 <label class="form-label" for="newProdDesc">Detailed Description</label>
-                                <textarea class="form-control" id="newProdDesc" rows="2" placeholder="Explain technical details, condition, specifications..." style="resize: none;"></textarea>
+                                <textarea class="form-control" id="newProdDesc" rows="3" placeholder="Explain technical details, condition, specifications..." style="resize: none;"></textarea>
                             </div>
 
                             <div class="form-group">
@@ -126,9 +157,11 @@
                             </button>
                         </form>
                     </div>
+                </div>
 
-                    <!-- Products Inventory Table -->
-                    <div class="glass-card" style="flex-grow: 2;">
+                <!-- VIEW 3: Active Listed Inventory Table -->
+                <div id="view-inventory" class="dashboard-view" style="display: none;">
+                    <div class="glass-card">
                         <h3 style="font-size: 1.1rem; margin-bottom: 20px;">Active Listed Inventory</h3>
                         
                         <div class="table-responsive">
@@ -155,30 +188,32 @@
                     </div>
                 </div>
 
-                <!-- Incoming Approved Orders Section -->
-                <div class="glass-card">
-                    <h3 style="font-size: 1.1rem; margin-bottom: 8px;">Incoming Approved Orders</h3>
-                    <p style="color: var(--text-secondary); font-size: 0.8rem; margin-bottom: 20px;">
-                        Orders listed here have been approved by the Service Team. Ship these physical goods to the Central Warehouse and mark them as delivered below.
-                    </p>
-                    
-                    <div class="table-responsive">
-                        <table class="data-table">
-                            <thead>
-                                <tr>
-                                    <th>Order ID</th>
-                                    <th>Student Buyer</th>
-                                    <th>Items Ordered</th>
-                                    <th>Fulfillment State</th>
-                                    <th>Logistics Audit Controls</th>
-                                </tr>
-                            </thead>
-                            <tbody id="sellerOrdersTable">
-                                <tr>
-                                    <td colspan="5" style="text-align: center; color: var(--text-muted);">Syncing incoming logistics orders...</td>
-                                </tr>
-                            </tbody>
-                        </table>
+                <!-- VIEW 4: Incoming Approved Orders Section -->
+                <div id="view-orders" class="dashboard-view" style="display: none;">
+                    <div class="glass-card">
+                        <h3 style="font-size: 1.1rem; margin-bottom: 8px;">Incoming Approved Orders</h3>
+                        <p style="color: var(--text-secondary); font-size: 0.8rem; margin-bottom: 20px;">
+                            Orders listed here have been approved by the Service Team. Ship these physical goods to the Central Warehouse and mark them as delivered below.
+                        </p>
+                        
+                        <div class="table-responsive">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Order ID</th>
+                                        <th>Student Buyer</th>
+                                        <th>Items Ordered</th>
+                                        <th>Fulfillment State</th>
+                                        <th>Logistics Audit Controls</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="sellerOrdersTable">
+                                    <tr>
+                                        <td colspan="5" style="text-align: center; color: var(--text-muted);">Syncing incoming logistics orders...</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
 

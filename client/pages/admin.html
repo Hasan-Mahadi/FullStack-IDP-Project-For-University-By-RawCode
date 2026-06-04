@@ -13,11 +13,13 @@
         <aside class="sidebar">
             <div class="sidebar-brand">
                 <div class="sidebar-logo">IDP</div>
-                <div class="sidebar-title">EduShop</div>
+                <div class="sidebar-title"> <a href="/" class="nav-brand">EduShop</a></div>
+                
             </div>
             
             <ul class="sidebar-menu">
-                <li class="sidebar-item active"><a href="/pages/admin.html">🛡️ Root Administration</a></li>
+                <li class="sidebar-item" data-route="dashboard"><a href="#/dashboard">🛡️ Administrative Overview</a></li>
+                <li class="sidebar-item" data-route="user-directory"><a href="#/user-directory">👥 Campus User Directory</a></li>
             </ul>
 
             <div class="sidebar-footer">
@@ -57,36 +59,52 @@
 
             <div style="padding: 32px; display: flex; flex-direction: column; gap: 32px;">
                 
-                <!-- Stat Summary Row -->
-                <div class="dashboard-grid" style="padding: 0; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px;">
-                    <div class="glass-card">
-                        <div class="stat-card-title">Registered Accounts</div>
-                        <div id="statAdminTotalUsers" class="stat-card-value">0</div>
-                        <div class="stat-card-icon">👥</div>
-                    </div>
+                <!-- VIEW 1: Overview Dashboard -->
+                <div id="view-dashboard" class="dashboard-view" style="display: none;">
+                    <div style="display: flex; flex-direction: column; gap: 32px;">
+                        <!-- Stat Summary Row -->
+                        <div class="dashboard-grid" style="padding: 0; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px;">
+                            <div class="glass-card">
+                                <div class="stat-card-title">Registered Accounts</div>
+                                <div id="statAdminTotalUsers" class="stat-card-value">0</div>
+                                <div class="stat-card-icon">👥</div>
+                            </div>
 
-                    <div class="glass-card" style="border-left: 3px solid var(--success);">
-                        <div class="stat-card-title">Completed Revenue</div>
-                        <div id="statAdminTotalRevenue" class="stat-card-value">$0.00</div>
-                        <div class="stat-card-icon">💵</div>
-                    </div>
+                            <div class="glass-card" style="border-left: 3px solid var(--success);">
+                                <div class="stat-card-title">Completed Revenue</div>
+                                <div id="statAdminTotalRevenue" class="stat-card-value">$0.00</div>
+                                <div class="stat-card-icon">💵</div>
+                            </div>
 
-                    <div class="glass-card" style="border-left: 3px solid var(--primary);">
-                        <div class="stat-card-title">Orders Logged</div>
-                        <div id="statAdminTotalOrders" class="stat-card-value">0</div>
-                        <div class="stat-card-icon">📜</div>
-                    </div>
+                            <div class="glass-card" style="border-left: 3px solid var(--primary);">
+                                <div class="stat-card-title">Orders Logged</div>
+                                <div id="statAdminTotalOrders" class="stat-card-value">0</div>
+                                <div class="stat-card-icon">📜</div>
+                            </div>
 
-                    <div class="glass-card">
-                        <div class="stat-card-title">Catalog Inventory</div>
-                        <div id="statAdminCatalogSize" class="stat-card-value">0</div>
-                        <div class="stat-card-icon">📦</div>
+                            <div class="glass-card">
+                                <div class="stat-card-title">Catalog Inventory</div>
+                                <div id="statAdminCatalogSize" class="stat-card-value">0</div>
+                                <div class="stat-card-icon">📦</div>
+                            </div>
+                        </div>
+
+                        <!-- Order Pipeline Analytics Chart Card -->
+                        <div class="glass-card" style="display: flex; flex-direction: column; min-height: 420px; max-width: 600px; margin: 0 auto; width: 100%;">
+                            <h3 style="font-size: 1.15rem; margin-bottom: 8px; text-align: center;">Order Pipeline Analytics</h3>
+                            <p style="color: var(--text-secondary); font-size: 0.8rem; text-align: center; margin-bottom: 20px;">
+                                Distribution profile of campus transactions matching fulfillment dispatches.
+                            </p>
+                            <!-- Analytical SVG graphic (drawn by dashboards.js) -->
+                            <div id="adminAnalyticsChart" style="flex-grow: 1; display: flex; align-items: center; justify-content: center;">
+                                <div style="text-align: center; color: var(--text-muted);">Compiling graphical matrices...</div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
-                <!-- User Management Table & SVG Graphical Chart Column layout -->
-                <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 32px; align-items: start;">
-                    
+                <!-- VIEW 2: Campus User Directory -->
+                <div id="view-users" class="dashboard-view" style="display: none;">
                     <!-- Registered Accounts Table -->
                     <div class="glass-card">
                         <h3 style="font-size: 1.1rem; margin-bottom: 20px;">Campus User Directory</h3>
@@ -110,16 +128,6 @@
                                     </tr>
                                 </tbody>
                             </table>
-                        </div>
-                    </div>
-
-                    <!-- Analytical Graphics Box -->
-                    <div class="glass-card" style="display: flex; flex-direction: column; justify-content: space-between; min-height: 400px;">
-                        <h3 style="font-size: 1.1rem; margin-bottom: 20px; text-align: center;">Order Pipeline Analytics</h3>
-                        
-                        <!-- Analytical SVG graphic (drawn by dashboards.js) -->
-                        <div id="adminAnalyticsChart" style="flex-grow: 1; display: flex; align-items: center; justify-content: center;">
-                            <div style="text-align: center; color: var(--text-muted);">Compiling graphical matrices...</div>
                         </div>
                     </div>
                 </div>

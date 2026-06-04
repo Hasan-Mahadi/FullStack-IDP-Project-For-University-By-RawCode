@@ -1681,3 +1681,95 @@ select.form-control {
     }
 }
 
+/* ====================================================================
+   DASHBOARD VIEW ROUTING & PREMIUM SVG CHART STYLING
+   ==================================================================== */
+
+/* Smooth fade-in and slide-up transition for hash-routed views */
+.dashboard-view {
+    animation: dashboardFadeIn 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes dashboardFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(12px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Interactive Chart Styles */
+.chart-container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+.chart-grid-line {
+    stroke: rgba(255, 255, 255, 0.05);
+    stroke-dasharray: 4;
+}
+
+.chart-line {
+    fill: none;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    filter: drop-shadow(0 6px 12px rgba(99, 102, 241, 0.3));
+    transition: stroke-dashoffset 1s ease-out;
+}
+
+.chart-area {
+    opacity: 0.12;
+    transition: opacity 0.3s ease;
+}
+
+.chart-point {
+    cursor: pointer;
+    transition: r 0.2s ease, fill 0.2s ease;
+}
+
+.chart-point:hover {
+    r: 7px;
+    fill: #ffffff;
+}
+
+.chart-bar {
+    cursor: pointer;
+    transition: fill 0.2s ease, opacity 0.2s ease;
+}
+
+.chart-bar:hover {
+    fill: var(--primary-hover);
+    opacity: 0.9;
+}
+
+/* Donut Chart visual slices */
+.donut-slice {
+    transition: stroke-width 0.2s ease, stroke 0.2s ease;
+    cursor: pointer;
+}
+
+.donut-slice:hover {
+    stroke-width: 10;
+}
+
+/* SVG Chart interactive tooltips */
+.chart-tooltip {
+    position: absolute;
+    background: rgba(13, 18, 31, 0.95);
+    border: 1px solid var(--border-glass);
+    padding: 8px 12px;
+    border-radius: var(--radius-sm);
+    font-size: 0.75rem;
+    color: var(--text-primary);
+    pointer-events: none;
+    box-shadow: var(--shadow-main);
+    z-index: 10;
+    opacity: 0;
+    transition: opacity 0.15s ease;
+}
+
+

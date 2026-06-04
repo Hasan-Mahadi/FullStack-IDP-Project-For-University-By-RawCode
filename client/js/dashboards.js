@@ -33,6 +33,72 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // ====================================================================
+    // HASH ROUTER — switches between .dashboard-view panels based on URL hash
+    // ====================================================================
+
+    // Per-page route → view-id maps
+    const ROUTE_MAPS = {
+        'seller.html': {
+            'dashboard':       'view-dashboard',
+            'upload-product':  'view-upload',
+            'active-inventory':'view-inventory',
+            'incoming-orders': 'view-orders',
+        },
+        'admin.html': {
+            'dashboard':       'view-dashboard',
+            'user-directory':  'view-users',
+        },
+        'service.html': {
+            'dashboard':       'view-dashboard',
+            'coordination-ledger': 'view-ledger',
+        },
+    };
+
+    // Detect which page we are on
+    const currentPage = Object.keys(ROUTE_MAPS).find(p => window.location.pathname.includes(p));
+    const routeMap = currentPage ? ROUTE_MAPS[currentPage] : {};
+
+    function handleRouting() {
+        // Parse the route key from the hash: "#/upload-product" → "upload-product"
+        const hash = window.location.hash || '';
+        const routeKey = hash.replace(/^#\//, '').trim() || 'dashboard';
+
+        // Find the target view ID; fall back to dashboard view
+        const targetViewId = routeMap[routeKey] || routeMap['dashboard'];
+
+        // Hide all views, show the matching one
+        document.querySelectorAll('.dashboard-view').forEach(view => {
+            view.style.display = 'none';
+        });
+
+        if (targetViewId) {
+            const targetView = document.getElementById(targetViewId);
+            if (targetView) {
+                targetView.style.display = 'block';
+            }
+        }
+
+        // Sync sidebar active states
+        document.querySelectorAll('.sidebar-item').forEach(item => {
+            const itemRoute = item.getAttribute('data-route');
+            if (itemRoute === routeKey || (routeKey === '' && itemRoute === 'dashboard')) {
+                item.classList.add('active');
+            } else {
+                item.classList.remove('active');
+            }
+        });
+    }
+
+    // Set default hash if none present
+    if (!window.location.hash) {
+        window.location.hash = '#/dashboard';
+    }
+
+    // Run router on load and on every hash change
+    handleRouting();
+    window.addEventListener('hashchange', handleRouting);
+
     // 2. REAL-TIME SYSTEM NOTIFICATIONS COORDINATOR
     const notificationBell = document.getElementById('notificationBell');
     const notificationInbox = document.getElementById('notificationInbox');
@@ -493,6 +559,11 @@ document.addEventListener('DOMContentLoaded', () => {
         let newUploadMode = 'file'; // 'file' or 'url'
         let editUploadMode = 'file'; // 'file' or 'url'
 
+        // Dynamic chart control states
+        let activeSellerChartTab = 'revenue';
+        let sellerProducts = [];
+        let sellerOrders = [];
+
         // Bind image toggle event listeners
         if (toggleNewFileBtn && toggleNewUrlBtn) {
             toggleNewFileBtn.addEventListener('click', () => {
@@ -525,6 +596,294 @@ document.addEventListener('DOMContentLoaded', () => {
                 toggleEditFileBtn.classList.remove('active');
                 editUrlGroup.style.display = 'block';
                 editFileGroup.style.display = 'none';
+            });
+        }
+
+        // Bind interactive SVG chart tabs
+        const chartTabRevenue = document.getElementById('chartTabRevenue');
+        const chartTabOrders = document.getElementById('chartTabOrders');
+        const chartTabInventory = document.getElementById('chartTabInventory');
+
+        if (chartTabRevenue && chartTabOrders && chartTabInventory) {
+            chartTabRevenue.addEventListener('click', () => {
+                activeSellerChartTab = 'revenue';
+                chartTabRevenue.classList.add('active');
+                chartTabOrders.classList.remove('active');
+                chartTabInventory.classList.remove('active');
+                triggerChartRender();
+            });
+            chartTabOrders.addEventListener('click', () => {
+                activeSellerChartTab = 'orders';
+                chartTabOrders.classList.add('active');
+                chartTabRevenue.classList.remove('active');
+                chartTabInventory.classList.remove('active');
+                triggerChartRender();
+            });
+            chartTabInventory.addEventListener('click', () => {
+                activeSellerChartTab = 'inventory';
+                chartTabInventory.classList.add('active');
+                chartTabOrders.classList.remove('active');
+                chartTabRevenue.classList.remove('active');
+                triggerChartRender();
+            });
+        }
+
+        function triggerChartRender() {
+            renderSellerCharts(sellerProducts, sellerOrders);
+        }
+
+        // Render interactive SVG charts dynamically
+        function renderSellerCharts(products, orders) {
+            const chartBox = document.getElementById('sellerAnalyticsChart');
+            if (!chartBox) return;
+
+            chartBox.innerHTML = '';
+            
+            let tooltip = chartBox.querySelector('.chart-tooltip');
+            if (!tooltip) {
+                tooltip = document.createElement('div');
+                tooltip.className = 'chart-tooltip';
+                chartBox.appendChild(tooltip);
+            }
+
+            if (activeSellerChartTab === 'revenue') {
+                // Line chart for last 7 calendar days
+                const last7Days = [];
+                for (let i = 6; i >= 0; i--) {
+                    const d = new Date();
+                    d.setDate(d.getDate() - i);
+                    last7Days.push({
+                        dateStr: d.toLocaleDateString([], { month: 'short', day: 'numeric' }),
+                        key: d.toISOString().split('T')[0],
+                        revenue: 0
+                    });
+                }
+
+                const completedOrders = orders.filter(o => o.status === 'COMPLETED');
+                completedOrders.forEach(o => {
+                    const orderDate = new Date(o.created_at).toISOString().split('T')[0];
+                    const dayMatch = last7Days.find(day => day.key === orderDate);
+                    if (dayMatch) {
+                        const sellerRev = o.items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+                        dayMatch.revenue += sellerRev;
+                    }
+                });
+
+                let cumulativeRevenue = 0;
+                const points = last7Days.map((day, idx) => {
+                    cumulativeRevenue += day.revenue;
+                    return {
+                        label: day.dateStr,
+                        value: cumulativeRevenue
+                    };
+                });
+
+                const maxVal = Math.max(...points.map(p => p.value), 100);
+                const svgW = 600;
+                const svgH = 260;
+                const padding = 40;
+                const plotW = svgW - padding * 2;
+                const plotH = svgH - padding * 2;
+
+                const coords = points.map((p, idx) => {
+                    const x = padding + (idx * (plotW / (points.length - 1)));
+                    const y = padding + plotH - ((p.value / maxVal) * plotH);
+                    return { x, y, label: p.label, value: p.value };
+                });
+
+                let linePath = `M ${coords[0].x} ${coords[0].y}`;
+                let areaPath = `M ${coords[0].x} ${coords[0].y}`;
+                for (let i = 1; i < coords.length; i++) {
+                    linePath += ` L ${coords[i].x} ${coords[i].y}`;
+                    areaPath += ` L ${coords[i].x} ${coords[i].y}`;
+                }
+                areaPath += ` L ${coords[coords.length - 1].x} ${padding + plotH} L ${coords[0].x} ${padding + plotH} Z`;
+
+                let gridLines = '';
+                for (let i = 0; i <= 4; i++) {
+                    const yVal = padding + (i * (plotH / 4));
+                    const labelVal = maxVal - (i * (maxVal / 4));
+                    gridLines += `
+                        <line class="chart-grid-line" x1="${padding}" y1="${yVal}" x2="${svgW - padding}" y2="${yVal}" />
+                        <text x="${padding - 10}" y="${yVal + 4}" fill="var(--text-muted)" font-size="9" text-anchor="end">$${Math.round(labelVal)}</text>
+                    `;
+                }
+
+                let bottomLabels = '';
+                coords.forEach((c, idx) => {
+                    bottomLabels += `
+                        <text x="${c.x}" y="${padding + plotH + 20}" fill="var(--text-muted)" font-size="9" text-anchor="middle">${c.label}</text>
+                    `;
+                });
+
+                let interactiveCircles = '';
+                coords.forEach((c, idx) => {
+                    interactiveCircles += `
+                        <circle class="chart-point" cx="${c.x}" cy="${c.y}" r="4" fill="var(--success)" stroke="#0d121f" stroke-width="2" 
+                                data-label="${c.label}" data-value="$${c.value.toFixed(2)}" />
+                    `;
+                });
+
+                chartBox.innerHTML += `
+                    <svg viewBox="0 0 ${svgW} ${svgH}" width="100%" height="280">
+                        <defs>
+                            <linearGradient id="chartGrad" x1="0" y1="0" x2="0" y2="1">
+                                <stop offset="0%" stop-color="var(--success)" stop-opacity="0.3" />
+                                <stop offset="100%" stop-color="var(--success)" stop-opacity="0" />
+                            </linearGradient>
+                        </defs>
+                        ${gridLines}
+                        ${bottomLabels}
+                        <path class="chart-area" d="${areaPath}" fill="url(#chartGrad)" />
+                        <path class="chart-line" d="${linePath}" stroke="var(--success)" stroke-width="3" fill="none" />
+                        ${interactiveCircles}
+                    </svg>
+                `;
+
+            } else if (activeSellerChartTab === 'orders') {
+                // Bar chart of orders by status
+                const statusMap = {
+                    'PENDING': { label: 'Pending', count: 0, color: 'var(--primary)' },
+                    'APPROVED': { label: 'Approved', count: 0, color: 'var(--accent)' },
+                    'IN-TRANSIT': { label: 'In-Transit', count: 0, color: 'var(--warning)' },
+                    'COMPLETED': { label: 'Completed', count: 0, color: 'var(--success)' }
+                };
+
+                orders.forEach(o => {
+                    if (o.status === 'PENDING') statusMap.PENDING.count++;
+                    else if (o.status === 'APPROVED') statusMap.APPROVED.count++;
+                    else if (o.status === 'COMPLETED') statusMap.COMPLETED.count++;
+                    else statusMap['IN-TRANSIT'].count++;
+                });
+
+                const data = Object.values(statusMap);
+                const maxVal = Math.max(...data.map(d => d.count), 5);
+                const svgW = 600;
+                const svgH = 260;
+                const padding = 40;
+                const plotW = svgW - padding * 2;
+                const plotH = svgH - padding * 2;
+                const barWidth = (plotW / data.length) * 0.6;
+                const barSpacing = (plotW / data.length);
+
+                let bars = '';
+                let labels = '';
+                let gridLines = '';
+
+                for (let i = 0; i <= 4; i++) {
+                    const yVal = padding + (i * (plotH / 4));
+                    const labelVal = maxVal - (i * (maxVal / 4));
+                    gridLines += `
+                        <line class="chart-grid-line" x1="${padding}" y1="${yVal}" x2="${svgW - padding}" y2="${yVal}" />
+                        <text x="${padding - 10}" y="${yVal + 4}" fill="var(--text-muted)" font-size="9" text-anchor="end">${Math.round(labelVal)}</text>
+                    `;
+                }
+
+                data.forEach((d, idx) => {
+                    const x = padding + (idx * barSpacing) + (barSpacing - barWidth) / 2;
+                    const h = (d.count / maxVal) * plotH;
+                    const y = padding + plotH - h;
+
+                    bars += `
+                        <rect class="chart-bar" x="${x}" y="${y}" width="${barWidth}" height="${h}" rx="4" fill="${d.color}" 
+                              data-label="${d.label}" data-value="${d.count} orders" />
+                        <text x="${x + barWidth / 2}" y="${y - 6}" fill="var(--text-primary)" font-size="9" font-weight="700" text-anchor="middle">${d.count}</text>
+                    `;
+                    labels += `
+                        <text x="${x + barWidth / 2}" y="${padding + plotH + 20}" fill="var(--text-muted)" font-size="9" text-anchor="middle">${d.label}</text>
+                    `;
+                });
+
+                chartBox.innerHTML += `
+                    <svg viewBox="0 0 ${svgW} ${svgH}" width="100%" height="280">
+                        ${gridLines}
+                        ${bars}
+                        ${labels}
+                    </svg>
+                `;
+
+            } else if (activeSellerChartTab === 'inventory') {
+                // Donut category breakdown
+                const catMap = {};
+                products.forEach(p => {
+                    const catName = p.category_name || 'General';
+                    catMap[catName] = (catMap[catName] || 0) + 1;
+                });
+
+                const categories = Object.entries(catMap).map(([name, count]) => ({ name, count }));
+                
+                if (categories.length === 0) {
+                    chartBox.innerHTML = `<div style="padding: 40px; text-align: center; color: var(--text-muted); font-size: 0.85rem;">No catalog inventory available to map.</div>`;
+                    return;
+                }
+
+                const total = products.length;
+                const colors = ['#6366f1', '#8b5cf6', '#10b981', '#f59e0b', '#ef4444', '#06b6d4', '#ec4899'];
+
+                let cumulativePercent = 0;
+                let slicesSvg = '';
+                let legendHtml = '<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 12px; width: 100%; border-top: var(--border-glass); padding-top: 16px;">';
+
+                categories.forEach((cat, idx) => {
+                    const percent = cat.count / total;
+                    const dashArray = 2 * Math.PI * 40;
+                    const dashOffset = dashArray * (1 - percent);
+                    const rotation = 360 * cumulativePercent;
+                    cumulativePercent += percent;
+                    const color = colors[idx % colors.length];
+
+                    slicesSvg += `
+                        <circle class="donut-slice" cx="50" cy="50" r="40" fill="transparent" stroke="${color}" stroke-width="8"
+                                stroke-dasharray="${dashArray}" 
+                                stroke-dashoffset="${dashOffset}"
+                                transform="rotate(${rotation} 50 50)"
+                                stroke-linecap="round"
+                                data-label="${cat.name}" data-value="${cat.count} items (${Math.round(percent * 100)}%)" />
+                    `;
+
+                    legendHtml += `
+                        <div style="display: flex; align-items: center; justify-content: space-between; font-size: 0.75rem;">
+                            <span style="display: inline-flex; align-items: center; gap: 6px; color: var(--text-secondary);">
+                                <span style="width: 8px; height: 8px; border-radius: 50%; background: ${color};"></span>
+                                ${cat.name}
+                            </span>
+                            <span style="font-weight: 700; color: var(--text-primary);">${cat.count}</span>
+                        </div>
+                    `;
+                });
+                legendHtml += '</div>';
+
+                chartBox.innerHTML += `
+                    <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px; margin: 0 auto; width: 100%; max-width: 320px;">
+                        <svg viewBox="0 0 100 100" width="100%" height="180" style="transform: rotate(-90deg); filter: drop-shadow(0px 0px 8px rgba(99, 102, 241, 0.15));">
+                            <circle cx="50" cy="50" r="40" fill="transparent" stroke="rgba(255,255,255,0.03)" stroke-width="8"/>
+                            ${slicesSvg}
+                        </svg>
+                        ${legendHtml}
+                    </div>
+                `;
+            }
+
+            const tooltipNode = chartBox.querySelector('.chart-tooltip');
+            chartBox.querySelectorAll('.chart-point, .chart-bar, .donut-slice').forEach(el => {
+                el.addEventListener('mouseenter', (e) => {
+                    const label = e.target.getAttribute('data-label');
+                    const val = e.target.getAttribute('data-value');
+                    tooltipNode.innerHTML = `<strong>${label}</strong><br/>${val}`;
+                    tooltipNode.style.opacity = '1';
+                });
+
+                el.addEventListener('mousemove', (e) => {
+                    const rect = chartBox.getBoundingClientRect();
+                    const x = e.clientX - rect.left + 15;
+                    const y = e.clientY - rect.top - 40;
+                    tooltipNode.style.left = `${x}px`;
+                    tooltipNode.style.top = `${y}px`;
+                });
+
+                el.addEventListener('mouseleave', () => {
+                    tooltipNode.style.opacity = '0';
+                });
             });
         }
 
@@ -561,95 +920,113 @@ document.addEventListener('DOMContentLoaded', () => {
             try {
                 // 1. Fetch seller's products
                 const prodData = await API.get('/api/products/my');
-                if (prodData.success && sellerProductsTable) {
-                    sellerProductsTable.innerHTML = '';
-                    statSellerTotalProducts.innerText = prodData.products.length;
+                if (prodData.success) {
+                    sellerProducts = prodData.products;
+                    if (sellerProductsTable) {
+                        sellerProductsTable.innerHTML = '';
+                        statSellerTotalProducts.innerText = sellerProducts.length;
 
-                    prodData.products.forEach(p => {
-                        const tr = document.createElement('tr');
-                        
-                        const imgHtml = p.image_url 
-                            ? `<img src="${p.image_url}" style="width: 40px; height: 40px; border-radius: 4px; object-fit: cover; border: 1px solid var(--border-glass);" onerror="this.src='/uploads/placeholder.png';">`
-                            : `<div style="width: 40px; height: 40px; border-radius: 4px; background: #111827; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; border: 1px solid var(--border-glass);">📦</div>`;
+                        sellerProducts.forEach(p => {
+                            const tr = document.createElement('tr');
+                            
+                            const imgHtml = p.image_url 
+                                ? `<img src="${p.image_url}" style="width: 40px; height: 40px; border-radius: 4px; object-fit: cover; border: 1px solid var(--border-glass);" onerror="this.src='/uploads/placeholder.png';">`
+                                : `<div style="width: 40px; height: 40px; border-radius: 4px; background: #111827; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; border: 1px solid var(--border-glass);">📦</div>`;
 
-                        tr.innerHTML = `
-                            <td>#${p.id}</td>
-                            <td>${imgHtml}</td>
-                            <td>${p.name}</td>
-                            <td><span class="badge" style="background: rgba(99,102,241,0.1); color: var(--primary); border: none;">${p.category_name || 'General'}</span></td>
-                            <td>$${p.price.toFixed(2)}</td>
-                            <td>${p.stock} units</td>
-                            <td>
-                                <span class="badge ${p.is_active === 1 ? 'badge-success' : 'badge-danger'}">
-                                    ${p.is_active === 1 ? 'Active' : 'Deactivated'}
-                                </span>
-                            </td>
-                            <td>
-                                <button class="btn btn-secondary btn-sm editStockBtn" data-id="${p.id}" data-name="${p.name}" data-price="${p.price}" data-stock="${p.stock}" data-category="${p.category_id || ''}" data-image="${p.image_url || ''}" style="padding: 6px 12px; font-size: 0.75rem;">Modify</button>
-                                <button class="btn btn-danger btn-sm deleteProductBtn" data-id="${p.id}" style="padding: 6px 12px; font-size: 0.75rem;">Deactivate</button>
-                            </td>
-                        `;
-                        sellerProductsTable.appendChild(tr);
-                    });
+                            tr.innerHTML = `
+                                <td>#${p.id}</td>
+                                <td>${imgHtml}</td>
+                                <td>${p.name}</td>
+                                <td><span class="badge" style="background: rgba(99,102,241,0.1); color: var(--primary); border: none;">${p.category_name || 'General'}</span></td>
+                                <td>$${p.price.toFixed(2)}</td>
+                                <td>${p.stock} units</td>
+                                <td>
+                                    <span class="badge ${p.is_active === 1 ? 'badge-success' : 'badge-danger'}">
+                                        ${p.is_active === 1 ? 'Active' : 'Deactivated'}
+                                    </span>
+                                </td>
+                                <td>
+                                    <button class="btn btn-secondary btn-sm editStockBtn" data-id="${p.id}" data-name="${p.name}" data-price="${p.price}" data-stock="${p.stock}" data-category="${p.category_id || ''}" data-image="${p.image_url || ''}" style="padding: 6px 12px; font-size: 0.75rem;">Modify</button>
+                                    <button class="btn btn-danger btn-sm deleteProductBtn" data-id="${p.id}" style="padding: 6px 12px; font-size: 0.75rem;">Deactivate</button>
+                                </td>
+                            `;
+                            sellerProductsTable.appendChild(tr);
+                        });
 
-                    // Edit & Delete handlers
-                    bindProductActions();
+                        bindProductActions();
+                    }
                 }
 
                 // 2. Fetch assigned incoming orders
                 const ordData = await API.get('/api/orders/my');
-                if (ordData.success && sellerOrdersTable) {
-                    sellerOrdersTable.innerHTML = '';
-                    let activeCount = 0;
+                if (ordData.success) {
+                    sellerOrders = ordData.orders;
+                    if (sellerOrdersTable) {
+                        sellerOrdersTable.innerHTML = '';
+                        let activeCount = 0;
 
-                    ordData.orders.forEach(o => {
-                        if (o.status === 'APPROVED') activeCount++;
+                        sellerOrders.forEach(o => {
+                            if (o.status === 'APPROVED') activeCount++;
 
-                        const tr = document.createElement('tr');
-                        
-                        const itemsHtml = o.items.map(i => {
-                            const imgHtml = i.image_url 
-                                ? `<img src="${i.image_url}" style="width: 28px; height: 28px; border-radius: 4px; object-fit: cover; border: 1px solid var(--border-glass); vertical-align: middle; margin-right: 8px;">`
-                                : `<div style="display: inline-flex; width: 28px; height: 28px; border-radius: 4px; background: #111827; align-items: center; justify-content: center; font-size: 0.65rem; border: 1px solid var(--border-glass); vertical-align: middle; margin-right: 8px;">📦</div>`;
-                            return `<div style="display: flex; align-items: center; margin-bottom: 6px;">${imgHtml}<span>${i.product_name} (x${i.quantity})</span></div>`;
-                        }).join('');
+                            const tr = document.createElement('tr');
+                            
+                            const itemsHtml = o.items.map(i => {
+                                const imgHtml = i.image_url 
+                                    ? `<img src="${i.image_url}" style="width: 28px; height: 28px; border-radius: 4px; object-fit: cover; border: 1px solid var(--border-glass); vertical-align: middle; margin-right: 8px;">`
+                                    : `<div style="display: inline-flex; width: 28px; height: 28px; border-radius: 4px; background: #111827; align-items: center; justify-content: center; font-size: 0.65rem; border: 1px solid var(--border-glass); vertical-align: middle; margin-right: 8px;">📦</div>`;
+                                return `<div style="display: flex; align-items: center; margin-bottom: 6px;">${imgHtml}<span>${i.product_name} (x${i.quantity})</span></div>`;
+                            }).join('');
 
-                        tr.innerHTML = `
-                            <td>#${o.id}</td>
-                            <td>${o.customer_name}</td>
-                            <td>${itemsHtml}</td>
-                            <td>
-                                <span class="badge ${o.status === 'APPROVED' ? 'badge-primary' : 'badge-pending'}">${o.status}</span>
-                            </td>
-                            <td>
-                                ${o.status === 'APPROVED' 
-                                    ? `<button class="btn btn-success btn-sm shipWarehouseBtn" data-id="${o.id}" style="padding: 6px 12px; font-size: 0.75rem;">Deliver to Warehouse</button>` 
-                                    : `<span class="badge badge-success">Shipped</span>`}
-                                <button class="btn btn-secondary btn-sm" onclick="openOrderChat(${o.id}, 'Message Service Coordinator - Order #${o.id}')" style="padding: 6px 12px; font-size: 0.75rem;">Message Service</button>
-                            </td>
-                        `;
-                        sellerOrdersTable.appendChild(tr);
-                    });
-
-                    statSellerActiveOrders.innerText = activeCount;
-
-                    // Ship to warehouse button handlers
-                    document.querySelectorAll('.shipWarehouseBtn').forEach(btn => {
-                        btn.addEventListener('click', async () => {
-                            const oId = Number(btn.getAttribute('data-id'));
-                            if (confirm(`Confirm physical shipping of items in Order #${oId} to the campus central warehouse?`)) {
-                                try {
-                                    btn.disabled = true;
-                                    const res = await API.put('/api/orders/deliver-warehouse', { orderId: oId });
-                                    if (res.success) {
-                                        loadSellerDashboard();
-                                    }
-                                } catch (e) {
-                                    alert(e.message);
-                                }
-                            }
+                            tr.innerHTML = `
+                                <td>#${o.id}</td>
+                                <td>${o.customer_name}</td>
+                                <td>${itemsHtml}</td>
+                                <td>
+                                    <span class="badge ${o.status === 'APPROVED' ? 'badge-primary' : 'badge-pending'}">${o.status}</span>
+                                </td>
+                                <td>
+                                    ${o.status === 'APPROVED' 
+                                        ? `<button class="btn btn-success btn-sm shipWarehouseBtn" data-id="${o.id}" style="padding: 6px 12px; font-size: 0.75rem;">Deliver to Warehouse</button>` 
+                                        : `<span class="badge badge-success">Shipped</span>`}
+                                    <button class="btn btn-secondary btn-sm" onclick="openOrderChat(${o.id}, 'Message Service Coordinator - Order #${o.id}')" style="padding: 6px 12px; font-size: 0.75rem;">Message Service</button>
+                                </td>
+                            `;
+                            sellerOrdersTable.appendChild(tr);
                         });
-                    });
+
+                        statSellerActiveOrders.innerText = activeCount;
+
+                        document.querySelectorAll('.shipWarehouseBtn').forEach(btn => {
+                            btn.addEventListener('click', async () => {
+                                const oId = Number(btn.getAttribute('data-id'));
+                                if (confirm(`Confirm physical shipping of items in Order #${oId} to the campus central warehouse?`)) {
+                                    try {
+                                        btn.disabled = true;
+                                        const res = await API.put('/api/orders/deliver-warehouse', { orderId: oId });
+                                        if (res.success) {
+                                            loadSellerDashboard();
+                                        }
+                                    } catch (e) {
+                                        alert(e.message);
+                                    }
+                                }
+                            });
+                        });
+                    }
+
+                    // Calculate completed sales revenue
+                    const completedOrders = sellerOrders.filter(o => o.status === 'COMPLETED');
+                    const totalRevenue = completedOrders.reduce((sum, o) => {
+                        return sum + o.items.reduce((itemSum, item) => itemSum + (item.price * item.quantity), 0);
+                    }, 0);
+                    
+                    const statSellerRevenue = document.getElementById('statSellerRevenue');
+                    if (statSellerRevenue) {
+                        statSellerRevenue.innerText = `$${totalRevenue.toFixed(2)}`;
+                    }
+
+                    // Trigger dynamic charts render
+                    triggerChartRender();
                 }
 
             } catch (e) {

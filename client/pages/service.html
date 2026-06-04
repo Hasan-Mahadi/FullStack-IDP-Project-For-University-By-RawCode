@@ -13,11 +13,12 @@
         <aside class="sidebar">
             <div class="sidebar-brand">
                 <div class="sidebar-logo">IDP</div>
-                <div class="sidebar-title">EduShop</div>
+                           <div class="sidebar-title"> <a href="/" class="nav-brand">EduShop</a></div>
             </div>
             
             <ul class="sidebar-menu">
-                <li class="sidebar-item active"><a href="/pages/service.html">🛠️ Logistics Control Panel</a></li>
+                <li class="sidebar-item" data-route="dashboard"><a href="#/dashboard">🛠️ Logistics Control Panel</a></li>
+                <li class="sidebar-item" data-route="coordination-ledger"><a href="#/coordination-ledger">📜 Coordination Ledger</a></li>
             </ul>
 
             <div class="sidebar-footer">
@@ -57,59 +58,68 @@
 
             <div style="padding: 32px; display: flex; flex-direction: column; gap: 32px;">
                 
-                <!-- Welcome Banner -->
-                <div class="glass-card" style="padding: 28px; background: linear-gradient(135deg, rgba(255, 204, 0, 0.08), rgba(31, 41, 55, 0.4));">
-                    <h2 style="font-size: 1.5rem; margin-bottom: 8px;">Logistics Management Hub</h2>
-                    <p style="color: var(--text-secondary); font-size: 0.9rem;">
-                        You are the vital link in the trade ecosystem. Approve incoming purchases, execute physical quantity quality audits in the Central Warehouse, assign courier dispatches, and coordinate disputes between students and vendors.
-                    </p>
+                <!-- VIEW 1: Control Panel Dashboard Overview -->
+                <div id="view-dashboard" class="dashboard-view" style="display: none;">
+                    <div style="display: flex; flex-direction: column; gap: 32px;">
+                        <!-- Welcome Banner -->
+                        <div class="glass-card" style="padding: 28px; background: linear-gradient(135deg, rgba(255, 204, 0, 0.08), rgba(31, 41, 55, 0.4));">
+                            <h2 style="font-size: 1.5rem; margin-bottom: 8px;">Logistics Management Hub</h2>
+                            <p style="color: var(--text-secondary); font-size: 0.9rem;">
+                                You are the vital link in the trade ecosystem. Approve incoming purchases, execute physical quantity quality audits in the Central Warehouse, assign courier dispatches, and coordinate disputes between students and vendors.
+                            </p>
+                        </div>
+
+                        <!-- Stat Counters Row -->
+                        <div class="dashboard-grid" style="padding: 0; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px;">
+                            <div class="glass-card">
+                                <div class="stat-card-title">Pending Order Reviews</div>
+                                <div id="statPendingReview" class="stat-card-value">0</div>
+                                <div class="stat-card-icon">🛎️</div>
+                            </div>
+
+                            <div class="glass-card" style="border-left: 3px solid var(--warning);">
+                                <div class="stat-card-title">Warehouse Physical Audits</div>
+                                <div id="statWarehouseAudits" class="stat-card-value">0</div>
+                                <div class="stat-card-icon">🏗️</div>
+                            </div>
+
+                            <div class="glass-card" style="border-left: 3px solid var(--primary);">
+                                <div class="stat-card-title">Assigned Courier Dispatches</div>
+                                <div id="statCourierDispatches" class="stat-card-value">0</div>
+                                <div class="stat-card-icon">🚴</div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
-                <!-- Stat Counters Row -->
-                <div class="dashboard-grid" style="padding: 0; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px;">
+                <!-- VIEW 2: Central Logistics Coordination Ledger -->
+                <div id="view-ledger" class="dashboard-view" style="display: none;">
                     <div class="glass-card">
-                        <div class="stat-card-title">Pending Order Reviews</div>
-                        <div id="statPendingReview" class="stat-card-value">0</div>
-                        <div class="stat-card-icon">🛎️</div>
-                    </div>
-
-                    <div class="glass-card" style="border-left: 3px solid var(--warning);">
-                        <div class="stat-card-title">Warehouse Physical Audits</div>
-                        <div id="statWarehouseAudits" class="stat-card-value">0</div>
-                        <div class="stat-card-icon">🏗️</div>
-                    </div>
-
-                    <div class="glass-card" style="border-left: 3px solid var(--primary);">
-                        <div class="stat-card-title">Assigned courier Dispatches</div>
-                        <div id="statCourierDispatches" class="stat-card-value">0</div>
-                        <div class="stat-card-icon">🚴</div>
-                    </div>
-                </div>
-
-                <!-- Central Orders Coordination Table -->
-                <div class="glass-card">
-                    <h3 style="font-size: 1.1rem; margin-bottom: 20px;">Central Logistics Coordination Ledger</h3>
-                    
-                    <div class="table-responsive">
-                        <table class="data-table">
-                            <thead>
-                                <tr>
-                                    <th>Order ID</th>
-                                    <th>Student Buyer</th>
-                                    <th>Items Ordered</th>
-                                    <th>Fulfillment Value</th>
-                                    <th>Logistics State</th>
-                                    <th>Action Coordinates</th>
-                                </tr>
-                            </thead>
-                            <tbody id="serviceOrdersTable">
-                                <tr>
-                                    <td colspan="6" style="text-align: center; color: var(--text-muted);">Syncing central logs ledger...</td>
-                                </tr>
-                            </tbody>
-                        </table>
+                        <h3 style="font-size: 1.1rem; margin-bottom: 20px;">Central Logistics Coordination Ledger</h3>
+                        
+                        <div class="table-responsive">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Order ID</th>
+                                        <th>Student Buyer</th>
+                                        <th>Items Ordered</th>
+                                        <th>Fulfillment Value</th>
+                                        <th>Logistics State</th>
+                                        <th>Action Coordinates</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="serviceOrdersTable">
+                                    <tr>
+                                        <td colspan="6" style="text-align: center; color: var(--text-muted);">Syncing central logs ledger...</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
+
+            </div>
 
             </div>
         </main>
