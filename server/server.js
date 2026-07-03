@@ -111,11 +111,17 @@ const server = http.createServer(async (req, res) => {
 // Bootstrapper function
 async function boot() {
     try {
-        // Create client/uploads/products directory if it doesn't exist
+        // Create client/uploads directories if they don't exist
         const uploadsDir = path.join(__dirname, '../client/uploads/products');
         if (!fs.existsSync(uploadsDir)) {
             fs.mkdirSync(uploadsDir, { recursive: true });
             console.log('>> [Server] Created upload directory at: client/uploads/products');
+        }
+
+        const profilesDir = path.join(__dirname, '../client/uploads/profiles');
+        if (!fs.existsSync(profilesDir)) {
+            fs.mkdirSync(profilesDir, { recursive: true });
+            console.log('>> [Server] Created upload directory at: client/uploads/profiles');
         }
 
         // 1. Establish database connection pool / mock fallbacks

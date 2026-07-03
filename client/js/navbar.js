@@ -17,6 +17,23 @@ document.addEventListener("DOMContentLoaded", () => {
                     </ul>
                     
                     <div class="nav-controls">
+                        <!-- System Notifications Bell -->
+                        <div id="navNotificationBellContainer" style="display: none; position: relative;">
+                            <button class="cart-badge-trigger" id="navNotificationBell" title="System Notifications">
+                                <span style="font-size: 1.25rem;">🔔</span>
+                                <span class="cart-count" id="navNotificationBadge" style="display: none;">0</span>
+                            </button>
+                            <div id="navNotificationInbox" class="notification-inbox" style="position: absolute; right: 0; top: 44px; width: 300px;">
+                                <div class="notification-header" style="display: flex; justify-content: space-between; align-items: center; padding: 12px; border-bottom: 1px solid var(--border-glass);">
+                                    <h4 style="font-size: 0.85rem; font-weight: bold; margin: 0;">Notifications</h4>
+                                    <button id="navMarkReadBtn" style="background: none; border: none; color: var(--primary); font-size: 0.7rem; cursor: pointer; font-weight: 600; padding: 0;">Mark all as read</button>
+                                </div>
+                                <div id="navNotificationList" style="max-height: 250px; overflow-y: auto;">
+                                    <div style="padding: 16px; text-align: center; color: var(--text-muted);">Syncing alerts...</div>
+                                </div>
+                            </div>
+                        </div>
+
                         <button class="cart-badge-trigger" id="cartTrigger" title="Shopping Cart">
                             <span style="font-size: 1.25rem;">🛒</span>
                             <span class="cart-count" id="cartBadgeCount" style="display: none;">0</span>
@@ -124,6 +141,18 @@ document.addEventListener("DOMContentLoaded", () => {
     if (container) {
       const user = Auth.getUser();
       if (user) {
+        const themeMap = {
+          1: 'theme-admin',      // Green Theme
+          2: 'theme-seller',     // Yellow/Amber Theme
+          3: 'theme-customer',   // Blue Theme
+          4: 'theme-service'     // Orange/Purple Theme
+        };
+        const activeTheme = themeMap[user.roleId];
+        if (activeTheme) {
+          Object.values(themeMap).forEach(t => document.body.classList.remove(t));
+          document.body.classList.add(activeTheme);
+        }
+
         const avatarChar = user.fullName
           ? user.fullName.charAt(0).toUpperCase()
           : "U";

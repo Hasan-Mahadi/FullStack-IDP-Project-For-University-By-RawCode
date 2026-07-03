@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Profile | EduShop</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+    <!-- Header Navigation Placeholder -->
+    <div id="main-header"></div>
+
+    <!-- Alert Box for Toast Notifications -->
+    <div id="alertBox" class="glass-card" style="display: none; position: fixed; top: 100px; right: 24px; z-index: 1000; padding: 16px 24px; border-radius: var(--radius-md); box-shadow: var(--shadow-main); max-width: 350px; animation: slideIn 0.3s ease-out;"></div>
+
+    <!-- Main Container -->
+    <main class="container" style="max-width: 1000px; margin: 0 auto; padding: 100px 24px 80px;">
+        
+        <div class="glass-panel" style="padding: 40px; border-radius: var(--radius-lg);">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 40px;">
+                <div>
+                    <h1 style="font-size: 2rem; font-weight: 800; background: linear-gradient(135deg, #ffffff, #8b5cf6); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Account Settings</h1>
+                    <p style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 4px;">Manage your profile details, avatar, and password credentials.</p>
+                </div>
+                <button class="btn btn-secondary btn-sm" id="backToConsoleBtn">&larr; Return to Console</button>
+            </div>
+
+            <div class="profile-grid">
+                <!-- Sidebar: Avatar and quick actions -->
+                <aside class="profile-avatar-section">
+                    <div class="avatar-preview-container">
+                        <img src="" alt="Avatar" class="avatar-preview-img" id="profileAvatarImg">
+                        <div class="avatar-upload-overlay" id="avatarUploadOverlay">
+                            Upload Photo
+                        </div>
+                        <input type="file" id="avatarFileInput" accept="image/*" style="display: none;">
+                    </div>
+                    
+                    <div>
+                        <h3 id="profileNameDisplay" style="font-size: 1.2rem; font-weight: 700; margin-bottom: 4px;">Loading Name...</h3>
+                        <span class="nav-role-badge" id="profileRoleBadge" style="display: inline-block;">User</span>
+                    </div>
+
+                    <div style="width: 100%; border-top: 1px solid var(--border-glass); padding-top: 16px; margin-top: 8px; text-align: left; font-size: 0.85rem; color: var(--text-secondary); display: flex; flex-direction: column; gap: 8px;">
+                        <div><strong>Username:</strong> <span id="profileUsernameDisplay">loading</span></div>
+                        <div><strong>Joined:</strong> <span id="profileJoinedDisplay">loading</span></div>
+                    </div>
+                </aside>
+
+                <!-- Main Content: Forms -->
+                <div style="display: flex; flex-direction: column; gap: 32px;">
+                    <!-- Personal Info Form -->
+                    <div class="glass-card" style="padding: 30px;">
+                        <h3 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 24px; color: var(--primary); border-bottom: 1px solid var(--border-glass); padding-bottom: 12px;">Personal Details</h3>
+                        <form id="profileDetailsForm" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                            <div style="grid-column: span 2;">
+                                <label class="form-label" style="display: block; margin-bottom: 8px; font-size: 0.85rem;">Full Name *</label>
+                                <input class="form-control" type="text" id="detailsFullName" required>
+                            </div>
+                            <div>
+                                <label class="form-label" style="display: block; margin-bottom: 8px; font-size: 0.85rem;">Email Address *</label>
+                                <input class="form-control" type="email" id="detailsEmail" required>
+                            </div>
+                            <div>
+                                <label class="form-label" style="display: block; margin-bottom: 8px; font-size: 0.85rem;">Contact Number</label>
+                                <input class="form-control" type="text" id="detailsPhone" placeholder="e.g. +880 1700-000000">
+                            </div>
+                            <div style="grid-column: span 2;">
+                                <label class="form-label" style="display: block; margin-bottom: 8px; font-size: 0.85rem;">Campus Address</label>
+                                <textarea class="form-control" id="detailsAddress" rows="3" placeholder="e.g. Lalon Shah Hall, Room 304, RUET" style="resize: none;"></textarea>
+                            </div>
+                            <div style="grid-column: span 2; text-align: right; margin-top: 10px;">
+                                <button type="submit" class="btn btn-primary" id="saveDetailsBtn">Save Changes</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- Change Password Form -->
+                    <div class="glass-card" style="padding: 30px;">
+                        <h3 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 24px; color: var(--accent); border-bottom: 1px solid var(--border-glass); padding-bottom: 12px;">Security & Password</h3>
+                        <form id="profilePasswordForm" style="display: flex; flex-direction: column; gap: 20px;">
+                            <div>
+                                <label class="form-label" style="display: block; margin-bottom: 8px; font-size: 0.85rem;">Current Password</label>
+                                <input class="form-control" type="password" id="pwCurrent" required>
+                            </div>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                                <div>
+                                    <label class="form-label" style="display: block; margin-bottom: 8px; font-size: 0.85rem;">New Password</label>
+                                    <input class="form-control" type="password" id="pwNew" placeholder="Min. 6 characters" required>
+                                </div>
+                                <div>
+                                    <label class="form-label" style="display: block; margin-bottom: 8px; font-size: 0.85rem;">Confirm New Password</label>
+                                    <input class="form-control" type="password" id="pwConfirm" required>
+                                </div>
+                            </div>
+                            <div style="text-align: right; margin-top: 10px;">
+                                <button type="submit" class="btn btn-accent" id="savePasswordBtn">Update Password</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Footer Placeholder -->
+    <div id="main-footer"></div>
+
+    <script src="/js/toast.js"></script>
+    <script src="/js/api.js"></script>
+    <script src="/js/auth.js"></script>
+    <script src="/js/navbar.js"></script>
+    <script src="/js/profile.js"></script>
+</body>
+</html>

@@ -16,6 +16,11 @@
  *   seller123   -> f1a8e2d3b4c56789.208b591...a4f
  *   customer123 -> f1a8e2d3b4c56789.fa559ff...b68
  *   service123  -> f1a8e2d3b4c56789.4f4333e...d8
+ *
+ * v2 ADDITIONS:
+ *   - users: phone_number, address, avatar_url fields
+ *   - orders: payment_method, payment_status, transaction_id, shipping_name, shipping_phone, shipping_address
+ *   - tables: password_reset_tokens, wishlist, recently_viewed
  */
 
 const fs   = require('fs');
@@ -23,7 +28,7 @@ const path = require('path');
 
 const STORE_PATH = path.join(__dirname, 'db_store.json');
 
-// In-memory data store
+// In-memory data store — includes all v2 tables
 let db = {
     roles: [],
     users: [],
@@ -35,7 +40,11 @@ let db = {
     deliveries: [],
     warehouse: [],
     notifications: [],
-    messages: []
+    messages: [],
+    // v2 tables
+    password_reset_tokens: [],
+    wishlist: [],
+    recently_viewed: []
 };
 
 // -----------------------------------------------------------------------
@@ -59,6 +68,9 @@ const seedData = {
             role_id: 1,
             full_name: 'System Administrator',
             is_active: 1,
+            phone_number: null,
+            address: null,
+            avatar_url: null,
             created_at: new Date().toISOString()
         },
         {
@@ -70,6 +82,9 @@ const seedData = {
             role_id: 2,
             full_name: 'Elite Campus Seller',
             is_active: 1,
+            phone_number: '+880 1700-000002',
+            address: 'Shop Block B, Campus Market, RUET',
+            avatar_url: null,
             created_at: new Date().toISOString()
         },
         {
@@ -81,6 +96,9 @@ const seedData = {
             role_id: 3,
             full_name: 'John Doe Student',
             is_active: 1,
+            phone_number: '+880 1800-000003',
+            address: 'Hall-3, Room 204, University Campus',
+            avatar_url: null,
             created_at: new Date().toISOString()
         },
         {
@@ -92,6 +110,9 @@ const seedData = {
             role_id: 4,
             full_name: 'Operations Coordinator',
             is_active: 1,
+            phone_number: '+880 1900-000004',
+            address: 'Central Warehouse, Logistics Block',
+            avatar_url: null,
             created_at: new Date().toISOString()
         }
     ],
@@ -161,7 +182,11 @@ const seedData = {
     deliveries:    [],
     warehouse:     [],
     notifications: [],
-    messages:      []
+    messages:      [],
+    // v2 tables — start empty
+    password_reset_tokens: [],
+    wishlist:              [],
+    recently_viewed:       []
 };
 
 // -----------------------------------------------------------------------
@@ -191,12 +216,35 @@ function initDb() {
             }
 
             db = parsed;
-            // Schema integrity check — add any missing tables
+
+            // Schema integrity check — add any missing tables (including v2)
             for (const table of Object.keys(seedData)) {
-                if (!db[table] || (Array.isArray(db[table]) && db[table].length === 0 && seedData[table].length > 0)) {
+                if (!db[table]) {
+                    db[table] = JSON.parse(JSON.stringify(seedData[table]));
+                } else if (Array.isArray(db[table]) && db[table].length === 0 && seedData[table].length > 0) {
                     db[table] = JSON.parse(JSON.stringify(seedData[table]));
                 }
             }
+
+            // v2: Patch missing fields on existing user records
+            db.users = db.users.map(u => ({
+                phone_number: null,
+                address: null,
+                avatar_url: null,
+                ...u
+            }));
+
+            // v2: Patch missing fields on existing order records
+            db.orders = db.orders.map(o => ({
+                payment_method: o.payment_method || null,
+                payment_status: o.payment_status || null,
+                transaction_id: o.transaction_id || null,
+                shipping_name: o.shipping_name || null,
+                shipping_phone: o.shipping_phone || null,
+                shipping_address: o.shipping_address || null,
+                ...o
+            }));
+
         } else {
             db = JSON.parse(JSON.stringify(seedData));
             saveDb();

@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Wishlist | EduShop</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+    <!-- Header Navigation Placeholder -->
+    <div id="main-header"></div>
+
+    <!-- Alert Box for Toast Notifications -->
+    <div id="alertBox" class="glass-card" style="display: none; position: fixed; top: 100px; right: 24px; z-index: 1000; padding: 16px 24px; border-radius: var(--radius-md); box-shadow: var(--shadow-main); max-width: 350px; animation: slideIn 0.3s ease-out;"></div>
+
+    <!-- Main Container -->
+    <main class="container" style="max-width: 1000px; margin: 0 auto; padding: 100px 24px 80px;">
+        
+        <div class="glass-panel" style="padding: 40px; border-radius: var(--radius-lg);">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 40px;">
+                <div>
+                    <h1 style="font-size: 2rem; font-weight: 800; background: linear-gradient(135deg, #ffffff, #8b5cf6); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">My Wishlist</h1>
+                    <p style="color: var(--text-secondary); font-size: 0.9rem; margin-top: 4px;">Items you've saved to buy later.</p>
+                </div>
+                <a href="/" class="btn btn-secondary btn-sm">&larr; Return to Store</a>
+            </div>
+
+            <!-- Wishlist Products Grid -->
+            <div id="wishlistGrid" class="catalog-grid" style="grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 24px;">
+                <!-- Loading State -->
+                <div style="grid-column: span 3; text-align: center; padding: 60px 0; color: var(--text-muted);">
+                    Syncing wishlist items...
+                </div>
+            </div>
+
+            <!-- Empty Wishlist State -->
+            <div id="wishlistEmptyState" style="display: none; text-align: center; padding: 80px 20px;">
+                <div style="font-size: 3.5rem; margin-bottom: 20px;">❤️</div>
+                <h3 style="font-size: 1.3rem; font-weight: 700; margin-bottom: 12px;">Your wishlist is empty</h3>
+                <p style="color: var(--text-secondary); margin-bottom: 30px; max-width: 400px; margin-left: auto; margin-right: auto;">Explore campus catalogs and tap the heart icon to save products here!</p>
+                <a href="/" class="btn btn-primary">Browse Catalog</a>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Footer Placeholder -->
+    <div id="main-footer"></div>
+
+    <script src="/js/toast.js"></script>
+    <script src="/js/api.js"></script>
+    <script src="/js/auth.js"></script>
+    <script src="/js/navbar.js"></script>
+    <script src="/js/wishlist.js"></script>
+</body>
+</html>

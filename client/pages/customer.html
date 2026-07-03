@@ -19,6 +19,8 @@
             <ul class="sidebar-menu">
                 <li class="sidebar-item"><a href="/">🛒 Browse Catalog</a></li>
                 <li class="sidebar-item active"><a href="/pages/customer.html">📦 My Orders</a></li>
+                <li class="sidebar-item"><a href="/pages/wishlist.html">❤️ My Wishlist</a></li>
+                <li class="sidebar-item"><a href="/pages/profile.html">👤 My Profile</a></li>
             </ul>
 
             <div class="sidebar-footer">
@@ -77,6 +79,8 @@
                                     <th>Order ID</th>
                                     <th>Date Placed</th>
                                     <th>Products Detail</th>
+                                    <th>Shipping Details</th>
+                                    <th>Payment Info</th>
                                     <th>Total Price</th>
                                     <th>Workflow State</th>
                                     <th>Actions Scope</th>
@@ -84,7 +88,7 @@
                             </thead>
                             <tbody id="customerOrdersTable">
                                 <tr>
-                                    <td colspan="6" style="text-align: center; color: var(--text-muted);">Syncing your campus transactions...</td>
+                                    <td colspan="8" style="text-align: center; color: var(--text-muted);">Syncing your campus transactions...</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -173,6 +177,7 @@
     </div>
 
     <!-- Security Check, Redirection Guards and Controllers -->
+    <script src="/js/toast.js"></script>
     <script src="/js/api.js"></script>
     <script src="/js/auth.js"></script>
     <script>

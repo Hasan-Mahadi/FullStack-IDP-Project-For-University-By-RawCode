@@ -26,6 +26,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const productSeller = document.getElementById('productSeller');
     const productCreated = document.getElementById('productCreated');
     const addToCartBtn = document.getElementById('addToCartBtn');
+    const detailsWishlistBtn = document.getElementById('detailsWishlistBtn');
     
     const reviewsList = document.getElementById('reviewsList');
     const submitReviewCard = document.getElementById('submitReviewCard');
@@ -64,9 +65,16 @@ document.addEventListener('DOMContentLoaded', () => {
         if (Number(user.roleId) === 3) {
             submitReviewCard.style.display = 'block';
             submitReviewPrompt.style.display = 'none';
+            if (detailsWishlistBtn) {
+                detailsWishlistBtn.style.display = 'flex';
+                checkWishlistStatus();
+                detailsWishlistBtn.addEventListener('click', toggleWishlist);
+            }
+            trackRecentlyViewedProduct();
         } else {
             submitReviewCard.style.display = 'none';
             submitReviewPrompt.style.display = 'block';
+            if (detailsWishlistBtn) detailsWishlistBtn.style.display = 'none';
         }
 
         // Fetch details
@@ -106,7 +114,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 productName.innerText = currentProduct.name;
                 productDescription.innerText = currentProduct.description || 'No description listed by vendor.';
                 productPrice.innerText = `$${currentProduct.price.toFixed(2)}`;
-                productSeller.innerText = currentProduct.seller_name;
+                if (currentProduct.seller_name && currentProduct.seller_name !== 'System Administrator') {
+                    productSeller.innerText = currentProduct.seller_name;
+                    productSeller.parentElement.style.display = 'inline';
+                } else {
+                    productSeller.parentElement.style.display = 'none';
+                }
                 productCategory.innerText = currentProduct.category_name || 'General';
                 
                 // Date formatting
@@ -463,7 +476,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (window.closeCartDrawer) window.closeCartDrawer();
     }
 
-    async function handleCheckout() {
+    function handleCheckout() {
         const user = Auth.getUser();
         if (!user) {
             triggerToast('Session required. Redirecting to Login...', false);
@@ -478,30 +491,58 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        const items = cart.map(item => ({
-            productId: item.productId,
-            quantity: item.quantity
-        }));
+        if (cart.length === 0) {
+            triggerToast('Your shopping cart is empty.', false);
+            return;
+        }
 
+        closeCartDrawer();
+        window.location.href = '/pages/checkout.html';
+    }
+
+    async function checkWishlistStatus() {
         try {
-            checkoutBtn.disabled = true;
-            checkoutBtn.innerText = 'Submitting...';
+            const data = await API.get(`/api/wishlist/check?productId=${productId}`);
+            if (data.success && data.inWishlist) {
+                detailsWishlistBtn.classList.add('active');
+                detailsWishlistBtn.innerText = '❤️';
+            } else {
+                detailsWishlistBtn.classList.remove('active');
+                detailsWishlistBtn.innerText = '🤍';
+            }
+        } catch (e) {
+            console.error('Failed to check wishlist status:', e);
+        }
+    }
 
-            const data = await API.post('/api/orders', { items });
-            if (data.success) {
-                triggerToast('Order placed successfully! Awaiting Service Team approval.', true);
-                cart = [];
-                saveLocalCart();
-                closeCartDrawer();
-                setTimeout(() => {
-                    window.location.href = '/pages/customer.html';
-                }, 1000);
+    async function toggleWishlist() {
+        const isActive = detailsWishlistBtn.classList.contains('active');
+        try {
+            if (isActive) {
+                const res = await API.delete('/api/wishlist', { productId });
+                if (res.success) {
+                    detailsWishlistBtn.classList.remove('active');
+                    detailsWishlistBtn.innerText = '🤍';
+                    triggerToast('Removed from wishlist.', true);
+                }
+            } else {
+                const res = await API.post('/api/wishlist', { productId });
+                if (res.success) {
+                    detailsWishlistBtn.classList.add('active');
+                    detailsWishlistBtn.innerText = '❤️';
+                    triggerToast('Added to wishlist.', true);
+                }
             }
         } catch (error) {
-            triggerToast(error.message || 'Checkout failed.', false);
-        } finally {
-            checkoutBtn.disabled = false;
-            checkoutBtn.innerText = 'Submit Order for Approval';
+            triggerToast(error.message || 'Wishlist action failed.', false);
+        }
+    }
+
+    async function trackRecentlyViewedProduct() {
+        try {
+            await API.post('/api/products/viewed', { productId });
+        } catch (e) {
+            console.error('Failed to track recently viewed:', e);
         }
     }
 

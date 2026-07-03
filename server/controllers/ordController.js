@@ -40,10 +40,21 @@ module.exports = {
      */
     async createOrder(req, res) {
         const customerId = req.user.userId;
-        const { items } = req.body || {}; // items is array of { productId, quantity }
+        const { items, shippingInfo, paymentMethod } = req.body || {}; // items: [{productId, quantity}], shippingInfo: {name, phone, address}
 
         if (!items || !Array.isArray(items) || items.length === 0) {
             return responseUtils.sendError(res, 400, 'Empty Checkout', 'Your shopping cart must contain at least one item.');
+        }
+
+        // Validate shipping info
+        if (!shippingInfo || !shippingInfo.name || !shippingInfo.phone || !shippingInfo.address) {
+            return responseUtils.sendError(res, 400, 'Shipping Info Required', 'Please provide full name, phone number, and delivery address.');
+        }
+
+        const validPaymentMethods = ['COD', 'MOCK_CARD'];
+        const selectedPaymentMethod = paymentMethod || 'COD';
+        if (!validPaymentMethods.includes(selectedPaymentMethod)) {
+            return responseUtils.sendError(res, 400, 'Invalid Payment Method', 'Payment method must be COD or MOCK_CARD.');
         }
 
         try {
@@ -100,9 +111,15 @@ module.exports = {
             if (db.isMockMode()) {
                 // Insert order
                 const newOrder = mock.insert('orders', {
-                    customer_id: customerId,
-                    total_amount: totalAmount,
-                    status: 'PENDING'
+                    customer_id:     customerId,
+                    total_amount:    totalAmount,
+                    status:          'PENDING',
+                    payment_method:  selectedPaymentMethod,
+                    payment_status:  selectedPaymentMethod === 'COD' ? 'COD_PENDING' : 'PAID',
+                    transaction_id:  null,
+                    shipping_name:   shippingInfo.name,
+                    shipping_phone:  shippingInfo.phone,
+                    shipping_address: shippingInfo.address
                 });
                 orderId = newOrder.id;
 
@@ -132,8 +149,12 @@ module.exports = {
             } else {
                 // Oracle DB transactional inserts
                 const resOrder = await db.execute(
-                    'INSERT INTO orders (customer_id, total_amount, status) VALUES (:1, :2, \'PENDING\')',
-                    [customerId, totalAmount]
+                    `INSERT INTO orders (customer_id, total_amount, status, payment_method, payment_status,
+                     shipping_name, shipping_phone, shipping_address)
+                     VALUES (:1, :2, 'PENDING', :3, :4, :5, :6, :7)`,
+                    [customerId, totalAmount, selectedPaymentMethod,
+                     selectedPaymentMethod === 'COD' ? 'COD_PENDING' : 'PAID',
+                     shippingInfo.name, shippingInfo.phone, shippingInfo.address]
                 );
                 // Oracle standard returns insert IDs or sequences can be fetched. For safety, we resolve ID:
                 const latest = await db.query('SELECT MAX(id) as last_id FROM orders WHERE customer_id = :1', [customerId]);
@@ -232,8 +253,8 @@ module.exports = {
                         return {
                             ...item,
                             product_name: prod ? prod.name : 'Unknown Product',
-                            seller_id: prod ? prod.seller_id : null,
-                            image_url: prod ? prod.image_url : null
+                            seller_id:    prod ? prod.seller_id : null,
+                            image_url:    prod ? prod.image_url : null
                         };
                     });
 
@@ -243,16 +264,23 @@ module.exports = {
                         : oItems;
 
                     return {
-                        id: o.id,
-                        customer_id: o.customer_id,
-                        customer_name: customer ? customer.full_name : 'Student',
-                        total_amount: o.total_amount,
-                        status: o.status,
-                        created_at: o.created_at,
-                        items: filteredItems,
-                        delivery_status: delivery ? delivery.status : 'PENDING',
+                        id:               o.id,
+                        customer_id:      o.customer_id,
+                        customer_name:    customer ? customer.full_name : 'Student',
+                        total_amount:     o.total_amount,
+                        status:           o.status,
+                        created_at:       o.created_at,
+                        items:            filteredItems,
+                        delivery_status:       delivery ? delivery.status : 'PENDING',
                         warehouse_arrival_date: delivery ? delivery.warehouse_arrival_date : null,
-                        dispatch_date: delivery ? delivery.dispatch_date : null
+                        dispatch_date:         delivery ? delivery.dispatch_date : null,
+                        // v2 fields
+                        payment_method:  o.payment_method || null,
+                        payment_status:  o.payment_status || null,
+                        transaction_id:  o.transaction_id || null,
+                        shipping_name:   o.shipping_name || null,
+                        shipping_phone:  o.shipping_phone || null,
+                        shipping_address: o.shipping_address || null
                     };
                 });
 
@@ -261,10 +289,11 @@ module.exports = {
                 let sql = '';
                 let binds = [];
 
-                if (roleId === 1 || roleId === 4) {
+                 if (roleId === 1 || roleId === 4) {
                     sql = `
                         SELECT o.id, o.customer_id, u.full_name as customer_name, o.total_amount, o.status, o.created_at, 
-                               d.status as delivery_status, d.warehouse_arrival_date, d.dispatch_date
+                               d.status as delivery_status, d.warehouse_arrival_date, d.dispatch_date,
+                               o.payment_method, o.payment_status, o.transaction_id, o.shipping_name, o.shipping_phone, o.shipping_address
                         FROM orders o
                         JOIN users u ON o.customer_id = u.id
                         LEFT JOIN deliveries d ON o.id = d.order_id
@@ -273,7 +302,8 @@ module.exports = {
                 } else if (roleId === 3) {
                     sql = `
                         SELECT o.id, o.customer_id, u.full_name as customer_name, o.total_amount, o.status, o.created_at, 
-                               d.status as delivery_status, d.warehouse_arrival_date, d.dispatch_date
+                               d.status as delivery_status, d.warehouse_arrival_date, d.dispatch_date,
+                               o.payment_method, o.payment_status, o.transaction_id, o.shipping_name, o.shipping_phone, o.shipping_address
                         FROM orders o
                         JOIN users u ON o.customer_id = u.id
                         LEFT JOIN deliveries d ON o.id = d.order_id
@@ -284,7 +314,8 @@ module.exports = {
                 } else if (roleId === 2) {
                     sql = `
                         SELECT DISTINCT o.id, o.customer_id, u.full_name as customer_name, o.total_amount, o.status, o.created_at, 
-                                        d.status as delivery_status, d.warehouse_arrival_date, d.dispatch_date
+                                        d.status as delivery_status, d.warehouse_arrival_date, d.dispatch_date,
+                                        o.payment_method, o.payment_status, o.transaction_id, o.shipping_name, o.shipping_phone, o.shipping_address
                         FROM orders o
                         JOIN users u ON o.customer_id = u.id
                         JOIN order_items oi ON o.id = oi.order_id
@@ -326,17 +357,24 @@ module.exports = {
                         image_url: iRow.IMAGE_URL
                     }));
 
-                    ordersList.push({
-                        id: oId,
-                        customer_id: Number(row.CUSTOMER_ID),
-                        customer_name: row.CUSTOMER_NAME,
-                        total_amount: Number(row.TOTAL_AMOUNT),
-                        status: row.STATUS,
-                        created_at: row.CREATED_AT,
+                ordersList.push({
+                        id:              oId,
+                        customer_id:     Number(row.CUSTOMER_ID),
+                        customer_name:   row.CUSTOMER_NAME,
+                        total_amount:    Number(row.TOTAL_AMOUNT),
+                        status:          row.STATUS,
+                        created_at:      row.CREATED_AT,
                         items,
-                        delivery_status: row.DELIVERY_STATUS,
-                        warehouse_arrival_date: row.WAREHOUSE_ARRIVAL_DATE || null,
-                        dispatch_date: row.DISPATCH_DATE || null
+                        delivery_status:        row.DELIVERY_STATUS,
+                        warehouse_arrival_date:  row.WAREHOUSE_ARRIVAL_DATE || null,
+                        dispatch_date:           row.DISPATCH_DATE || null,
+                        // v2 fields
+                        payment_method:  row.PAYMENT_METHOD || null,
+                        payment_status:  row.PAYMENT_STATUS || null,
+                        transaction_id:  row.TRANSACTION_ID || null,
+                        shipping_name:   row.SHIPPING_NAME || null,
+                        shipping_phone:  row.SHIPPING_PHONE || null,
+                        shipping_address: row.SHIPPING_ADDRESS || null
                     });
                 }
             }

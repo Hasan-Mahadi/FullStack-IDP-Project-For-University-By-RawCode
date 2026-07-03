@@ -16,6 +16,19 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
     }
 
+    // Apply Theme to body by User Role ID
+    const themeMap = {
+        1: 'theme-admin',      // Green Theme
+        2: 'theme-seller',     // Yellow/Amber Theme
+        3: 'theme-customer',   // Blue Theme
+        4: 'theme-service'     // Orange/Purple Theme
+    };
+    const activeTheme = themeMap[user.roleId];
+    if (activeTheme) {
+        Object.values(themeMap).forEach(t => document.body.classList.remove(t));
+        document.body.classList.add(activeTheme);
+    }
+
     // Populate user profile info in the sidebar footer
     const sidebarAvatar = document.getElementById('sidebarAvatar');
     const sidebarName = document.getElementById('sidebarName');
@@ -311,7 +324,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     customerOrdersTable.innerHTML = '';
 
                     if (data.orders.length === 0) {
-                        customerOrdersTable.innerHTML = `<tr><td colspan="5" style="text-align: center; color: var(--text-muted);">You have placed no campus orders yet. Go to catalog.</td></tr>`;
+                        customerOrdersTable.innerHTML = `<tr><td colspan="8" style="text-align: center; color: var(--text-muted);">You have placed no campus orders yet. Go to catalog.</td></tr>`;
                         return;
                     }
 
@@ -327,10 +340,30 @@ document.addEventListener('DOMContentLoaded', () => {
                             return `<div style="display: flex; align-items: center; margin-bottom: 6px;">${imgHtml}<span>${i.product_name} (x${i.quantity})</span></div>`;
                         }).join('');
 
+                        const shippingHtml = o.shipping_name 
+                            ? `<div style="font-size: 0.8rem; line-height: 1.4;">
+                                 <strong>${o.shipping_name}</strong><br>
+                                 📞 ${o.shipping_phone}<br>
+                                 📍 ${o.shipping_address}
+                               </div>`
+                            : `<span style="color: var(--text-muted); font-size: 0.8rem;">No shipping info</span>`;
+
+                        const paymentMethodLabel = o.payment_method === 'MOCK_CARD' ? '💳 Card' : o.payment_method === 'COD' ? '💵 COD' : 'Pending';
+                        const paymentStatusColor = o.payment_status === 'PAID' ? 'var(--success)' : o.payment_status === 'COD_PENDING' ? 'var(--warning)' : 'var(--danger)';
+                        const paymentHtml = o.payment_method 
+                            ? `<div style="font-size: 0.8rem; line-height: 1.4;">
+                                 <span>Method: <strong>${paymentMethodLabel}</strong></span><br>
+                                 <span>Status: <strong style="color: ${paymentStatusColor}">${o.payment_status || 'PENDING'}</strong></span><br>
+                                 <span style="font-size: 0.7rem; color: var(--text-muted); font-family: monospace;">ID: ${o.transaction_id || 'N/A'}</span>
+                               </div>`
+                            : `<span style="color: var(--text-muted); font-size: 0.8rem;">No payment info</span>`;
+
                         tr.innerHTML = `
                             <td>#${o.id}</td>
                             <td>${date}</td>
                             <td>${itemsHtml}</td>
+                            <td>${shippingHtml}</td>
+                            <td>${paymentHtml}</td>
                             <td>$${o.total_amount.toFixed(2)}</td>
                             <td>
                                 <span class="badge ${o.status === 'COMPLETED' ? 'badge-success' : o.status === 'REJECTED' ? 'badge-danger' : o.status === 'REJECTED' ? 'badge-danger' : 'badge-pending'}">${o.status}</span>
@@ -515,9 +548,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (data.success) {
                         stepperCard.style.display = 'none';
                         loadCustomerOrders();
+                        Toast.success('Package delivery confirmed! Order completed.');
                     }
                 } catch (e) {
-                    alert(e.message);
+                    Toast.error(e.message);
                 } finally {
                     confirmReceiptBtn.disabled = false;
                     confirmReceiptBtn.innerText = 'Confirm Physical Package Arrival';
@@ -1005,9 +1039,10 @@ document.addEventListener('DOMContentLoaded', () => {
                                         const res = await API.put('/api/orders/deliver-warehouse', { orderId: oId });
                                         if (res.success) {
                                             loadSellerDashboard();
+                                            Toast.success('Items shipped to Central Warehouse.');
                                         }
                                     } catch (e) {
-                                        alert(e.message);
+                                        Toast.error(e.message);
                                     }
                                 }
                             });
@@ -1045,7 +1080,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const categoryId = parseInt(document.getElementById('newProdCategory').value);
 
                 if (!categoryId) {
-                    alert('Please select a product category.');
+                    Toast.warning('Please select a product category.');
                     return;
                 }
 
@@ -1074,9 +1109,10 @@ document.addEventListener('DOMContentLoaded', () => {
                         if (newProdImageUrl) newProdImageUrl.value = '';
                         if (toggleNewFileBtn) toggleNewFileBtn.click();
                         loadSellerDashboard();
+                        Toast.success('Product listing published successfully!');
                     }
                 } catch (err) {
-                    alert(err.message);
+                    Toast.error(err.message);
                 } finally {
                     publishBtn.disabled = false;
                     publishBtn.innerText = 'Publish Product Listing';
@@ -1139,9 +1175,10 @@ document.addEventListener('DOMContentLoaded', () => {
                             const res = await API.delete('/api/products', { id });
                             if (res.success) {
                                 loadSellerDashboard();
+                                Toast.success('Product listing deactivated.');
                             }
                         } catch (e) {
-                            alert(e.message);
+                            Toast.error(e.message);
                         }
                     }
                 });
@@ -1158,7 +1195,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const categoryId = parseInt(document.getElementById('editProdCategory').value);
 
                 if (!categoryId) {
-                    alert('Please select a product category.');
+                    Toast.warning('Please select a product category.');
                     return;
                 }
 
@@ -1193,9 +1230,10 @@ document.addEventListener('DOMContentLoaded', () => {
                         if (editProdImageFile) editProdImageFile.value = '';
                         if (editProdImageUrl) editProdImageUrl.value = '';
                         loadSellerDashboard();
+                        Toast.success('Product listing updated successfully.');
                     }
                 } catch (err) {
-                    alert(err.message);
+                    Toast.error(err.message);
                 } finally {
                     applyBtn.disabled = false;
                     applyBtn.innerText = 'Apply Specifications';
@@ -1318,9 +1356,10 @@ document.addEventListener('DOMContentLoaded', () => {
                         const res = await API.put('/api/orders/approve', { orderId: oId, approve });
                         if (res.success) {
                             loadServiceDashboard();
+                            Toast.success(approve ? 'Order approved.' : 'Order rejected.');
                         }
                     } catch (e) {
-                        alert(e.message);
+                        Toast.error(e.message);
                     }
                 });
             });
@@ -1336,9 +1375,10 @@ document.addEventListener('DOMContentLoaded', () => {
                         const res = await API.put('/api/orders/verify-warehouse', { orderId: oId, approved });
                         if (res.success) {
                             loadServiceDashboard();
+                            Toast.success(approved ? 'Warehouse verification complete.' : 'Warehouse discrepancy logged.');
                         }
                     } catch (e) {
-                        alert(e.message);
+                        Toast.error(e.message);
                     }
                 });
             });
@@ -1353,9 +1393,10 @@ document.addEventListener('DOMContentLoaded', () => {
                         const res = await API.put('/api/orders/dispatch', { orderId: oId });
                         if (res.success) {
                             loadServiceDashboard();
+                            Toast.success('Order dispatched for delivery!');
                         }
                     } catch (e) {
-                        alert(e.message);
+                        Toast.error(e.message);
                     }
                 });
             });
@@ -1430,9 +1471,10 @@ document.addEventListener('DOMContentLoaded', () => {
                                     });
                                     if (res.success) {
                                         loadAdminDashboard();
+                                        Toast.success('User status updated.');
                                     }
                                 } catch (e) {
-                                    alert(e.message);
+                                    Toast.error(e.message);
                                 }
                             }
                         });

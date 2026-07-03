@@ -15,6 +15,7 @@ const Auth = {
     saveSession(token, user) {
         API.setToken(token);
         localStorage.setItem('idp_user_profile', JSON.stringify(user));
+        this.applyTheme();
     },
 
     /**
@@ -35,6 +36,8 @@ const Auth = {
      */
     logout() {
         API.clearSession();
+        localStorage.removeItem('idp_user_profile');
+        this.applyTheme();
         window.location.href = '/pages/login.html';
     },
 
@@ -59,6 +62,7 @@ const Auth = {
             return false;
         }
 
+        this.applyTheme();
         return true;
     },
 
@@ -78,5 +82,31 @@ const Auth = {
         } else {
             window.location.href = '/';
         }
+    },
+
+    /**
+     * Apply the user's role theme to the body element.
+     */
+    applyTheme() {
+        const user = this.getUser();
+        document.body.classList.remove('theme-admin', 'theme-seller', 'theme-customer', 'theme-service');
+        if (user && user.roleId) {
+            const roleId = Number(user.roleId);
+            const themes = {
+                1: 'theme-admin',
+                2: 'theme-seller',
+                3: 'theme-customer',
+                4: 'theme-service'
+            };
+            const themeClass = themes[roleId];
+            if (themeClass) {
+                document.body.classList.add(themeClass);
+            }
+        }
     }
 };
+
+// Auto-apply theme on script load
+document.addEventListener('DOMContentLoaded', () => {
+    Auth.applyTheme();
+});

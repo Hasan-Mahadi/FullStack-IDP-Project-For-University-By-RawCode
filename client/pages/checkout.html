@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secure Checkout | EduShop</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+    <!-- Header Navigation Placeholder -->
+    <div id="main-header"></div>
+
+    <!-- Alert Box for Toast Notifications -->
+    <div id="alertBox" class="glass-card" style="display: none; position: fixed; top: 100px; right: 24px; z-index: 1000; padding: 16px 24px; border-radius: var(--radius-md); box-shadow: var(--shadow-main); max-width: 350px; animation: slideIn 0.3s ease-out;"></div>
+
+    <!-- Main Container -->
+    <main class="container" style="max-width: 900px; margin: 0 auto; padding: 100px 24px 80px;">
+        
+        <div class="glass-panel" style="padding: 40px; border-radius: var(--radius-lg);">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 30px;">
+                <h1 style="font-size: 2rem; font-weight: 800; background: linear-gradient(135deg, #ffffff, #8b5cf6); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Secure Checkout</h1>
+                <a href="/" class="btn btn-secondary btn-sm">&larr; Return to Store</a>
+            </div>
+
+            <!-- Wizard Steps Header -->
+            <div class="wizard-steps">
+                <div class="wizard-step active" id="stepIndicator1">1</div>
+                <div class="wizard-step" id="stepIndicator2">2</div>
+                <div class="wizard-step" id="stepIndicator3">3</div>
+                <div class="wizard-step" id="stepIndicator4">4</div>
+            </div>
+            
+            <div style="display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--text-secondary); margin-top: -10px; margin-bottom: 40px; padding: 0 4px;">
+                <span style="font-weight: 600;">1. Review Cart</span>
+                <span style="font-weight: 600;">2. Shipping Info</span>
+                <span style="font-weight: 600;">3. Payment Method</span>
+                <span style="font-weight: 600;">4. Place Order</span>
+            </div>
+
+            <!-- STEP 1: Cart Review -->
+            <div id="checkoutStep1" class="checkout-step-content">
+                <h3 style="font-size: 1.25rem; margin-bottom: 20px;">Review Your Selection</h3>
+                <div id="checkoutCartItems" style="display: flex; flex-direction: column; gap: 16px; margin-bottom: 30px;">
+                    <!-- Populated dynamically -->
+                </div>
+                <div class="glass-card" style="padding: 20px; display: flex; justify-content: space-between; align-items: center;">
+                    <span style="font-weight: 600; color: var(--text-secondary);">Subtotal Amount:</span>
+                    <span id="checkoutSubtotal" style="font-size: 1.5rem; font-weight: 800; color: var(--primary);">$0.00</span>
+                </div>
+            </div>
+
+            <!-- STEP 2: Shipping Info -->
+            <div id="checkoutStep2" class="checkout-step-content" style="display: none;">
+                <h3 style="font-size: 1.25rem; margin-bottom: 20px;">Shipping & Contact Information</h3>
+                <form id="shippingForm" style="display: flex; flex-direction: column; gap: 20px;">
+                    <div>
+                        <label class="form-label" for="shippingName" style="display: block; margin-bottom: 8px; font-size: 0.85rem; font-weight: 600; color: var(--text-secondary);">Full Recipient Name *</label>
+                        <input class="form-control" type="text" id="shippingName" placeholder="Enter recipient full name" required>
+                    </div>
+                    <div>
+                        <label class="form-label" for="shippingPhone" style="display: block; margin-bottom: 8px; font-size: 0.85rem; font-weight: 600; color: var(--text-secondary);">Contact Mobile Number *</label>
+                        <input class="form-control" type="tel" id="shippingPhone" placeholder="e.g. +880 17XXXXXXXX" required>
+                    </div>
+                    <div>
+                        <label class="form-label" for="shippingAddress" style="display: block; margin-bottom: 8px; font-size: 0.85rem; font-weight: 600; color: var(--text-secondary);">Campus Delivery Address (Hall, Room, Dept, etc.) *</label>
+                        <textarea class="form-control" id="shippingAddress" rows="4" placeholder="Be descriptive, e.g. Lalon Shah Hall, Room 304, RUET Campus" style="resize: none;" required></textarea>
+                    </div>
+                </form>
+            </div>
+
+            <!-- STEP 3: Payment Method -->
+            <div id="checkoutStep3" class="checkout-step-content" style="display: none;">
+                <h3 style="font-size: 1.25rem; margin-bottom: 12px;">Choose Payment Option</h3>
+                <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 24px;">Please select your preferred secure payment method.</p>
+                
+                <div class="payment-methods-grid" id="paymentMethodsGrid">
+                    <!-- Populated dynamically from API -->
+                </div>
+
+                <!-- Card Details Form (displayed only if MOCK_CARD is active) -->
+                <div id="cardDetailsContainer" style="display: none; margin-top: 30px; border-top: 1px solid var(--border-glass); padding-top: 30px;">
+                    <h4 style="font-size: 1.1rem; margin-bottom: 20px;">Enter Card Credentials</h4>
+                    
+                    <!-- Credit Card Mockup SVG/CSS Visualizer -->
+                    <div class="credit-card-mock" id="creditCardMock">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <div class="card-chip"></div>
+                            <div style="font-weight: 800; font-style: italic; font-size: 1.1rem; color: #ffffff;">CAMPUS CARD</div>
+                        </div>
+                        <div class="card-number" id="mockCardNumber">•••• •••• •••• ••••</div>
+                        <div class="card-holder-info">
+                            <div>
+                                <div style="font-size: 0.6rem; opacity: 0.7;">Card Holder</div>
+                                <div id="mockCardHolder">CARDHOLDER NAME</div>
+                            </div>
+                            <div style="text-align: right;">
+                                <div style="font-size: 0.6rem; opacity: 0.7;">Expires</div>
+                                <div id="mockCardExpiry">MM/YY</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <form id="cardForm" style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 24px;">
+                        <div style="grid-column: span 2;">
+                            <label class="form-label" for="cardNumber" style="display: block; margin-bottom: 6px; font-size: 0.85rem;">Card Number</label>
+                            <input class="form-control" type="text" id="cardNumber" placeholder="1234 5678 1234 5678" maxlength="19">
+                        </div>
+                        <div style="grid-column: span 2;">
+                            <label class="form-label" for="cardName" style="display: block; margin-bottom: 6px; font-size: 0.85rem;">Cardholder Name</label>
+                            <input class="form-control" type="text" id="cardName" placeholder="JOHN DOE">
+                        </div>
+                        <div>
+                            <label class="form-label" for="cardExpiry" style="display: block; margin-bottom: 6px; font-size: 0.85rem;">Expiry Date</label>
+                            <input class="form-control" type="text" id="cardExpiry" placeholder="MM/YY" maxlength="5">
+                        </div>
+                        <div>
+                            <label class="form-label" for="cardCvv" style="display: block; margin-bottom: 6px; font-size: 0.85rem;">CVV Code</label>
+                            <input class="form-control" type="password" id="cardCvv" placeholder="•••" maxlength="3">
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- STEP 4: Place Order -->
+            <div id="checkoutStep4" class="checkout-step-content" style="display: none;">
+                <h3 style="font-size: 1.25rem; margin-bottom: 20px;">Review & Place Order</h3>
+                
+                <div style="display: flex; flex-direction: column; gap: 24px;">
+                    <div class="glass-card" style="padding: 24px;">
+                        <h4 style="font-weight: 700; margin-bottom: 12px; color: var(--primary);">Delivery Information</h4>
+                        <div style="font-size: 0.9rem; line-height: 1.6; color: var(--text-secondary);">
+                            <p><strong>Name:</strong> <span id="summaryName"></span></p>
+                            <p><strong>Phone:</strong> <span id="summaryPhone"></span></p>
+                            <p><strong>Address:</strong> <span id="summaryAddress"></span></p>
+                        </div>
+                    </div>
+                    
+                    <div class="glass-card" style="padding: 24px;">
+                        <h4 style="font-weight: 700; margin-bottom: 12px; color: var(--accent);">Payment Method Selected</h4>
+                        <div style="font-size: 0.9rem; line-height: 1.6; color: var(--text-secondary);">
+                            <p><strong>Method:</strong> <span id="summaryPaymentMethod"></span></p>
+                            <p id="summaryPaymentStatusContainer" style="display: none;"><strong>Status:</strong> <span id="summaryPaymentStatus" style="font-weight: 700;"></span></p>
+                        </div>
+                    </div>
+
+                    <div class="glass-card" style="padding: 24px; background: linear-gradient(135deg, rgba(99,102,241,0.06), rgba(139,92,246,0.06)); border-color: rgba(99,102,241,0.2);">
+                        <h4 style="font-weight: 700; margin-bottom: 12px; color: var(--text-primary);">Order Summary</h4>
+                        <div id="summaryItemsList" style="display: flex; flex-direction: column; gap: 12px; margin-bottom: 16px; border-bottom: 1px solid var(--border-glass); padding-bottom: 16px;">
+                            <!-- Populated dynamically -->
+                        </div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; font-weight: 800;">
+                            <span>Total Due:</span>
+                            <span id="summaryTotal" style="font-size: 1.4rem; color: var(--primary);">$0.00</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Navigation Controls -->
+            <div style="display: flex; justify-content: space-between; margin-top: 40px; border-top: 1px solid var(--border-glass); padding-top: 24px;">
+                <button class="btn btn-secondary" id="prevStepBtn" style="visibility: hidden;">&larr; Back</button>
+                <button class="btn btn-primary" id="nextStepBtn">Continue &rarr;</button>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Footer Placeholder -->
+    <div id="main-footer"></div>
+
+    <script src="/js/toast.js"></script>
+    <script src="/js/api.js"></script>
+    <script src="/js/auth.js"></script>
+    <script src="/js/navbar.js"></script>
+    <script src="/js/checkout.js"></script>
+</body>
+</html>

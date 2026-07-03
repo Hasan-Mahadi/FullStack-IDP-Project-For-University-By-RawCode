@@ -818,5 +818,211 @@ module.exports = {
             console.error('Upload Error:', error);
             return responseUtils.sendError(res, 500, 'Upload Failed', error.message);
         }
+    },
+
+    /**
+     * GET /api/products/top-rated
+     * Public: Returns top 8 products by average rating, min 3 reviews.
+     */
+    async getTopRated(req, res) {
+        try {
+            let products = [];
+
+            if (db.isMockMode()) {
+                const mock     = db.getMock();
+                const allProds = mock.select('products', p => p.is_active === 1);
+                const reviews  = mock.getTable('reviews');
+
+                const rated = allProds.map(p => {
+                    const prodReviews = reviews.filter(r => r.product_id === p.id);
+                    const avg = prodReviews.length > 0
+                        ? prodReviews.reduce((s, r) => s + r.rating, 0) / prodReviews.length
+                        : 0;
+                    return { ...p, avg_rating: avg, review_count: prodReviews.length };
+                });
+
+                products = rated
+                    .sort((a, b) => b.avg_rating - a.avg_rating || b.review_count - a.review_count)
+                    .slice(0, 8);
+            } else {
+                const sql = `
+                    SELECT p.id, p.seller_id, p.name, p.description, p.price, p.stock,
+                           p.image_url, p.category_id, p.is_active,
+                           ROUND(AVG(r.rating), 1) as avg_rating, COUNT(r.id) as review_count
+                    FROM products p
+                    LEFT JOIN reviews r ON p.id = r.product_id
+                    WHERE p.is_active = 1
+                    GROUP BY p.id, p.seller_id, p.name, p.description, p.price, p.stock,
+                             p.image_url, p.category_id, p.is_active
+                    ORDER BY avg_rating DESC NULLS LAST, review_count DESC
+                    FETCH FIRST 8 ROWS ONLY
+                `;
+                const rows = await db.query(sql, []);
+                products = rows.map(row => ({
+                    id:           Number(row.ID),
+                    name:         row.NAME,
+                    description:  row.DESCRIPTION,
+                    price:        Number(row.PRICE),
+                    stock:        Number(row.STOCK),
+                    image_url:    row.IMAGE_URL,
+                    category_id:  row.CATEGORY_ID ? Number(row.CATEGORY_ID) : null,
+                    is_active:    Number(row.IS_ACTIVE),
+                    avg_rating:   row.AVG_RATING ? Number(row.AVG_RATING) : 0,
+                    review_count: Number(row.REVIEW_COUNT)
+                }));
+            }
+
+            return responseUtils.sendJSON(res, 200, { success: true, products });
+        } catch (error) {
+            return responseUtils.sendError(res, 500, 'Top Rated Fetch Failed', error.message);
+        }
+    },
+
+    /**
+     * GET /api/products/related
+     * Public: Returns related products by category_id (excludes current product).
+     * Query: ?category_id=X&exclude=Y&limit=6
+     */
+    async getRelatedProducts(req, res) {
+        const categoryId = parseInt(req.query.category_id);
+        const excludeId  = parseInt(req.query.exclude) || 0;
+        const limit      = parseInt(req.query.limit) || 6;
+
+        if (!categoryId) {
+            return responseUtils.sendError(res, 400, 'Missing category_id', 'Provide category_id as query parameter.');
+        }
+
+        try {
+            let products = [];
+
+            if (db.isMockMode()) {
+                const mock = db.getMock();
+                products = mock.select('products', p =>
+                    p.is_active === 1 && p.category_id === categoryId && p.id !== excludeId
+                ).slice(0, limit);
+            } else {
+                const sql = `
+                    SELECT p.id, p.name, p.description, p.price, p.stock, p.image_url,
+                           p.category_id, p.is_active
+                    FROM products p
+                    WHERE p.is_active = 1 AND p.category_id = :1 AND p.id != :2
+                    ORDER BY p.id DESC
+                    FETCH FIRST :3 ROWS ONLY
+                `;
+                const rows = await db.query(sql, [categoryId, excludeId, limit]);
+                products = rows.map(row => ({
+                    id:          Number(row.ID),
+                    name:        row.NAME,
+                    description: row.DESCRIPTION,
+                    price:       Number(row.PRICE),
+                    stock:       Number(row.STOCK),
+                    image_url:   row.IMAGE_URL,
+                    category_id: row.CATEGORY_ID ? Number(row.CATEGORY_ID) : null,
+                    is_active:   Number(row.IS_ACTIVE)
+                }));
+            }
+
+            return responseUtils.sendJSON(res, 200, { success: true, products });
+        } catch (error) {
+            return responseUtils.sendError(res, 500, 'Related Products Fetch Failed', error.message);
+        }
+    },
+
+    /**
+     * POST /api/products/viewed
+     * Protected (Customer): Track a recently viewed product.
+     */
+    async trackRecentlyViewed(req, res) {
+        const customerId = req.user.userId;
+        const { productId } = req.body || {};
+
+        if (!productId) return responseUtils.sendError(res, 400, 'Missing productId', 'Provide productId.');
+
+        const pId = Number(productId);
+
+        try {
+            if (db.isMockMode()) {
+                const mock = db.getMock();
+                // Remove existing entry to re-add at top
+                mock.delete('recently_viewed', rv => rv.customer_id === customerId && rv.product_id === pId);
+                mock.insert('recently_viewed', {
+                    customer_id: customerId,
+                    product_id:  pId,
+                    viewed_at:   new Date().toISOString()
+                });
+                // Keep only last 20 per customer
+                const allRv = mock.select('recently_viewed', rv => rv.customer_id === customerId)
+                    .sort((a, b) => new Date(b.viewed_at) - new Date(a.viewed_at));
+                if (allRv.length > 20) {
+                    const toDelete = allRv.slice(20);
+                    toDelete.forEach(rv => mock.delete('recently_viewed', x => x.id === rv.id));
+                }
+            } else {
+                await db.execute(
+                    'DELETE FROM recently_viewed WHERE customer_id = :1 AND product_id = :2',
+                    [customerId, pId]
+                );
+                await db.execute(
+                    'INSERT INTO recently_viewed (customer_id, product_id, viewed_at) VALUES (:1, :2, CURRENT_TIMESTAMP)',
+                    [customerId, pId]
+                );
+            }
+
+            return responseUtils.sendJSON(res, 200, { success: true });
+        } catch (error) {
+            return responseUtils.sendError(res, 500, 'Track View Failed', error.message);
+        }
+    },
+
+    /**
+     * GET /api/products/recently-viewed
+     * Protected (Customer): Get recently viewed products.
+     */
+    async getRecentlyViewed(req, res) {
+        const customerId = req.user.userId;
+
+        try {
+            let products = [];
+
+            if (db.isMockMode()) {
+                const mock    = db.getMock();
+                const allProds = mock.getTable('products');
+                const views   = mock.select('recently_viewed', rv => rv.customer_id === customerId)
+                    .sort((a, b) => new Date(b.viewed_at) - new Date(a.viewed_at))
+                    .slice(0, 8);
+
+                products = views.map(rv => {
+                    const p = allProds.find(x => x.id === rv.product_id);
+                    if (!p || !p.is_active) return null;
+                    return { ...p, viewed_at: rv.viewed_at };
+                }).filter(Boolean);
+            } else {
+                const sql = `
+                    SELECT rv.viewed_at, p.id, p.name, p.description, p.price, p.stock,
+                           p.image_url, p.category_id, p.is_active
+                    FROM recently_viewed rv
+                    JOIN products p ON rv.product_id = p.id
+                    WHERE rv.customer_id = :1 AND p.is_active = 1
+                    ORDER BY rv.viewed_at DESC
+                    FETCH FIRST 8 ROWS ONLY
+                `;
+                const rows = await db.query(sql, [customerId]);
+                products = rows.map(row => ({
+                    id:          Number(row.ID),
+                    name:        row.NAME,
+                    description: row.DESCRIPTION,
+                    price:       Number(row.PRICE),
+                    stock:       Number(row.STOCK),
+                    image_url:   row.IMAGE_URL,
+                    category_id: row.CATEGORY_ID ? Number(row.CATEGORY_ID) : null,
+                    is_active:   Number(row.IS_ACTIVE),
+                    viewed_at:   row.VIEWED_AT
+                }));
+            }
+
+            return responseUtils.sendJSON(res, 200, { success: true, products });
+        } catch (error) {
+            return responseUtils.sendError(res, 500, 'Recently Viewed Fetch Failed', error.message);
+        }
     }
 };

@@ -14,6 +14,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const catalogGrid = document.getElementById('catalogGrid');
     const categoriesGrid = document.getElementById('categoriesGrid');
     const newArrivalsGrid = document.getElementById('newArrivalsGrid');
+    const productFeedGrid = document.getElementById('productFeedGrid');
+    const topRatedGrid = document.getElementById('topRatedGrid');
     const searchInput = document.getElementById('searchInput');
     const searchBtn = document.getElementById('searchBtn');
     const priceFilter = document.getElementById('priceFilter');
@@ -28,6 +30,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Cart memory store state
     let cart = [];
+    let wishlistIds = new Set();
 
     // Category emoji mapping
     const emojiMap = {
@@ -76,6 +79,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // 3. Fetch products and render in UI
+    let catalogProducts = [];
+    let currentPage = 1;
+    const itemsPerPage = 8;
+
     async function loadCatalog() {
         const query = searchInput.value.trim();
         const priceRange = priceFilter.value;
@@ -87,12 +94,16 @@ document.addEventListener('DOMContentLoaded', () => {
         const categoriesSection = categoriesGrid ? categoriesGrid.closest('section') : null;
         const flashSection = document.getElementById('flashCountdown') ? document.getElementById('flashCountdown').closest('section') : null;
         const newArrivalsSection = newArrivalsGrid ? newArrivalsGrid.closest('section') : null;
+        const trendingSection = document.getElementById('productFeedSection');
+        const topRatedSection = document.getElementById('topRatedSection');
 
         if (isFiltering) {
             if (heroSection) heroSection.style.display = 'none';
             if (categoriesSection) categoriesSection.style.display = 'none';
             if (flashSection) flashSection.style.display = 'none';
             if (newArrivalsSection) newArrivalsSection.style.display = 'none';
+            if (trendingSection) trendingSection.style.display = 'none';
+            if (topRatedSection) topRatedSection.style.display = 'none';
             
             let endpoint = `/api/products?q=${encodeURIComponent(query)}`;
             if (priceRange === '0-20') {
@@ -111,7 +122,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 `;
                 const data = await API.get(endpoint);
                 if (data.success) {
-                    renderProductGrid(catalogGrid, data.products);
+                    catalogProducts = data.products || [];
+                    currentPage = 1;
+                    applyCatalogSortAndRender();
                 }
             } catch (error) {
                 catalogGrid.innerHTML = `
@@ -119,6 +132,8 @@ document.addEventListener('DOMContentLoaded', () => {
                         Sync Failed: ${error.message}
                     </div>
                 `;
+                const paginationContainer = document.getElementById('catalogPagination');
+                if (paginationContainer) paginationContainer.innerHTML = '';
             }
         } else {
             // Restore sections for standard landing page
@@ -126,6 +141,8 @@ document.addEventListener('DOMContentLoaded', () => {
             if (categoriesSection) categoriesSection.style.display = 'block';
             if (flashSection) flashSection.style.display = 'flex';
             if (newArrivalsSection) newArrivalsSection.style.display = 'block';
+            if (trendingSection) trendingSection.style.display = 'block';
+            if (topRatedSection) topRatedSection.style.display = 'block';
 
             try {
                 catalogGrid.innerHTML = `
@@ -135,9 +152,22 @@ document.addEventListener('DOMContentLoaded', () => {
                 `;
                 const data = await API.get('/api/products/featured');
                 if (data.success) {
-                    renderProductGrid(catalogGrid, data.featured || []);
+                    if (productFeedGrid && data.featured) {
+                        renderProductGrid(productFeedGrid, data.featured || []);
+                        const skeleton = document.getElementById('feedSkeletonLoader');
+                        if (skeleton) skeleton.style.display = 'none';
+                        const seeMore = document.getElementById('feedSeeMoreWrap');
+                        if (seeMore && data.featured.length > 0) seeMore.style.display = 'block';
+                    }
+                    catalogProducts = data.featured || [];
+                    currentPage = 1;
+                    applyCatalogSortAndRender();
+                    
                     if (newArrivalsGrid && data.newest) {
                         renderProductGrid(newArrivalsGrid, data.newest);
+                    }
+                    if (topRatedGrid && data.topRated) {
+                        renderProductGrid(topRatedGrid, data.topRated);
                     }
                 }
             } catch (error) {
@@ -146,13 +176,99 @@ document.addEventListener('DOMContentLoaded', () => {
                         Sync Failed: ${error.message}
                     </div>
                 `;
+                const paginationContainer = document.getElementById('catalogPagination');
+                if (paginationContainer) paginationContainer.innerHTML = '';
             }
         }
+    }
+
+    function applyCatalogSortAndRender() {
+        const sortFilter = document.getElementById('sortFilter');
+        const sortVal = sortFilter ? sortFilter.value : 'default';
+
+        // 1. Sort
+        const sorted = [...catalogProducts];
+        if (sortVal === 'price-low-high') {
+            sorted.sort((a, b) => a.price - b.price);
+        } else if (sortVal === 'price-high-low') {
+            sorted.sort((a, b) => b.price - a.price);
+        } else if (sortVal === 'newest') {
+            sorted.sort((a, b) => new Date(b.created_at || b.id) - new Date(a.created_at || a.id));
+        }
+
+        // 2. Paginate
+        const totalItems = sorted.length;
+        const totalPages = Math.ceil(totalItems / itemsPerPage);
+        
+        // Safe bounds
+        if (currentPage > totalPages) currentPage = Math.max(1, totalPages);
+        
+        const start = (currentPage - 1) * itemsPerPage;
+        const pageProducts = sorted.slice(start, start + itemsPerPage);
+
+        renderProductGrid(catalogGrid, pageProducts);
+        renderPaginationControls(totalPages);
 
         // Trigger animations for newly rendered content
         if (window.AppAnimations && window.AppAnimations.observeAll) {
             window.AppAnimations.observeAll();
         }
+    }
+
+    function renderPaginationControls(totalPages) {
+        const paginationContainer = document.getElementById('catalogPagination');
+        if (!paginationContainer) return;
+
+        if (totalPages <= 1) {
+            paginationContainer.innerHTML = '';
+            return;
+        }
+
+        paginationContainer.innerHTML = '';
+
+        // Prev Button
+        const prevBtn = document.createElement('button');
+        prevBtn.className = 'btn btn-secondary btn-sm';
+        prevBtn.style.padding = '6px 12px';
+        prevBtn.innerText = 'Prev';
+        prevBtn.disabled = currentPage === 1;
+        prevBtn.addEventListener('click', () => {
+            if (currentPage > 1) {
+                currentPage--;
+                applyCatalogSortAndRender();
+                catalogGrid.scrollIntoView({ behavior: 'smooth' });
+            }
+        });
+        paginationContainer.appendChild(prevBtn);
+
+        // Page Numbers
+        for (let i = 1; i <= totalPages; i++) {
+            const pageBtn = document.createElement('button');
+            pageBtn.className = `btn btn-sm ${i === currentPage ? 'btn-primary' : 'btn-secondary'}`;
+            pageBtn.style.padding = '6px 12px';
+            pageBtn.innerText = i;
+            pageBtn.addEventListener('click', () => {
+                currentPage = i;
+                applyCatalogSortAndRender();
+                catalogGrid.scrollIntoView({ behavior: 'smooth' });
+            });
+            paginationContainer.appendChild(pageBtn);
+        }
+
+        // Next Button
+        const nextBtn = document.createElement('button');
+        nextBtn.className = 'btn btn-secondary btn-sm';
+        nextBtn.style.padding = '6px 12px';
+        nextBtn.innerText = 'Next';
+        nextBtn.disabled = currentPage === totalPages;
+        nextBtn.addEventListener('click', () => {
+            if (currentPage < totalPages) {
+                currentPage++;
+                applyCatalogSortAndRender();
+                catalogGrid.scrollIntoView({ behavior: 'smooth' });
+            }
+        });
+        paginationContainer.appendChild(nextBtn);
     }
 
     function renderProductGrid(container, products) {
@@ -181,13 +297,23 @@ document.addEventListener('DOMContentLoaded', () => {
                 : `<div class="product-image-placeholder">🎓 ${p.name.substring(0,2).toUpperCase()}</div>`;
 
             const ratingDisplay = p.avg_rating > 0 
-                ? `<span class="star-rating" style="font-size: 0.75rem;">⭐ ${p.avg_rating.toFixed(1)} (${p.review_count})</span>`
+                ? `<span class="star-rating" style="font-size: 0.75rem;">⭐ ${Number(p.avg_rating).toFixed(1)} (${p.review_count})</span>`
                 : `<span style="font-size: 0.75rem; color: var(--text-muted);">No reviews yet</span>`;
 
+            const isWishlisted = wishlistIds.has(p.id);
+            const user = Auth.getUser();
+            const isCustomer = user && Number(user.roleId) === 3;
+            const heartHtml = isCustomer
+                ? `<button class="wishlist-heart-btn ${isWishlisted ? 'active' : ''}" data-id="${p.id}" style="position: absolute; top: 12px; right: 12px; z-index: 10; background: rgba(15, 23, 42, 0.6); border: 1px solid var(--border-glass); border-radius: 50%; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s;" title="Save to Wishlist">
+                       ${isWishlisted ? '❤️' : '🤍'}
+                   </button>`
+                : '';
+
             card.innerHTML = `
-                <div class="product-image-container">
+                <div class="product-image-container" style="position: relative;">
                     ${imageHtml}
                     <span class="product-category-tag">${p.category_name || 'General'}</span>
+                    ${heartHtml}
                 </div>
                 <div class="product-info-wrap">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
@@ -199,7 +325,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     <div class="product-price-row">
                         <div>
                             <div class="product-price">$${p.price.toFixed(2)}</div>
-                            <span class="product-seller">Vendor: ${p.seller_name}</span>
+                            ${(p.seller_name && p.seller_name !== 'System Administrator') ? `<span class="product-seller">Vendor: ${p.seller_name}</span>` : ''}
                         </div>
                         <button class="btn btn-primary addToCartBtn" data-id="${p.id}" data-name="${p.name}" data-price="${p.price}" data-stock="${p.stock}" data-image="${p.image_url || ''}" style="font-size: 0.8rem; padding: 8px 12px;" ${isOutOfStock ? 'disabled' : ''}>
                             ${isOutOfStock ? 'Sold Out' : 'Add to Cart'}
@@ -221,6 +347,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 const pImage = btn.getAttribute('data-image');
 
                 addToCart(pId, pName, pPrice, pStock, pImage);
+            });
+        });
+
+        // Add wishlist heart listeners
+        container.querySelectorAll('.wishlist-heart-btn').forEach(btn => {
+            btn.addEventListener('click', async (e) => {
+                e.stopPropagation();
+                e.preventDefault();
+                const id = Number(btn.getAttribute('data-id'));
+                await toggleWishlist(id, btn);
             });
         });
     }
@@ -369,8 +505,8 @@ document.addEventListener('DOMContentLoaded', () => {
         if (window.closeCartDrawer) window.closeCartDrawer();
     }
 
-    // 5. Cart Checkouts Submission
-    async function handleCheckout() {
+    // 5. Cart Checkouts Redirect to Secure Checkout Page
+    function handleCheckout() {
         const user = Auth.getUser();
         
         if (!user) {
@@ -386,52 +522,22 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        const items = cart.map(item => ({
-            productId: item.productId,
-            quantity: item.quantity
-        }));
-
-        try {
-            checkoutBtn.disabled = true;
-            checkoutBtn.innerText = 'Submitting...';
-
-            const data = await API.post('/api/orders', { items });
-
-            if (data.success) {
-                triggerToast('Order placed successfully! Awaiting Service Team approval.', true);
-                
-                // Clear cart state
-                cart = [];
-                saveLocalCart();
-                closeCartDrawer();
-
-                // Redirect to customer tracking panel
-                setTimeout(() => {
-                    window.location.href = '/pages/customer.html';
-                }, 1000);
-            }
-        } catch (error) {
-            triggerToast(error.message || 'Checkout failed. Stock holds might have expired.', false);
-        } finally {
-            checkoutBtn.disabled = false;
-            checkoutBtn.innerText = 'Submit Order for Approval';
+        if (cart.length === 0) {
+            triggerToast('Your shopping cart is empty.', false);
+            return;
         }
+
+        closeCartDrawer();
+        window.location.href = '/pages/checkout.html';
     }
 
     // Helper Toast
     function triggerToast(message, isSuccess = true) {
-        alertBox.style.display = 'block';
-        alertBox.style.background = isSuccess ? 'rgba(52, 199, 89, 0.1)' : 'rgba(255, 59, 48, 0.1)';
-        alertBox.style.color = isSuccess ? 'var(--success)' : 'var(--danger)';
-        alertBox.style.border = isSuccess ? '1px solid rgba(52, 199, 89, 0.3)' : '1px solid rgba(255, 59, 48, 0.3)';
-        alertBox.innerText = message;
-
-        // Scroll to top
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-
-        setTimeout(() => {
-            alertBox.style.display = 'none';
-        }, 5000);
+        if (isSuccess) {
+            Toast.success(message);
+        } else {
+            Toast.error(message);
+        }
     }
 
     // Carousel Autoplay Logic
@@ -526,10 +632,72 @@ document.addEventListener('DOMContentLoaded', () => {
         setInterval(updateCountdown, 1000);
     }
 
+    async function loadWishlist() {
+        const user = Auth.getUser();
+        if (!user || Number(user.roleId) !== 3) return;
+        try {
+            const data = await API.get('/api/wishlist');
+            if (data.success && data.wishlist) {
+                wishlistIds = new Set(data.wishlist.map(item => item.product_id));
+            }
+        } catch (e) {
+            console.error('Failed to load wishlist:', e);
+        }
+    }
+
+    async function toggleWishlist(id, btn) {
+        const isActive = btn.classList.contains('active');
+        try {
+            if (isActive) {
+                const res = await API.delete('/api/wishlist', { productId: id });
+                if (res.success) {
+                    btn.classList.remove('active');
+                    btn.innerText = '🤍';
+                    wishlistIds.delete(id);
+                    triggerToast('Removed from wishlist.', true);
+                }
+            } else {
+                const res = await API.post('/api/wishlist', { productId: id });
+                if (res.success) {
+                    btn.classList.add('active');
+                    btn.innerText = '❤️';
+                    wishlistIds.add(id);
+                    triggerToast('Added to wishlist.', true);
+                }
+            }
+        } catch (error) {
+            triggerToast(error.message || 'Wishlist action failed.', false);
+        }
+    }
+
+    async function loadRecentlyViewed() {
+        const user = Auth.getUser();
+        const section = document.getElementById('recentlyViewedSection');
+        const grid = document.getElementById('recentlyViewedGrid');
+        if (!section || !grid || !user || Number(user.roleId) !== 3) return;
+
+        try {
+            const data = await API.get('/api/products/recently-viewed');
+            if (data.success && data.products && data.products.length > 0) {
+                section.style.display = 'block';
+                renderProductGrid(grid, data.products);
+            } else {
+                section.style.display = 'none';
+            }
+        } catch (e) {
+            console.error('Failed to load recently viewed products:', e);
+            section.style.display = 'none';
+        }
+    }
+
     // 6. Initializers & Listeners Binding
     updateHeaderAuth();
     loadCategories();
-    loadCatalog();
+    (async () => {
+        await loadWishlist();
+        await loadCatalog();
+        await loadRecentlyViewed();
+    })();
     loadLocalCart();
 
     // Event Bindings
@@ -538,6 +706,14 @@ document.addEventListener('DOMContentLoaded', () => {
         if (e.key === 'Enter') loadCatalog();
     });
     priceFilter.addEventListener('change', loadCatalog);
+    
+    const sortFilter = document.getElementById('sortFilter');
+    if (sortFilter) {
+        sortFilter.addEventListener('change', () => {
+            currentPage = 1;
+            applyCatalogSortAndRender();
+        });
+    }
 
     if (cartToggle) cartToggle.addEventListener('click', openCartDrawer);
     if (cartClose) cartClose.addEventListener('click', closeCartDrawer);

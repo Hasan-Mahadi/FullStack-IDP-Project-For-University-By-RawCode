@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>All Products | EduShop — Campus E-Commerce</title>
+    <meta name="description" content="Browse all products available on EduShop — the campus e-commerce platform. Filter by category, search by keyword, sort by price, and add to cart instantly.">
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        /* ── Page Hero Banner ── */
+        .all-products-hero {
+            margin-top: 90px;
+            margin-bottom: 36px;
+            padding: 40px 32px;
+            background: linear-gradient(135deg, rgba(99,102,241,0.12) 0%, rgba(168,85,247,0.08) 100%);
+            border: 1px solid var(--border-glass);
+            border-radius: var(--radius-lg);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 24px;
+            flex-wrap: wrap;
+        }
+        .all-products-hero-text h1 {
+            font-size: 2rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #ffffff 0%, #a78bfa 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin: 0 0 6px;
+        }
+        .all-products-hero-text p {
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            margin: 0;
+        }
+        .all-products-hero-stats {
+            display: flex;
+            gap: 24px;
+            flex-wrap: wrap;
+        }
+        .hero-stat {
+            text-align: center;
+        }
+        .hero-stat-num {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: var(--primary-light);
+        }
+        .hero-stat-label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        /* ── Two-column layout ── */
+        .all-products-layout {
+            display: grid;
+            grid-template-columns: 260px 1fr;
+            gap: 28px;
+            margin-bottom: 80px;
+        }
+
+        /* ── Sidebar ── */
+        .filter-sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .sidebar-panel {
+            background: var(--glass-bg);
+            border: 1px solid var(--border-glass);
+            border-radius: var(--radius-md);
+            padding: 20px;
+            backdrop-filter: blur(12px);
+        }
+        .sidebar-panel h3 {
+            font-size: 1rem;
+            font-weight: 700;
+            margin: 0 0 16px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--border-glass);
+            color: var(--text-primary);
+        }
+        .category-filter-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 14px;
+            border-radius: var(--radius-sm);
+            background: rgba(255,255,255,0.02);
+            border: 1px solid transparent;
+            color: var(--text-secondary);
+            transition: var(--transition-fast);
+            cursor: pointer;
+            font-size: 0.9rem;
+            margin-bottom: 4px;
+        }
+        .category-filter-item:hover {
+            background: rgba(99,102,241,0.08);
+            border-color: rgba(99,102,241,0.3);
+            color: var(--text-primary);
+        }
+        .category-filter-item.active {
+            background: rgba(99,102,241,0.15);
+            border-color: var(--primary);
+            color: var(--text-primary);
+            font-weight: 700;
+        }
+
+        /* ── Toolbar (search + sort) ── */
+        .products-toolbar {
+            background: var(--glass-bg);
+            border: 1px solid var(--border-glass);
+            border-radius: var(--radius-md);
+            padding: 14px 20px;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 14px;
+            backdrop-filter: blur(12px);
+            margin-bottom: 20px;
+        }
+        .toolbar-search {
+            display: flex;
+            gap: 8px;
+            flex-grow: 1;
+            max-width: 480px;
+        }
+        .toolbar-controls {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .toolbar-summary {
+            font-size: 0.82rem;
+            color: var(--text-muted);
+            white-space: nowrap;
+        }
+
+        /* ── Catalog grid ── */
+        .catalog-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 20px;
+        }
+
+        /* ── Responsive ── */
+        @media (max-width: 1024px) {
+            .all-products-layout {
+                grid-template-columns: 1fr;
+            }
+            .filter-sidebar {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+        @media (max-width: 640px) {
+            .all-products-hero {
+                flex-direction: column;
+                text-align: center;
+            }
+            .all-products-hero-stats {
+                justify-content: center;
+            }
+            .filter-sidebar {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header Navigation Placeholder -->
+    <div id="main-header"></div>
+
+    <!-- Main Container -->
+    <main class="container" style="max-width: 1280px; margin: 0 auto; padding: 0 24px;">
+
+        <!-- Page Hero -->
+        <div class="all-products-hero scroll-reveal">
+            <div class="all-products-hero-text">
+                <h1>🛍️ All Campus Products</h1>
+                <p>Browse everything available on EduShop — search, filter, and add to cart in seconds.</p>
+            </div>
+            <div class="all-products-hero-stats">
+                <div class="hero-stat">
+                    <div class="hero-stat-num" id="heroStatProducts">—</div>
+                    <div class="hero-stat-label">Products</div>
+                </div>
+                <div class="hero-stat">
+                    <div class="hero-stat-num" id="heroStatCategories">—</div>
+                    <div class="hero-stat-label">Categories</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Alert box -->
+        <div id="alertBox" style="display: none; padding: 12px; border-radius: 8px; font-size: 0.85rem; margin-bottom: 20px; text-align: center;"></div>
+
+        <!-- Two-column layout -->
+        <div class="all-products-layout">
+
+            <!-- ── Left Sidebar ── -->
+            <aside class="filter-sidebar">
+
+                <!-- Category list -->
+                <div class="sidebar-panel scroll-reveal">
+                    <h3>📂 Categories</h3>
+                    <div id="sidebarCategoriesList">
+                        <div style="text-align:center; padding: 20px; color: var(--text-muted);">Loading…</div>
+                    </div>
+                </div>
+
+                <!-- Quick filters -->
+                <div class="sidebar-panel scroll-reveal">
+                    <h3>⚙️ Quick Filters</h3>
+                    <div class="form-group">
+                        <label class="form-label" for="priceSort">Sort by Price</label>
+                        <select id="priceSort" class="form-control" style="height: 38px; padding: 0 14px;">
+                            <option value="none">Default Listing</option>
+                            <option value="low-high">Price: Low → High</option>
+                            <option value="high-low">Price: High → Low</option>
+                        </select>
+                    </div>
+                    <div class="form-group" style="margin-bottom: 0;">
+                        <label class="form-label" for="stockFilter">Availability</label>
+                        <select id="stockFilter" class="form-control" style="height: 38px; padding: 0 14px;">
+                            <option value="all">All Items</option>
+                            <option value="instock">In-Stock Only</option>
+                        </select>
+                    </div>
+                </div>
+
+            </aside>
+
+            <!-- ── Right: Toolbar + Grid ── -->
+            <section style="display: flex; flex-direction: column;">
+
+                <!-- Toolbar -->
+                <div class="products-toolbar scroll-reveal">
+                    <div class="toolbar-search">
+                        <input class="form-control" type="text" id="searchInput" placeholder="Search products, brands, keywords…" style="height: 38px;">
+                        <button id="searchBtn" class="btn btn-primary" style="height: 38px; padding: 0 20px; white-space: nowrap;">Search</button>
+                    </div>
+                    <div class="toolbar-controls">
+                        <span class="toolbar-summary" id="catalogSummaryText">Loading products…</span>
+                    </div>
+                </div>
+
+                <!-- Products Grid -->
+                <div id="catalogGrid" class="catalog-grid">
+                    <!-- Skeleton placeholders while loading -->
+                    <div class="skeleton-card"></div>
+                    <div class="skeleton-card"></div>
+                    <div class="skeleton-card"></div>
+                    <div class="skeleton-card"></div>
+                    <div class="skeleton-card"></div>
+                    <div class="skeleton-card"></div>
+                    <div class="skeleton-card"></div>
+                    <div class="skeleton-card"></div>
+                </div>
+
+            </section>
+        </div>
+
+    </main>
+
+    <!-- Shopping Cart Drawer -->
+    <div id="cartDrawer" class="cart-drawer">
+        <div class="cart-header">
+            <h3 style="font-size: 1.25rem;">Shopping Cart</h3>
+            <span id="cartClose" class="modal-close">✕</span>
+        </div>
+
+        <div id="cartItems" class="cart-items-container">
+            <div style="text-align: center; padding: 50px 0; color: var(--text-muted);">
+                Your cart is empty.
+            </div>
+        </div>
+
+        <div class="cart-footer">
+            <div class="cart-total-flex">
+                <span>Total:</span>
+                <span id="cartTotalValue">$0.00</span>
+            </div>
+            <button id="checkoutBtn" class="btn btn-success" style="width: 100%; height: 46px;">
+                Proceed to Checkout
+            </button>
+        </div>
+    </div>
+
+    <!-- Footer Placeholder -->
+    <div id="main-footer"></div>
+
+    <!-- Scripts -->
+    <script src="/js/toast.js"></script>
+    <script src="/js/api.js"></script>
+    <script src="/js/auth.js"></script>
+    <script src="/js/navbar.js"></script>
+    <script src="/js/animations.js"></script>
+    <!-- Reuse categories.js — same logic, same DOM IDs -->
+    <script src="/js/categories.js"></script>
+
+    <!-- Extra: update hero stat counters once categories.js has loaded products -->
+    <script>
+        (function () {
+            const heroProducts   = document.getElementById('heroStatProducts');
+            const heroCategories = document.getElementById('heroStatCategories');
+
+            // Poll until categories.js populates the catalog
+            let attempts = 0;
+            const interval = setInterval(() => {
+                const cards = document.querySelectorAll('#catalogGrid .product-card');
+                const cats  = document.querySelectorAll('#sidebarCategoriesList .category-filter-item');
+                if (cards.length > 0 || attempts > 20) {
+                    clearInterval(interval);
+                    heroProducts.innerText   = cards.length || '0';
+                    // Subtract 1 for the "All Products" item
+                    heroCategories.innerText = Math.max(0, cats.length - 1) || '0';
+                }
+                attempts++;
+            }, 300);
+        })();
+    </script>
+
+</body>
+</html>

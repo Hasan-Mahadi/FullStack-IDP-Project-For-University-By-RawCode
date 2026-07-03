@@ -49,9 +49,14 @@
                         <span id="productCreated">Listed on: Loading...</span>
                     </div>
                     
-                    <button class="btn btn-primary" id="addToCartBtn" style="height: 48px; font-size: 1rem; font-weight: bold; width: 100%;">
-                        Add to Lab Cart
-                    </button>
+                    <div style="display: flex; gap: 12px; width: 100%;">
+                        <button class="btn btn-primary" id="addToCartBtn" style="height: 48px; font-size: 1rem; font-weight: bold; flex: 1;">
+                            Add to Lab Cart
+                        </button>
+                        <button class="wishlist-heart-btn" id="detailsWishlistBtn" style="width: 48px; height: 48px; flex-shrink: 0; font-size: 1.2rem; display: none;" title="Save to Wishlist">
+                            🤍
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -142,6 +147,7 @@
     <div id="main-footer"></div>
 
     <!-- Scripts -->
+    <script src="/js/toast.js"></script>
     <script src="/js/api.js"></script>
     <script src="/js/auth.js"></script>
     <script src="/js/navbar.js"></script>

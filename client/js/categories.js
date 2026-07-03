@@ -29,6 +29,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let categories = [];
     let products = [];
     let cart = [];
+    let wishlistIds = new Set();
 
     // Emoji mapping
     const emojiMap = {
@@ -46,6 +47,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     async function init() {
         await loadCategoriesSidebar();
+        await loadWishlist();
         await loadProductsList();
         loadLocalCart();
 
@@ -60,6 +62,44 @@ document.addEventListener('DOMContentLoaded', () => {
         if (cartToggle) cartToggle.addEventListener('click', openCartDrawer);
         if (cartClose) cartClose.addEventListener('click', closeCartDrawer);
         if (checkoutBtn) checkoutBtn.addEventListener('click', handleCheckout);
+    }
+
+    async function loadWishlist() {
+        const user = Auth.getUser();
+        if (!user || Number(user.roleId) !== 3) return;
+        try {
+            const data = await API.get('/api/wishlist');
+            if (data.success && data.wishlist) {
+                wishlistIds = new Set(data.wishlist.map(item => item.product_id));
+            }
+        } catch (e) {
+            console.error('Failed to load wishlist:', e);
+        }
+    }
+
+    async function toggleWishlist(id, btn) {
+        const isActive = btn.classList.contains('active');
+        try {
+            if (isActive) {
+                const res = await API.delete('/api/wishlist', { productId: id });
+                if (res.success) {
+                    btn.classList.remove('active');
+                    btn.innerText = '🤍';
+                    wishlistIds.delete(id);
+                    triggerToast('Removed from wishlist.', true);
+                }
+            } else {
+                const res = await API.post('/api/wishlist', { productId: id });
+                if (res.success) {
+                    btn.classList.add('active');
+                    btn.innerText = '❤️';
+                    wishlistIds.add(id);
+                    triggerToast('Added to wishlist.', true);
+                }
+            }
+        } catch (error) {
+            triggerToast(error.message || 'Wishlist action failed.', false);
+        }
     }
 
     async function loadCategoriesSidebar() {
@@ -210,10 +250,20 @@ document.addEventListener('DOMContentLoaded', () => {
                 ? `<span class="star-rating" style="font-size: 0.75rem;">⭐ ${p.avg_rating.toFixed(1)} (${p.review_count})</span>`
                 : `<span style="font-size: 0.75rem; color: var(--text-muted);">No reviews yet</span>`;
 
+            const isWishlisted = wishlistIds.has(p.id);
+            const user = Auth.getUser();
+            const isCustomer = user && Number(user.roleId) === 3;
+            const heartHtml = isCustomer
+                ? `<button class="wishlist-heart-btn ${isWishlisted ? 'active' : ''}" data-id="${p.id}" style="position: absolute; top: 12px; right: 12px; z-index: 10; background: rgba(15, 23, 42, 0.6); border: 1px solid var(--border-glass); border-radius: 50%; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s;" title="Save to Wishlist">
+                       ${isWishlisted ? '❤️' : '🤍'}
+                   </button>`
+                : '';
+
             card.innerHTML = `
-                <div class="product-image-container">
+                <div class="product-image-container" style="position: relative;">
                     ${imgHtml}
                     <span class="product-category-tag">${p.category_name || 'General'}</span>
+                    ${heartHtml}
                 </div>
                 <div class="product-info-wrap">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
@@ -225,7 +275,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     <div class="product-price-row">
                         <div>
                             <div class="product-price">$${p.price.toFixed(2)}</div>
-                            <span class="product-seller">Vendor: ${p.seller_name}</span>
+                            ${(p.seller_name && p.seller_name !== 'System Administrator') ? `<span class="product-seller">Vendor: ${p.seller_name}</span>` : ''}
                         </div>
                         <button class="btn btn-primary addToCartBtn" data-id="${p.id}" data-name="${p.name}" data-price="${p.price}" data-stock="${p.stock}" data-image="${p.image_url || ''}" style="font-size: 0.8rem; padding: 8px 12px;" ${isOutOfStock ? 'disabled' : ''}>
                             ${isOutOfStock ? 'Sold Out' : 'Add to Cart'}
@@ -246,6 +296,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 const stock = Number(btn.getAttribute('data-stock'));
                 const image = btn.getAttribute('data-image');
                 addToCart(id, name, price, stock, image);
+            });
+        });
+
+        // Add wishlist heart listeners
+        catalogGrid.querySelectorAll('.wishlist-heart-btn').forEach(btn => {
+            btn.addEventListener('click', async (e) => {
+                e.stopPropagation();
+                e.preventDefault();
+                const id = Number(btn.getAttribute('data-id'));
+                await toggleWishlist(id, btn);
             });
         });
 
@@ -384,7 +444,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (window.closeCartDrawer) window.closeCartDrawer();
     }
 
-    async function handleCheckout() {
+    function handleCheckout() {
         const user = Auth.getUser();
         if (!user) {
             triggerToast('Session required. Redirecting to Login...', false);
@@ -399,31 +459,13 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        const items = cart.map(item => ({
-            productId: item.productId,
-            quantity: item.quantity
-        }));
-
-        try {
-            checkoutBtn.disabled = true;
-            checkoutBtn.innerText = 'Submitting...';
-
-            const data = await API.post('/api/orders', { items });
-            if (data.success) {
-                triggerToast('Order placed successfully! Awaiting Service Team approval.', true);
-                cart = [];
-                saveLocalCart();
-                closeCartDrawer();
-                setTimeout(() => {
-                    window.location.href = '/pages/customer.html';
-                }, 1000);
-            }
-        } catch (error) {
-            triggerToast(error.message || 'Checkout failed.', false);
-        } finally {
-            checkoutBtn.disabled = false;
-            checkoutBtn.innerText = 'Submit Order for Approval';
+        if (cart.length === 0) {
+            triggerToast('Your shopping cart is empty.', false);
+            return;
         }
+
+        closeCartDrawer();
+        window.location.href = '/pages/checkout.html';
     }
 
     const alertBox = document.getElementById('alertBox');
