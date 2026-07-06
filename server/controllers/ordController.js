@@ -15,6 +15,8 @@
 
 const db = require('../database/connection');
 const responseUtils = require('../utils/responseUtils');
+const emailService = require('../services/emailService');
+
 
 // Helper to push a notification record into database
 async function createNotification(userId, message, mockDbRef = null) {
@@ -148,16 +150,23 @@ module.exports = {
 
             } else {
                 // Oracle DB transactional inserts
+                // IMPORTANT: Explicitly cast customerId to Number — the JWT payload
+                // stores it from Oracle's row result which may be an internal type,
+                // not a plain JS integer. Oracle's NUMBER column rejects non-numeric
+                // binds with ORA-01722 (Invalid Number).
+                // totalAmount is rounded to 2dp to prevent floating-point imprecision
+                // (e.g. 45.990000000001) from violating Oracle's NUMBER(10,2) constraint.
                 const resOrder = await db.execute(
                     `INSERT INTO orders (customer_id, total_amount, status, payment_method, payment_status,
                      shipping_name, shipping_phone, shipping_address)
                      VALUES (:1, :2, 'PENDING', :3, :4, :5, :6, :7)`,
-                    [customerId, totalAmount, selectedPaymentMethod,
+                    [Number(customerId), parseFloat(totalAmount.toFixed(2)),
+                     String(selectedPaymentMethod),
                      selectedPaymentMethod === 'COD' ? 'COD_PENDING' : 'PAID',
-                     shippingInfo.name, shippingInfo.phone, shippingInfo.address]
+                     String(shippingInfo.name), String(shippingInfo.phone), String(shippingInfo.address)]
                 );
                 // Oracle standard returns insert IDs or sequences can be fetched. For safety, we resolve ID:
-                const latest = await db.query('SELECT MAX(id) as last_id FROM orders WHERE customer_id = :1', [customerId]);
+                const latest = await db.query('SELECT MAX(id) as last_id FROM orders WHERE customer_id = :1', [Number(customerId)]);
                 orderId = Number(latest[0].LAST_ID);
 
                 for (let purchase of itemsToPurchase) {
@@ -198,11 +207,65 @@ module.exports = {
                 await createNotification(svc.id, `New order pending verification: Order #${orderId} was submitted by student customer.`);
             }
 
+            // 4. Send Order Confirmation Email (non-blocking — never affects order success)
+            // Fetch customer email and details asynchronously after the order is fully committed
+            setImmediate(async () => {
+                try {
+                    // Fetch customer record for email address and name
+                    let customerEmail = null;
+                    let customerFullName = customerId;
+
+                    if (db.isMockMode()) {
+                        const customerRecord = db.getMock().selectOne('users', u => u.id === customerId);
+                        if (customerRecord) {
+                            customerEmail    = customerRecord.email;
+                            customerFullName = customerRecord.full_name || customerRecord.username;
+                        }
+                    } else {
+                        const rows = await db.query('SELECT email, full_name FROM users WHERE id = :1', [customerId]);
+                        if (rows.length > 0) {
+                            customerEmail    = rows[0].EMAIL;
+                            customerFullName = rows[0].FULL_NAME;
+                        }
+                    }
+
+                    if (!customerEmail) {
+                        console.warn('[ORDER EMAIL] Could not resolve customer email for order #' + orderId + '. Skipping email.');
+                        return;
+                    }
+
+                    // Build items array for the email template
+                    const emailItems = itemsToPurchase.map(p => ({
+                        product_name: p.product.name,
+                        quantity:     p.quantity,
+                        price:        p.price
+                    }));
+
+                    // Send confirmation — emailService catches all errors internally
+                    await emailService.sendOrderConfirmationEmail(customerEmail, {
+                        customerName:    customerFullName,
+                        orderId:         orderId,
+                        orderDate:       new Date(),
+                        items:           emailItems,
+                        shippingName:    shippingInfo.name,
+                        shippingPhone:   shippingInfo.phone,
+                        shippingAddress: shippingInfo.address,
+                        paymentMethod:   selectedPaymentMethod,
+                        paymentStatus:   selectedPaymentMethod === 'COD' ? 'COD_PENDING' : 'PAID',
+                        totalAmount:     totalAmount
+                    });
+                } catch (emailErr) {
+                    // Final safety net — order is already saved, log and move on
+                    console.error('[ORDER EMAIL] Unexpected error in email dispatch task:', emailErr.message);
+                }
+            });
+
             return responseUtils.sendJSON(res, 201, {
                 success: true,
                 message: 'Order successfully placed. Awaiting operational approval.',
                 orderId
             });
+
 
         } catch (error) {
             return responseUtils.sendError(res, 500, 'Checkout Transaction Failed', error.message);

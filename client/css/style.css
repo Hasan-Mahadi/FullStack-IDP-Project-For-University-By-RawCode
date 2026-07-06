@@ -107,6 +107,12 @@ body {
     overflow: hidden;
 }
 
+/* Glass card that wraps a scrollable data table — must NOT clip horizontal scroll */
+.glass-card.table-card {
+    overflow: visible;
+    padding: 24px 0 24px 0;
+}
+
 .glass-card:hover {
     transform: translateY(-5px);
     background: var(--bg-card-hover);
@@ -539,17 +545,18 @@ select.form-control {
     background: rgba(255, 255, 255, 0.02);
     color: var(--text-secondary);
     font-weight: 600;
-    font-size: 0.8rem;
+    font-size: 0.78rem;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
-    padding: 14px 20px;
+padding: 2px;
     border-bottom: 1px solid var(--border-glass);
+    white-space: nowrap;
 }
 .data-table td {
-    padding: 16px 20px;
+    padding: 14px 14px;
     border-bottom: 1px solid var(--border-glass);
     color: var(--text-primary);
-    font-size: 0.85rem;
+    font-size: 0.82rem;
+    vertical-align: top;
 }
 .data-table tr:hover {
     background: rgba(255, 255, 255, 0.02);
@@ -559,6 +566,7 @@ select.form-control {
 .app-container {
     display: flex;
     min-height: 100vh;
+    max-width: 100%;
 }
 .sidebar {
     width: 260px;
@@ -657,6 +665,7 @@ select.form-control {
     min-height: 100vh;
     display: flex;
     flex-direction: column;
+    min-width: 0;
 }
 .main-workspace .navbar {
     height: 70px;
@@ -1224,9 +1233,37 @@ select.form-control {
         height: auto;
         border-right: none;
         border-bottom: 1px solid var(--border-glass);
+        left: auto;
+        top: auto;
+    }
+    .sidebar-brand {
+        padding: 16px 24px;
+        justify-content: center;
+    }
+    .sidebar-menu {
+        display: flex !important;
+        flex-direction: row !important;
+        flex-wrap: wrap !important;
+        padding: 12px !important;
+        gap: 8px !important;
+        justify-content: center !important;
+    }
+    .sidebar-item {
+        margin-bottom: 0 !important;
+    }
+    .sidebar-item a {
+        padding: 8px 12px !important;
+        font-size: 0.8rem !important;
+        justify-content: center;
+        box-shadow: none !important;
+    }
+    .sidebar-footer {
+        padding: 12px 24px !important;
+        justify-content: center;
+        background: rgba(0, 0, 0, 0.2);
     }
     .main-workspace {
-        margin-left: 0;
+        margin-left: 0 !important;
     }
 }
 @media (max-width: 768px) {
@@ -1565,23 +1602,25 @@ select.form-control {
         flex-direction: column;
         align-items: flex-start;
         gap: 24px;
-        padding-left: 20px;
+        padding-left: 0 !important;
         margin: 20px 0;
     }
     .stepper-container::before {
-        left: 30px;
+        left: 22px !important;
         top: 0;
         bottom: 0;
         width: 4px;
         height: 100%;
+        transform: translateX(-50%);
     }
     .stepper-line-progress {
-        left: 30px;
+        left: 22px !important;
         top: 0;
         width: 4px !important;
         height: var(--vertical-progress, 0%);
         transition: height var(--transition-smooth);
         max-height: 100%;
+        transform: translateX(-50%);
     }
     .step-node {
         flex-direction: row;
@@ -2269,6 +2308,83 @@ body.theme-service {
     align-items: center;
     z-index: 10;
     border-radius: inherit;
+}
+
+/* ====================================================================
+   DASHBOARD STAT CARD & GRID STYLES
+   ==================================================================== */
+.dashboard-grid {
+    display: grid !important;
+}
+.stat-card-title {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 8px;
+}
+.stat-card-value {
+    font-size: 2.2rem;
+    font-weight: 800;
+    color: var(--text-primary);
+    line-height: 1;
+}
+.stat-card-icon {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    font-size: 2rem;
+    opacity: 0.12;
+    transition: var(--transition-smooth);
+    pointer-events: none;
+}
+.glass-card:hover .stat-card-icon {
+    opacity: 0.25;
+    transform: scale(1.15);
+}
+
+/* ====================================================================
+   RESPONSIVE TABLE AND LAYOUT ADJUSTMENTS
+   ==================================================================== */
+.main-workspace > div {
+    min-width: 0;
+    max-width: 100%;
+}
+.table-responsive {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    border-radius: var(--radius-md);
+}
+.table-responsive .data-table {
+    min-width: 1020px; /* 8-column tables need more room — prevents right columns from clipping */
+}
+
+/* Title/header padding inside table-card */
+.glass-card.table-card > h3,
+.glass-card.table-card > [style] > h3 {
+    padding: 0 24px;
+}
+
+@media (max-width: 768px) {
+    .main-workspace > div {
+        padding: 16px !important;
+        gap: 16px !important;
+    }
+    .main-workspace .navbar {
+        padding: 0 16px !important;
+    }
+    .navbar-page-title {
+        font-size: 0.95rem !important;
+        max-width: 60%;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    .navbar-actions {
+        gap: 12px !important;
+    }
 }
 
 

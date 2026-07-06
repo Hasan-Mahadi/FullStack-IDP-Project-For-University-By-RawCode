@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Service Dashboard | Operations & Logistics</title>
     <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/chatbot.css">
 </head>
 <body>
 
@@ -95,8 +96,8 @@
 
                 <!-- VIEW 2: Central Logistics Coordination Ledger -->
                 <div id="view-ledger" class="dashboard-view" style="display: none;">
-                    <div class="glass-card">
-                        <h3 style="font-size: 1.1rem; margin-bottom: 20px;">Central Logistics Coordination Ledger</h3>
+                    <div class="glass-card table-card">
+                        <h3 style="font-size: 1.1rem; margin-bottom: 20px; padding: 0 24px;">Central Logistics Coordination Ledger</h3>
                         
                         <div class="table-responsive">
                             <table class="data-table">
@@ -105,14 +106,16 @@
                                         <th>Order ID</th>
                                         <th>Student Buyer</th>
                                         <th>Items Ordered</th>
-                                        <th>Fulfillment Value</th>
+                                        <th>Shipping Details</th>
+                                        <th>Payment Info</th>
+                                        <th>Value</th>
                                         <th>Logistics State</th>
                                         <th>Action Coordinates</th>
                                     </tr>
                                 </thead>
                                 <tbody id="serviceOrdersTable">
                                     <tr>
-                                        <td colspan="6" style="text-align: center; color: var(--text-muted);">Syncing central logs ledger...</td>
+                                        <td colspan="8" style="text-align: center; color: var(--text-muted);">Syncing central logs ledger...</td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -134,26 +137,28 @@
                 <span id="chatCloseBtn" class="modal-close">✕</span>
             </div>
             
-            <!-- Bridge Channel Select dropdown (Exclusive to Service Team Dashboard!) -->
-            <div class="form-group" style="margin-bottom: 20px;">
-                <label class="form-label" for="chatReceiverSelect">Target Bridge Recipient</label>
-                <select id="chatReceiverSelect" class="form-control">
-                    <!-- Loaded dynamically via dashboards.js -->
-                </select>
-                <span style="font-size: 0.7rem; color: var(--warning); margin-top: 4px; display: block;">
-                    * All messages from you are routed exclusively to the selected user.
-                </span>
-            </div>
-
-            <!-- Chat Messaging screen -->
-            <div class="chat-window">
-                <div id="chatMessages" class="chat-messages">
-                    <div style="text-align: center; padding: 20px; color: var(--text-muted);">Syncing secure logs...</div>
+            <div class="modal-body">
+                <!-- Bridge Channel Select dropdown (Exclusive to Service Team Dashboard!) -->
+                <div class="form-group" style="margin-bottom: 20px;">
+                    <label class="form-label" for="chatReceiverSelect">Target Bridge Recipient</label>
+                    <select id="chatReceiverSelect" class="form-control">
+                        <!-- Loaded dynamically via dashboards.js -->
+                    </select>
+                    <span style="font-size: 0.7rem; color: var(--warning); margin-top: 4px; display: block;">
+                        * All messages from you are routed exclusively to the selected user.
+                    </span>
                 </div>
-                
-                <div class="chat-input-bar">
-                    <input id="chatInput" class="form-control" type="text" placeholder="Type message..." style="height: 38px;">
-                    <button id="chatSendBtn" class="btn btn-primary" style="height: 38px; padding: 0 16px; font-size: 0.8rem;">Send</button>
+
+                <!-- Chat Messaging screen -->
+                <div class="chat-window">
+                    <div id="chatMessages" class="chat-messages">
+                        <div style="text-align: center; padding: 20px; color: var(--text-muted);">Syncing secure logs...</div>
+                    </div>
+                    
+                    <div class="chat-input-bar">
+                        <input id="chatInput" class="form-control" type="text" placeholder="Type message..." style="height: 38px;">
+                        <button id="chatSendBtn" class="btn btn-primary" style="height: 38px; padding: 0 16px; font-size: 0.8rem;">Send</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -168,5 +173,9 @@
         Auth.checkPageGuard([4]);
     </script>
     <script src="/js/dashboards.js"></script>
+
+    <!-- EduShop Website Assistant Chatbot -->
+    <script src="/js/chatbot/chatbot-engine.js"></script>
+    <script src="/js/chatbot/chatbot-ui.js"></script>
 </body>
 </html>

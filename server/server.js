@@ -11,6 +11,10 @@
  * 4. Automatic connection layer initialization.
  */
 
+// Load environment variables from .env file (must be first)
+// The .env file is excluded from version control via .gitignore
+require('dotenv').config();
+
 const http = require('http');
 const path = require('path');
 const fs = require('fs');

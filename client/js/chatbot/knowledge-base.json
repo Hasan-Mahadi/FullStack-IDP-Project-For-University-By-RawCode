@@ -1,0 +1,167 @@
+{
+  "version": "1.0",
+  "description": "EduShop Website Assistant Knowledge Base",
+  "entries": [
+    {
+      "id": "company_about",
+      "category": "Company Information",
+      "keywords": ["edushop", "about", "who", "company", "platform", "what is", "idp", "university", "campus", "mission", "story", "founded"],
+      "question": "What is EduShop?",
+      "answer": "EduShop is a role-based campus e-commerce platform designed for students, research lab coordinators, and faculty members. It was developed as an Integrated Design Project (IDP) to create a secure, trusted, and efficient peer-to-peer marketplace within the campus. Our platform connects Customers, Sellers, and a Service Team to ensure quality-assured transactions."
+    },
+    {
+      "id": "company_roles",
+      "category": "Company Information",
+      "keywords": ["roles", "user types", "account types", "who can", "admin", "seller", "customer", "service team", "register as"],
+      "question": "What types of accounts are available?",
+      "answer": "EduShop has 4 types of accounts:\n\n• **Customer** — Browse products, add to cart, place orders, and track deliveries.\n• **Seller** — List products, manage inventory, and ship orders to the warehouse.\n• **Service Team** — Review orders, audit warehouse stock, and dispatch packages.\n• **Admin** — Manage all users, monitor platform activity, and generate reports."
+    },
+    {
+      "id": "products_what",
+      "category": "Products",
+      "keywords": ["products", "sell", "items", "what do you sell", "catalog", "available", "electronics", "books", "lab", "equipment", "sportswear", "stationery", "buy"],
+      "question": "What products do you sell?",
+      "answer": "EduShop offers a wide range of campus-focused products including:\n\n• 📱 **Electronics** — Microcontrollers, sensors, components, and research tools\n• 📚 **Books & References** — Textbooks, scientific guides, course materials\n• 🔬 **Lab Equipment** — Instruments and accessories for research labs\n• 👕 **Campus Lifestyle** — Sportswear, athletic gear, and official accessories\n• 📝 **Stationery & Supplies** — Everything you need for academic life\n\nAll products are listed by verified campus sellers."
+    },
+    {
+      "id": "products_quality",
+      "category": "Products",
+      "keywords": ["quality", "verified", "authentic", "trust", "safe", "guarantee", "assurance", "real"],
+      "question": "Are products quality assured?",
+      "answer": "Yes! Every order goes through our quality assurance process. Our Service Team physically verifies all items at the Central Warehouse before dispatch. This ensures that what you ordered matches exactly what you receive. If there is a discrepancy, the team coordinates with the seller to resolve it immediately."
+    },
+    {
+      "id": "orders_how",
+      "category": "Orders",
+      "keywords": ["order", "place order", "how to order", "buy", "purchase", "checkout", "cart", "shopping", "how can i order"],
+      "question": "How can I place an order?",
+      "answer": "Placing an order on EduShop is simple:\n\n1. **Browse** — Explore products in the catalog or search by category\n2. **Add to Cart** — Click 'Add to Cart' on any product you want\n3. **Checkout** — Go to your cart and click 'Checkout'\n4. **Shipping Info** — Enter your name, phone number, and delivery address\n5. **Payment** — Choose Cash on Delivery (COD) or Card payment\n6. **Place Order** — Review your order and click 'Place Order & Pay'\n\nYou'll receive a confirmation email with all your order details!"
+    },
+    {
+      "id": "orders_track",
+      "category": "Orders",
+      "keywords": ["track", "status", "where is", "my order", "order status", "check order", "progress", "dashboard", "customer dashboard"],
+      "question": "How can I track my order?",
+      "answer": "You can track your order in real-time from your **Customer Dashboard**:\n\n• **PENDING** — Order received, awaiting Service Team approval\n• **APPROVED** — Order approved, seller is preparing items\n• **DELIVERED TO WAREHOUSE** — Items shipped to central warehouse\n• **VERIFIED IN WAREHOUSE** — Quality audit passed\n• **DISPATCHED** — Package is on its way to you!\n• **COMPLETED** — Order delivered and confirmed\n\nYou'll also receive in-app notifications at each stage."
+    },
+    {
+      "id": "orders_cancel",
+      "category": "Orders",
+      "keywords": ["cancel", "cancellation", "refund", "return order", "undo order"],
+      "question": "Can I cancel my order?",
+      "answer": "Currently, order cancellations are handled by our Service Team. Once an order is placed, it enters the review process. If you need to cancel, please contact our support team as soon as possible through the Contact page. Orders that have already been dispatched cannot be cancelled."
+    },
+    {
+      "id": "shipping_how",
+      "category": "Shipping",
+      "keywords": ["shipping", "delivery", "deliver", "how does delivery", "deliver work", "ship", "address", "campus", "dorm"],
+      "question": "How does delivery work?",
+      "answer": "EduShop uses a structured campus delivery system:\n\n1. **Seller ships** your items to our Central Warehouse\n2. Our **Service Team verifies** all items for quality and accuracy\n3. Once verified, the package is **dispatched** to your campus/dorm address\n4. You **confirm receipt** in your Customer Dashboard to complete the order\n\nDelivery is exclusively available within campus boundaries."
+    },
+    {
+      "id": "shipping_time",
+      "category": "Shipping",
+      "keywords": ["how long", "delivery time", "when will", "arrive", "timeline", "days", "fast", "speed"],
+      "question": "How long does delivery take?",
+      "answer": "Delivery timelines depend on the seller's dispatch speed and our verification process. Typically:\n\n• **Order Review**: 1–2 business days\n• **Warehouse Arrival**: 2–5 business days (after seller ships)\n• **Verification & Dispatch**: 1–2 business days\n\nYou can monitor every step in your Customer Dashboard."
+    },
+    {
+      "id": "payments_methods",
+      "category": "Payments",
+      "keywords": ["payment", "pay", "method", "how to pay", "cod", "cash", "card", "credit", "debit", "mock card", "payment methods"],
+      "question": "What payment methods are available?",
+      "answer": "EduShop currently supports two payment methods:\n\n• 💵 **Cash on Delivery (COD)** — Pay when your package arrives at your door. No upfront payment needed.\n• 💳 **Card Payment** — Pay securely online with your debit or credit card at checkout.\n\nYou can select your preferred method during the checkout process."
+    },
+    {
+      "id": "payments_secure",
+      "category": "Payments",
+      "keywords": ["secure", "safe", "fraud", "security", "protection", "encrypted"],
+      "question": "Is payment secure?",
+      "answer": "Yes! All card transactions on EduShop are processed securely. Your card details are never stored on our servers. For maximum security, we recommend using the COD option for large purchases, allowing you to inspect items before payment."
+    },
+    {
+      "id": "returns_policy",
+      "category": "Returns",
+      "keywords": ["return", "refund", "exchange", "wrong item", "damaged", "broken", "defective", "return policy"],
+      "question": "What is the return/refund policy?",
+      "answer": "If you receive a damaged, defective, or incorrect item, please contact our support team immediately through the Contact page. Our Service Team will investigate and coordinate with the seller to arrange a return or exchange. Please document the issue with photos when possible for faster resolution."
+    },
+    {
+      "id": "support_contact",
+      "category": "Support",
+      "keywords": ["contact", "support", "help", "reach", "email support", "customer service", "problem", "issue", "complaint", "how can i contact"],
+      "question": "How can I contact support?",
+      "answer": "You can reach our support team through multiple channels:\n\n• 📧 **Email**: support@edushop.edu\n• 📝 **Contact Form**: Visit our [Contact Page](/pages/contact.html)\n• 📱 **In-App Messaging**: Use the messaging system in your dashboard (for sellers and service team)\n\nOur support team is available Monday–Friday, 9 AM – 5 PM."
+    },
+    {
+      "id": "support_account",
+      "category": "Support",
+      "keywords": ["account", "forgot password", "reset password", "login problem", "cant login", "locked out", "password"],
+      "question": "I have a problem with my account or password.",
+      "answer": "For account issues:\n\n• **Forgot Password**: Click 'Forgot Password' on the login page to receive a reset link.\n• **Account Suspended**: Contact our admin team through the Contact page.\n• **Login Issues**: Make sure you're using your registered username and the correct password.\n\nFor any persistent issues, reach out to support@edushop.edu."
+    },
+    {
+      "id": "seller_become",
+      "category": "Seller Information",
+      "keywords": ["become seller", "sell", "register seller", "how to sell", "seller account", "list products", "vendor", "selling"],
+      "question": "How can I become a seller?",
+      "answer": "To become a seller on EduShop:\n\n1. **Register** an account and select **Seller** as your account type\n2. Log in to access your **Seller Dashboard**\n3. Click **Add Product** to create your first listing\n4. Add product name, description, category, price, and stock quantity\n5. Upload a product image\n6. Your product will be live and visible to customers!\n\nAs a seller, you're responsible for shipping items to our Central Warehouse once an order is approved."
+    },
+    {
+      "id": "seller_dashboard",
+      "category": "Seller Information",
+      "keywords": ["seller dashboard", "manage products", "seller features", "listings", "inventory", "stock", "seller tools"],
+      "question": "What can I do in the Seller Dashboard?",
+      "answer": "Your Seller Dashboard gives you full control over your business:\n\n• 📦 **Product Management** — Add, edit, or remove product listings\n• 📊 **Order Tracking** — View all orders containing your products\n• 📋 **Inventory** — Monitor and update stock levels\n• 🚚 **Warehouse Shipping** — Confirm shipment to our Central Warehouse\n• 💬 **Messaging** — Communicate with customers and the service team\n• 🖼️ **Profile** — Update your seller profile and avatar"
+    },
+    {
+      "id": "seller_warehouse",
+      "category": "Seller Information",
+      "keywords": ["warehouse", "ship to warehouse", "deliver warehouse", "seller ship", "after approval"],
+      "question": "What do I do after my order is approved?",
+      "answer": "After an order is approved by the Service Team:\n\n1. Prepare and package all items in the order\n2. Ship the physical items to the **Central Warehouse**\n3. In your Seller Dashboard, click **'Mark as Delivered to Warehouse'** to notify the Service Team\n4. The Service Team will then verify quantities and quality\n5. Once verified, they'll dispatch the package to the customer"
+    },
+    {
+      "id": "service_team",
+      "category": "Service Team Information",
+      "keywords": ["service team", "how does service", "service work", "team", "audit", "verify", "dispatch", "service role", "service dashboard"],
+      "question": "How does the Service Team work?",
+      "answer": "The EduShop Service Team is responsible for the entire quality assurance and logistics chain:\n\n• **Order Review** — Approve or reject incoming orders from customers\n• **Warehouse Audit** — Physically verify items delivered by sellers against the order\n• **Quality Control** — Confirm quantities and product condition\n• **Dispatch** — Assign couriers and dispatch verified packages to customers\n• **Coordination** — Communicate with sellers on discrepancies\n\nThe Service Team ensures every transaction meets our quality standards."
+    },
+    {
+      "id": "faq_register",
+      "category": "FAQs",
+      "keywords": ["register", "sign up", "create account", "new account", "join", "how to register"],
+      "question": "How do I create an account?",
+      "answer": "Creating an account on EduShop is easy:\n\n1. Click **Register** in the top navigation bar\n2. Fill in your full name, username, email, and password\n3. Select your account type: Customer, Seller, or Service Team\n4. Click **Create Account**\n\nYou'll be logged in automatically and can start using the platform right away!"
+    },
+    {
+      "id": "faq_categories",
+      "category": "FAQs",
+      "keywords": ["categories", "browse", "search", "find product", "explore", "filter", "category"],
+      "question": "How do I browse product categories?",
+      "answer": "You can browse products by category in several ways:\n\n• Click **Categories** in the navigation menu\n• Use the **Top Categories** grid on the homepage\n• Visit the **All Products** page to see everything\n• Use the search or filter options to narrow down results\n\nCategories include Electronics, Books, Lab Equipment, Sportswear, and more."
+    },
+    {
+      "id": "faq_wishlist",
+      "category": "FAQs",
+      "keywords": ["wishlist", "save", "favorite", "wish list", "saved items", "bookmark"],
+      "question": "How does the wishlist work?",
+      "answer": "As a Customer, you can save products to your Wishlist for later:\n\n• Click the **♥ Wishlist** button on any product page\n• Access your saved items from **My Wishlist** in your Customer Dashboard\n• Products stay in your wishlist until you remove them\n\nNote: Wishlist is only available for Customer accounts."
+    },
+    {
+      "id": "faq_notifications",
+      "category": "FAQs",
+      "keywords": ["notification", "alert", "update", "bell", "notify", "message"],
+      "question": "How do notifications work?",
+      "answer": "EduShop sends real-time in-app notifications for all important order events. You'll receive notifications when:\n\n• Your order is approved or rejected\n• Items arrive at the warehouse\n• Your package is dispatched\n• Any status changes occur\n\nCheck the notification bell 🔔 in the top navigation bar."
+    },
+    {
+      "id": "faq_profile",
+      "category": "FAQs",
+      "keywords": ["profile", "update profile", "change name", "avatar", "picture", "account settings", "edit profile"],
+      "question": "How do I update my profile?",
+      "answer": "You can update your profile from your Dashboard:\n\n• Click your **username/avatar** in the top navigation bar\n• Select **Profile Settings**\n• Update your full name, email, and profile picture (avatar)\n• You can also change your password from the Profile page\n\nProfile updates take effect immediately."
+    }
+  ]
+}

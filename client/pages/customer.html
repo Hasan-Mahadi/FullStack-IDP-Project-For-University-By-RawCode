@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Customer Dashboard | Campus Shop</title>
     <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/chatbot.css">
 </head>
 <body>
 
@@ -69,8 +70,8 @@
                 </div>
 
                 <!-- Table Card -->
-                <div class="glass-card">
-                    <h3 style="font-size: 1.1rem; margin-bottom: 20px;">My Orders History</h3>
+                <div class="glass-card table-card">
+                    <h3 style="font-size: 1.1rem; margin-bottom: 20px; padding: 0 24px;">My Orders History</h3>
                     
                     <div class="table-responsive">
                         <table class="data-table">
@@ -158,19 +159,21 @@
                 <span id="chatCloseBtn" class="modal-close">✕</span>
             </div>
             
-            <div style="font-size: 0.75rem; color: var(--warning); padding: 8px 12px; border-radius: 8px; background: rgba(255, 204, 0, 0.08); border: 1px solid rgba(255, 204, 0, 0.2); margin-bottom: 16px; line-height: 1.4;">
-                ⚠️ <strong>Communication Bridge Active:</strong> Customer-Seller direct talk is blocked. All messages are securely routed through the central Service Team.
-            </div>
-
-            <!-- Chat Messaging screen -->
-            <div class="chat-window">
-                <div id="chatMessages" class="chat-messages">
-                    <div style="text-align: center; padding: 20px; color: var(--text-muted);">Syncing secure logs...</div>
+            <div class="modal-body">
+                <div style="font-size: 0.75rem; color: var(--warning); padding: 8px 12px; border-radius: 8px; background: rgba(255, 204, 0, 0.08); border: 1px solid rgba(255, 204, 0, 0.2); margin-bottom: 16px; line-height: 1.4;">
+                    ⚠️ <strong>Communication Bridge Active:</strong> Customer-Seller direct talk is blocked. All messages are securely routed through the central Service Team.
                 </div>
-                
-                <div class="chat-input-bar">
-                    <input id="chatInput" class="form-control" type="text" placeholder="Type message to Service Team Coordinator..." style="height: 38px;">
-                    <button id="chatSendBtn" class="btn btn-primary" style="height: 38px; padding: 0 16px; font-size: 0.8rem;">Send</button>
+
+                <!-- Chat Messaging screen -->
+                <div class="chat-window">
+                    <div id="chatMessages" class="chat-messages">
+                        <div style="text-align: center; padding: 20px; color: var(--text-muted);">Syncing secure logs...</div>
+                    </div>
+                    
+                    <div class="chat-input-bar">
+                        <input id="chatInput" class="form-control" type="text" placeholder="Type message to Service Team Coordinator..." style="height: 38px;">
+                        <button id="chatSendBtn" class="btn btn-primary" style="height: 38px; padding: 0 16px; font-size: 0.8rem;">Send</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -185,5 +188,9 @@
         Auth.checkPageGuard([3]);
     </script>
     <script src="/js/dashboards.js"></script>
+
+    <!-- EduShop Website Assistant Chatbot -->
+    <script src="/js/chatbot/chatbot-engine.js"></script>
+    <script src="/js/chatbot/chatbot-ui.js"></script>
 </body>
 </html>

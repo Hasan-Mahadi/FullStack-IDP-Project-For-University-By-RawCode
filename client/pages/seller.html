@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Seller Portal | Campus Shop</title>
     <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/chatbot.css">
 </head>
 <body>
 
@@ -162,8 +163,8 @@
 
                 <!-- VIEW 3: Active Listed Inventory Table -->
                 <div id="view-inventory" class="dashboard-view" style="display: none;">
-                    <div class="glass-card">
-                        <h3 style="font-size: 1.1rem; margin-bottom: 20px;">Active Listed Inventory</h3>
+                    <div class="glass-card table-card">
+                        <h3 style="font-size: 1.1rem; margin-bottom: 20px; padding: 0 24px;">Active Listed Inventory</h3>
                         
                         <div class="table-responsive">
                             <table class="data-table">
@@ -191,9 +192,9 @@
 
                 <!-- VIEW 4: Incoming Approved Orders Section -->
                 <div id="view-orders" class="dashboard-view" style="display: none;">
-                    <div class="glass-card">
-                        <h3 style="font-size: 1.1rem; margin-bottom: 8px;">Incoming Approved Orders</h3>
-                        <p style="color: var(--text-secondary); font-size: 0.8rem; margin-bottom: 20px;">
+                    <div class="glass-card table-card">
+                        <h3 style="font-size: 1.1rem; margin-bottom: 8px; padding: 0 24px;">Incoming Approved Orders</h3>
+                        <p style="color: var(--text-secondary); font-size: 0.8rem; margin-bottom: 20px; padding: 0 24px;">
                             Orders listed here have been approved by the Service Team. Ship these physical goods to the Central Warehouse and mark them as delivered below.
                         </p>
                         
@@ -231,47 +232,49 @@
             </div>
             
             <form id="editProductForm">
-                <input type="hidden" id="editProdId">
-                <div class="form-group">
-                    <label class="form-label" for="editProdName">Product Title</label>
-                    <input class="form-control" type="text" id="editProdName" required>
-                </div>
-
-                <div class="form-group">
-                    <label class="form-label" for="editProdCategory">Product Category</label>
-                    <select id="editProdCategory" class="form-control" required>
-                        <option value="">Select Category</option>
-                    </select>
-                </div>
-
-                <div class="form-group">
-                    <label class="form-label">Product Image</label>
-                    <div style="display: flex; gap: 8px; margin-bottom: 8px;">
-                        <button type="button" id="toggleEditFileBtn" class="btn btn-secondary btn-sm active" style="flex: 1; padding: 6px; font-size: 0.75rem;">Upload File</button>
-                        <button type="button" id="toggleEditUrlBtn" class="btn btn-secondary btn-sm" style="flex: 1; padding: 6px; font-size: 0.75rem;">Image URL</button>
-                    </div>
-                    <div id="editFileGroup">
-                        <input type="file" id="editProdImageFile" accept="image/*" class="form-control" style="padding-top: 6px;">
-                    </div>
-                    <div id="editUrlGroup" style="display: none;">
-                        <input type="text" id="editProdImageUrl" placeholder="Image URL (e.g. /uploads/products/xyz.png)" class="form-control">
-                    </div>
-                </div>
-                
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px; margin-top: 12px;">
+                <div class="modal-body">
+                    <input type="hidden" id="editProdId">
                     <div class="form-group">
-                        <label class="form-label" for="editProdPrice">Price ($)</label>
-                        <input class="form-control" type="number" step="0.01" id="editProdPrice" required>
+                        <label class="form-label" for="editProdName">Product Title</label>
+                        <input class="form-control" type="text" id="editProdName" required>
                     </div>
-                    <div class="form-group">
-                        <label class="form-label" for="editProdStock">Stock Volume</label>
-                        <input class="form-control" type="number" id="editProdStock" required>
-                    </div>
-                </div>
 
-                <button type="submit" class="btn btn-primary" style="width: 100%; height: 42px;">
-                    Apply Specifications
-                </button>
+                    <div class="form-group">
+                        <label class="form-label" for="editProdCategory">Product Category</label>
+                        <select id="editProdCategory" class="form-control" required>
+                            <option value="">Select Category</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Product Image</label>
+                        <div style="display: flex; gap: 8px; margin-bottom: 8px;">
+                            <button type="button" id="toggleEditFileBtn" class="btn btn-secondary btn-sm active" style="flex: 1; padding: 6px; font-size: 0.75rem;">Upload File</button>
+                            <button type="button" id="toggleEditUrlBtn" class="btn btn-secondary btn-sm" style="flex: 1; padding: 6px; font-size: 0.75rem;">Image URL</button>
+                        </div>
+                        <div id="editFileGroup">
+                            <input type="file" id="editProdImageFile" accept="image/*" class="form-control" style="padding-top: 6px;">
+                        </div>
+                        <div id="editUrlGroup" style="display: none;">
+                            <input type="text" id="editProdImageUrl" placeholder="Image URL (e.g. /uploads/products/xyz.png)" class="form-control">
+                        </div>
+                    </div>
+                    
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px; margin-top: 12px;">
+                        <div class="form-group">
+                            <label class="form-label" for="editProdPrice">Price ($)</label>
+                            <input class="form-control" type="number" step="0.01" id="editProdPrice" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="editProdStock">Stock Volume</label>
+                            <input class="form-control" type="number" id="editProdStock" required>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary" style="width: 100%; height: 42px;">
+                        Apply Specifications
+                    </button>
+                </div>
             </form>
         </div>
     </div>
@@ -284,19 +287,21 @@
                 <span id="chatCloseBtn" class="modal-close">✕</span>
             </div>
             
-            <div style="font-size: 0.75rem; color: var(--warning); padding: 8px 12px; border-radius: 8px; background: rgba(255, 204, 0, 0.08); border: 1px solid rgba(255, 204, 0, 0.2); margin-bottom: 16px; line-height: 1.4;">
-                ⚠️ <strong>Communication Bridge Active:</strong> Customer-Seller direct talk is blocked. All messages are securely routed through the central Service Team.
-            </div>
-
-            <!-- Chat Messaging screen -->
-            <div class="chat-window">
-                <div id="chatMessages" class="chat-messages">
-                    <div style="text-align: center; padding: 20px; color: var(--text-muted);">Syncing secure logs...</div>
+            <div class="modal-body">
+                <div style="font-size: 0.75rem; color: var(--warning); padding: 8px 12px; border-radius: 8px; background: rgba(255, 204, 0, 0.08); border: 1px solid rgba(255, 204, 0, 0.2); margin-bottom: 16px; line-height: 1.4;">
+                    ⚠️ <strong>Communication Bridge Active:</strong> Customer-Seller direct talk is blocked. All messages are securely routed through the central Service Team.
                 </div>
-                
-                <div class="chat-input-bar">
-                    <input id="chatInput" class="form-control" type="text" placeholder="Type message to Service Team Coordinator..." style="height: 38px;">
-                    <button id="chatSendBtn" class="btn btn-primary" style="height: 38px; padding: 0 16px; font-size: 0.8rem;">Send</button>
+
+                <!-- Chat Messaging screen -->
+                <div class="chat-window">
+                    <div id="chatMessages" class="chat-messages">
+                        <div style="text-align: center; padding: 20px; color: var(--text-muted);">Syncing secure logs...</div>
+                    </div>
+                    
+                    <div class="chat-input-bar">
+                        <input id="chatInput" class="form-control" type="text" placeholder="Type message to Service Team Coordinator..." style="height: 38px;">
+                        <button id="chatSendBtn" class="btn btn-primary" style="height: 38px; padding: 0 16px; font-size: 0.8rem;">Send</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -311,5 +316,9 @@
         Auth.checkPageGuard([2]);
     </script>
     <script src="/js/dashboards.js"></script>
+
+    <!-- EduShop Website Assistant Chatbot -->
+    <script src="/js/chatbot/chatbot-engine.js"></script>
+    <script src="/js/chatbot/chatbot-ui.js"></script>
 </body>
 </html>

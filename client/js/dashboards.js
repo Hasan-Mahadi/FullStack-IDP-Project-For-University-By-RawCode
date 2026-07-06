@@ -73,6 +73,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const routeMap = currentPage ? ROUTE_MAPS[currentPage] : {};
 
     function handleRouting() {
+        if (!currentPage) return;
+        
         // Parse the route key from the hash: "#/upload-product" → "upload-product"
         const hash = window.location.hash || '';
         const routeKey = hash.replace(/^#\//, '').trim() || 'dashboard';
@@ -103,14 +105,16 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Set default hash if none present
-    if (!window.location.hash) {
-        window.location.hash = '#/dashboard';
-    }
+    if (currentPage) {
+        // Set default hash if none present
+        if (!window.location.hash) {
+            window.location.hash = '#/dashboard';
+        }
 
-    // Run router on load and on every hash change
-    handleRouting();
-    window.addEventListener('hashchange', handleRouting);
+        // Run router on load and on every hash change
+        handleRouting();
+        window.addEventListener('hashchange', handleRouting);
+    }
 
     // 2. REAL-TIME SYSTEM NOTIFICATIONS COORDINATOR
     const notificationBell = document.getElementById('notificationBell');
@@ -1305,20 +1309,45 @@ document.addEventListener('DOMContentLoaded', () => {
                             return `<div style="display: flex; align-items: center; margin-bottom: 6px;">${imgHtml}<span>${i.product_name} (x${i.quantity})</span></div>`;
                         }).join('');
 
+                        // Shipping info cell — same pattern as customer dashboard
+                        const shippingHtml = o.shipping_name 
+                            ? `<div style="font-size: 0.8rem; line-height: 1.4;">
+                                 <strong>${o.shipping_name}</strong><br>
+                                 📞 ${o.shipping_phone}<br>
+                                 📍 ${o.shipping_address}
+                               </div>`
+                            : `<span style="color: var(--text-muted); font-size: 0.8rem;">No shipping info</span>`;
+
+                        // Payment info cell — same pattern as customer dashboard
+                        const paymentMethodLabel = o.payment_method === 'MOCK_CARD' ? '💳 Card' : o.payment_method === 'COD' ? '💵 COD' : 'Pending';
+                        const paymentStatusColor = o.payment_status === 'PAID' ? 'var(--success)' : o.payment_status === 'COD_PENDING' ? 'var(--warning)' : 'var(--danger)';
+                        const paymentHtml = o.payment_method 
+                            ? `<div style="font-size: 0.8rem; line-height: 1.4;">
+                                 <span>Method: <strong>${paymentMethodLabel}</strong></span><br>
+                                 <span>Status: <strong style="color: ${paymentStatusColor}">${o.payment_status || 'PENDING'}</strong></span><br>
+                                 <span style="font-size: 0.7rem; color: var(--text-muted); font-family: monospace;">ID: ${o.transaction_id || 'N/A'}</span>
+                               </div>`
+                            : `<span style="color: var(--text-muted); font-size: 0.8rem;">No payment info</span>`;
+
                         tr.innerHTML = `
                             <td>#${o.id}</td>
                             <td>${o.customer_name}</td>
                             <td>${itemsHtml}</td>
+                            <td>${shippingHtml}</td>
+                            <td>${paymentHtml}</td>
                             <td>$${o.total_amount.toFixed(2)}</td>
                             <td>
                                 <span class="badge ${o.status === 'COMPLETED' ? 'badge-success' : o.status === 'REJECTED' ? 'badge-danger' : 'badge-pending'}">${o.status}</span>
                             </td>
-                            <td style="display: flex; gap: 6px; flex-wrap: wrap;">
-                                ${actionHtml}
-                                ${messageHtml}
+                            <td>
+                                <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+                                    ${actionHtml}
+                                    ${messageHtml}
+                                </div>
                             </td>
                         `;
                         serviceOrdersTable.appendChild(tr);
+
                     });
 
                     statPendingReview.innerText = pendingReview;
